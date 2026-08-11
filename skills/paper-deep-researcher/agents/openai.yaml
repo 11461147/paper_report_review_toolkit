@@ -1,0 +1,7 @@
+interface:
+  display_name: "Paper Deep Researcher"
+  short_description: "Citation-grounded academic literature reviews and paper comparisons."
+  default_prompt: "Use $paper-deep-researcher to produce a citation-grounded literature review on this topic."
+policy:
+  allow_implicit_invocation: true
+

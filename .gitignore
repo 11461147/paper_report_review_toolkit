@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+env/
+*.log
+*_audit.json
+*.audit_rewrite_contexts.json
+*.semantic_audit_packet.json

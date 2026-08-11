@@ -1,0 +1,120 @@
+[
+  {
+    "type": "function",
+    "function": {
+      "name": "search_academic_papers",
+      "description": "Searches Semantic Scholar API for academic papers using keyword or boolean expressions with metadata filters. Returns ranked papers with composite impact scores. Use this as the primary discovery tool.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Search query string or boolean logic expression. Examples: 'GraphRAG knowledge graph retrieval', '(entity alignment) AND (GNN OR graph neural network)'"
+          },
+          "yearFrom": {
+            "type": "integer",
+            "description": "Filter to papers published from this year onward (inclusive). Example: 2021"
+          },
+          "yearTo": {
+            "type": "integer",
+            "description": "Filter to papers published up to this year (inclusive). Example: 2026"
+          },
+          "fieldsOfStudy": {
+            "type": "string",
+            "description": "Comma-separated fields to filter by. Valid values: 'Computer Science', 'Medicine', 'Biology', 'Physics', 'Mathematics', 'Economics'. Example: 'Computer Science'"
+          },
+          "minCitations": {
+            "type": "integer",
+            "description": "Minimum citation count threshold. Use to filter for established, impactful papers. Example: 10"
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Maximum number of papers to return. Default: 20. Max recommended: 50.",
+            "default": 20
+          }
+        },
+        "required": ["query"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "traverse_citation_graph",
+      "description": "Traverses the bidirectional citation graph of a specific paper to discover foundational references (backward) or recent papers that cite it (forward). Essential for finding highly influential works that may not appear in keyword searches.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "paperId": {
+            "type": "string",
+            "description": "Semantic Scholar Paper ID, DOI, or ArXiv ID. Example: '649def34f8be52c8b66281af98ae884c09aef38d' or 'arXiv:2404.16130' or '10.18653/v1/2024.acl-long.812'"
+          },
+          "direction": {
+            "type": "string",
+            "enum": ["citations", "references", "recommendations"],
+            "description": "Direction of traversal: 'citations' finds papers that CITE this paper (downstream/recent), 'references' finds papers that this paper CITES (upstream/foundational), 'recommendations' finds semantically related papers."
+          },
+          "influentialOnly": {
+            "type": "boolean",
+            "description": "If true, only return papers flagged as 'influential' citations by Semantic Scholar. Recommended: true for focused research.",
+            "default": true
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Maximum number of related papers to return. Default: 15.",
+            "default": 15
+          }
+        },
+        "required": ["paperId", "direction"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "get_paper_snippets",
+      "description": "Retrieves exact full-text passages (~480 tokens each) from a specific paper using the Semantic Scholar Open Research Corpus (S2ORC). Use this to extract precise evidence for fact-scoring and in-text citation.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "paperId": {
+            "type": "string",
+            "description": "Semantic Scholar Paper ID for the target paper."
+          },
+          "query": {
+            "type": "string",
+            "description": "The specific sub-question or evidence query to search within the paper. Be specific. Example: 'What F1 score did the model achieve on HotpotQA?' or 'How does the entity alignment loss function work?'"
+          },
+          "maxSnippets": {
+            "type": "integer",
+            "description": "Maximum number of passages to retrieve. Default: 5.",
+            "default": 5
+          }
+        },
+        "required": ["paperId", "query"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "get_paper_metadata",
+      "description": "Retrieves complete metadata for a specific paper including abstract, authors, venue, citation counts, and open access PDF link. Use this to verify paper details before citing.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "paperId": {
+            "type": "string",
+            "description": "Semantic Scholar Paper ID, DOI, or ArXiv ID."
+          },
+          "fields": {
+            "type": "string",
+            "description": "Comma-separated fields to include. Default: 'paperId,title,abstract,authors,year,citationCount,influentialCitationCount,venue,openAccessPdf,tldr,externalIds'",
+            "default": "paperId,title,abstract,authors,year,citationCount,influentialCitationCount,venue,openAccessPdf,tldr,externalIds"
+          }
+        },
+        "required": ["paperId"]
+      }
+    }
+  }
+]
