@@ -18,6 +18,10 @@ Typical usage:
   python tools/report_auditor.py report.md --source paper.txt --write
   python tools/report_auditor.py report.md --json-out audit.json
   python tools/report_auditor.py report.md --semantic-packet
+  python tools/report_auditor.py report.md --argument-packet
+  python tools/report_auditor.py report.md --reasoning-packet
+  python tools/report_auditor.py report.md --reasoning-appendix
+  python tools/report_auditor.py report.md --semantic-verdicts l2.json --reasoning-verdicts l3.json --final-review-out final_review.json
   python tools/report_auditor.py report.md --no-verify-citation-metadata --json-out audit.json
   python tools/report_auditor.py report.md --check-links --json-out audit.json
 
@@ -41,6 +45,14 @@ from pathlib import Path
 
 
 DEFAULT_THRESHOLD = 80.0
+MIN_REPORT_CHARS = 600
+MIN_CLAIMS = 3
+MIN_CITED_CLAIMS = 1
+MIN_CITATION_SUPPORT_RATE = 35.0
+MIN_REQUIRED_SECTION_RATE = 60.0
+SEMANTIC_BLOCKING_STATUSES = {"unsupported", "unverifiable"}
+SEMANTIC_BLOCKING_ACTIONS = {"delete", "replace_source"}
+REASONING_BLOCKING_VERDICTS = {"overgeneralized", "causal_jump", "missing_condition", "unsupported", "unclear"}
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
@@ -257,6 +269,10 @@ def context_window(report: str, needle: str, width: int = 220) -> str:
     return report[start:end].replace("\n", " ").strip()
 
 
+def markdown_escape(text: str) -> str:
+    return text.replace("|", "\\|").replace("\n", " ").strip()
+
+
 def clamp(value: float, low: float = 0.0, high: float = 100.0) -> float:
     return max(low, min(high, value))
 
@@ -265,6 +281,73 @@ def percent(numerator: int, denominator: int) -> float:
     if denominator <= 0:
         return 100.0
     return 100.0 * numerator / denominator
+
+
+def hard_gate_failures(
+    report: str,
+    claims: list[str],
+    cited_claims: list[str],
+    citation_support_rate: float,
+    required_section_rate: float,
+    deterministic: dict,
+) -> list[dict]:
+    length = deterministic.get("length", {})
+    failures = []
+    if length.get("chars", len(report)) < MIN_REPORT_CHARS:
+        failures.append(
+            {
+                "gate": "minimum_report_length",
+                "message": f"報告字數過短，至少需要 {MIN_REPORT_CHARS} 個字元。",
+                "actual": length.get("chars", len(report)),
+                "minimum": MIN_REPORT_CHARS,
+            }
+        )
+    if len(claims) < MIN_CLAIMS:
+        failures.append(
+            {
+                "gate": "minimum_claim_count",
+                "message": f"可審核主張過少，至少需要 {MIN_CLAIMS} 條。",
+                "actual": len(claims),
+                "minimum": MIN_CLAIMS,
+            }
+        )
+    if len(cited_claims) < MIN_CITED_CLAIMS:
+        failures.append(
+            {
+                "gate": "minimum_cited_claims",
+                "message": f"有 citation 的主張過少，至少需要 {MIN_CITED_CLAIMS} 條。",
+                "actual": len(cited_claims),
+                "minimum": MIN_CITED_CLAIMS,
+            }
+        )
+    if citation_support_rate < MIN_CITATION_SUPPORT_RATE:
+        failures.append(
+            {
+                "gate": "minimum_citation_support_rate",
+                "message": f"Citation 支撐率低於硬門檻 {MIN_CITATION_SUPPORT_RATE:.1f}%。",
+                "actual": round(citation_support_rate, 2),
+                "minimum": MIN_CITATION_SUPPORT_RATE,
+            }
+        )
+    if required_section_rate < MIN_REQUIRED_SECTION_RATE:
+        failures.append(
+            {
+                "gate": "minimum_required_section_rate",
+                "message": f"必要章節覆蓋率低於硬門檻 {MIN_REQUIRED_SECTION_RATE:.1f}%。",
+                "actual": round(required_section_rate, 2),
+                "minimum": MIN_REQUIRED_SECTION_RATE,
+            }
+        )
+    if deterministic.get("reference_count", 0) == 0:
+        failures.append(
+            {
+                "gate": "minimum_references",
+                "message": "參考來源區沒有可辨識文獻條目。",
+                "actual": 0,
+                "minimum": 1,
+            }
+        )
+    return failures
 
 
 def extract_urls(report: str) -> list[str]:
@@ -1014,6 +1097,26 @@ def audit_report(
         len(deterministic["duplicate_references"]),
         max(deterministic["reference_count"], 1),
     )
+    hard_gates = hard_gate_failures(
+        report,
+        claims,
+        cited_claims,
+        citation_support_rate,
+        required_section_rate,
+        deterministic,
+    )
+
+    for gate in hard_gates:
+        findings.append(
+            Finding(
+                severity="critical",
+                category="hard_gate",
+                score_impact=10,
+                message=gate["message"],
+                context=json.dumps(gate, ensure_ascii=False),
+                rewrite_hint="補齊最低證據條件後重新審核；不要讓空報告、低引用或缺章節報告靠扣分制通過。",
+            )
+        )
 
     evidence_score = clamp(
         100
@@ -1051,12 +1154,49 @@ def audit_report(
         + 0.10 * (100 - hallucination_score)
     )
 
-    passed = final_score >= threshold and not any(f.severity == "critical" for f in findings)
+    passed = final_score >= threshold and not hard_gates and not any(f.severity == "critical" for f in findings)
+
+    reasoning_candidates = []
+    for claim in claims:
+        risk_labels = []
+        if any(word in claim for word in HIGH_RISK_WORDS):
+            risk_labels.append("strong_or_causal_language")
+        if any(word in claim for word in INFERENCE_WORDS):
+            risk_labels.append("explicit_inference")
+        if any(word in claim for word in DIRECT_EVIDENCE_WORDS):
+            risk_labels.append("direct_evidence_claim")
+        if not risk_labels and has_citation(claim):
+            risk_labels.append("cited_claim")
+        if not risk_labels:
+            continue
+        reasoning_candidates.append(
+            {
+                "claim": claim,
+                "has_citation": has_citation(claim),
+                "risk_labels": risk_labels,
+                "context": context_window(report, claim),
+                "premise_extraction_instruction": "從 context 與 citation 句中抽出 P1/P2/P3；不得加入未提供的外部知識。",
+            }
+        )
+        if len(reasoning_candidates) >= 40:
+            break
 
     result = {
         "passed": passed,
         "threshold": threshold,
         "final_score": round(final_score, 2),
+        "hard_gates": {
+            "passed": not hard_gates,
+            "failures": hard_gates,
+            "minimums": {
+                "report_chars": MIN_REPORT_CHARS,
+                "claims": MIN_CLAIMS,
+                "cited_claims": MIN_CITED_CLAIMS,
+                "citation_support_rate": MIN_CITATION_SUPPORT_RATE,
+                "required_section_rate": MIN_REQUIRED_SECTION_RATE,
+                "references": 1,
+            },
+        },
         "scores": {
             "evidence_score": round(evidence_score, 2),
             "inference_score": round(inference_score, 2),
@@ -1097,6 +1237,7 @@ def audit_report(
         },
         "missing_sections": missing_sections,
         "deterministic_checks": deterministic,
+        "reasoning_candidates": reasoning_candidates,
         "rewrite_contexts": [asdict(f) for f in findings],
     }
     return result
@@ -1121,7 +1262,187 @@ def audit_markdown(result: dict) -> str:
         f"- 高風險推論率：{scores['high_risk_inference_rate']:.2f}%",
         f"- 數字錯誤率：{scores['numeric_error_rate']:.2f}%",
     ]
+    hard_gates = result.get("hard_gates", {})
+    if hard_gates and not hard_gates.get("passed", True):
+        lines.extend(
+            [
+                "",
+                "### Hard Gates",
+                "",
+            ]
+        )
+        for failure in hard_gates.get("failures", []):
+            lines.append(f"- {failure.get('gate')}: {failure.get('message')}")
     return "\n".join(lines) + "\n"
+
+
+def load_json(path: Path) -> dict | list:
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def normalize_review_items(payload: dict | list) -> list[dict]:
+    if isinstance(payload, list):
+        return [item for item in payload if isinstance(item, dict)]
+    if not isinstance(payload, dict):
+        return []
+    for key in ("items", "reviews", "verdicts", "results"):
+        value = payload.get(key)
+        if isinstance(value, list):
+            return [item for item in value if isinstance(item, dict)]
+    for key in ("semantic_review", "reasoning_review", "final_review"):
+        value = payload.get(key)
+        if isinstance(value, dict):
+            nested = normalize_review_items(value)
+            if nested:
+                return nested
+    return []
+
+
+def normalized_lower(value: object) -> str:
+    return str(value or "").strip().lower()
+
+
+def semantic_item_is_blocking(item: dict) -> bool:
+    evidence_status = normalized_lower(item.get("evidence_status"))
+    action = normalized_lower(item.get("action"))
+    inference_risk = normalized_lower(item.get("inference_risk"))
+    return (
+        evidence_status in SEMANTIC_BLOCKING_STATUSES
+        or action in SEMANTIC_BLOCKING_ACTIONS
+        or (evidence_status == "partially_supported" and inference_risk == "high")
+    )
+
+
+def reasoning_item_is_blocking(item: dict) -> bool:
+    verdict = normalized_lower(item.get("verdict"))
+    return verdict in REASONING_BLOCKING_VERDICTS
+
+
+def summarize_semantic_review(path: Path | None, require_review: bool) -> dict:
+    if not path:
+        return {
+            "enabled": False,
+            "required": require_review,
+            "passed": not require_review,
+            "items": [],
+            "blocking_items": [
+                {
+                    "id": "L2-MISSING",
+                    "category": "missing_semantic_review",
+                    "message": "缺少 L2 semantic verdict 檔；正式閉環審查需提供 --semantic-verdicts。",
+                }
+            ] if require_review else [],
+        }
+    items = normalize_review_items(load_json(path))
+    blocking = [item for item in items if semantic_item_is_blocking(item)]
+    return {
+        "enabled": True,
+        "required": require_review,
+        "path": str(path),
+        "passed": not blocking,
+        "items": items,
+        "blocking_items": blocking,
+        "counts": {
+            "items": len(items),
+            "blocking": len(blocking),
+        },
+    }
+
+
+def summarize_reasoning_review(path: Path | None, require_review: bool) -> dict:
+    if not path:
+        return {
+            "enabled": False,
+            "required": require_review,
+            "passed": not require_review,
+            "items": [],
+            "blocking_items": [
+                {
+                    "id": "L3-MISSING",
+                    "category": "missing_reasoning_review",
+                    "message": "缺少 L3 reasoning verdict 檔；正式閉環審查需提供 --reasoning-verdicts。",
+                }
+            ] if require_review else [],
+        }
+    items = normalize_review_items(load_json(path))
+    blocking = [item for item in items if reasoning_item_is_blocking(item)]
+    return {
+        "enabled": True,
+        "required": require_review,
+        "path": str(path),
+        "passed": not blocking,
+        "items": items,
+        "blocking_items": blocking,
+        "counts": {
+            "items": len(items),
+            "blocking": len(blocking),
+        },
+    }
+
+
+def build_final_review(
+    result: dict,
+    semantic_verdicts: Path | None = None,
+    reasoning_verdicts: Path | None = None,
+    require_model_reviews: bool = False,
+) -> dict:
+    l1_passed = bool(result.get("passed"))
+    semantic = summarize_semantic_review(semantic_verdicts, require_model_reviews)
+    reasoning = summarize_reasoning_review(reasoning_verdicts, require_model_reviews)
+    blocking_issues = []
+    for item in semantic.get("blocking_items", []):
+        blocking_issues.append(
+            {
+                "layer": "L2",
+                "id": item.get("id", item.get("source_id", "")),
+                "category": item.get("category", "semantic_support"),
+                "message": item.get("reason") or item.get("message") or item.get("rewrite_instruction", ""),
+                "recommended_action": item.get("action", "rewrite_or_verify"),
+                "item": item,
+            }
+        )
+    for item in reasoning.get("blocking_items", []):
+        blocking_issues.append(
+            {
+                "layer": "L3",
+                "id": item.get("id", item.get("source_id", "")),
+                "category": item.get("verdict", item.get("category", "reasoning_validity")),
+                "message": item.get("reason") or item.get("invalid_step") or item.get("message", ""),
+                "recommended_action": item.get("action", "rewrite_or_narrow_claim"),
+                "item": item,
+            }
+        )
+    passed = l1_passed and semantic["passed"] and reasoning["passed"]
+    return {
+        "packet_type": "final_review",
+        "language": "zh-TW",
+        "passed": passed,
+        "l1_passed": l1_passed,
+        "semantic_review": semantic,
+        "reasoning_review": reasoning,
+        "blocking_issues": blocking_issues,
+        "acceptance_rule": "L1 pass + L2 no blocking semantic issues + L3 no blocking reasoning issues",
+        "notes": [
+            "L2/L3 verdicts are model-produced but schema-gated; this tool only merges and gates them.",
+            "L2/L3 never overwrite deterministic scores; they can block final acceptance or guide rewrite.",
+        ],
+    }
+
+
+def apply_final_review(result: dict, final_review: dict) -> dict:
+    result["l1_passed"] = result.get("passed")
+    result["external_reviews"] = final_review
+    result["passed"] = bool(final_review.get("passed"))
+    return result
+
+
+def write_final_review(path: Path, final_review: dict) -> Path:
+    path.write_text(json.dumps(final_review, ensure_ascii=False, indent=2), encoding="utf-8")
+    return path
+
+
+def default_final_review_path(report_path: Path) -> Path:
+    return report_path.with_name(report_path.stem + ".final_review.json")
 
 
 def build_semantic_packet(result: dict, max_items: int = 40) -> dict:
@@ -1193,10 +1514,213 @@ def build_semantic_packet(result: dict, max_items: int = 40) -> dict:
     }
 
 
+
+def build_argument_packet(result: dict, max_items: int = 40) -> dict:
+    """Build L3a argument-normalization work items.
+
+    L3a converts natural-language claims into explicit premises, conclusion,
+    scope conditions, implicit assumptions, and an inference-rule label. It does
+    not judge whether premises are true; L1/L2 evidence review owns that.
+    """
+    candidates = result.get("reasoning_candidates", [])[:max_items]
+    items = []
+    for index, candidate in enumerate(candidates, start=1):
+        items.append(
+            {
+                "id": f"ARG-{index:03d}",
+                "source_reasoning_id": f"L3-{index:03d}",
+                "original_claim": candidate.get("claim", ""),
+                "has_citation": candidate.get("has_citation", False),
+                "risk_labels": candidate.get("risk_labels", []),
+                "context": candidate.get("context", ""),
+                "normalization_task": {
+                    "goal": "將自然語言 claim 正規化為可做形式審查的 argument form。",
+                    "do_not_judge_truth": "不要判斷前提真偽；前提真偽由 L1/L2 evidence review 負責。",
+                    "do_not_add_external_knowledge": "只能使用 item context 與既有 citation 線索，不得補外部資料。",
+                },
+                "model_output_schema": {
+                    "id": "ARG-001",
+                    "source_claim_id": "L3-001",
+                    "original_claim": "原 claim 原文。",
+                    "normalized_argument": {
+                        "premises": [
+                            {
+                                "id": "P1",
+                                "text": "可由 context/citation 抽出的前提。",
+                                "evidence_status": "supported | partially_supported | unsupported | unverifiable | pending_l2",
+                                "source": "L1/L2 evidence id 或 citation/context 指標。",
+                            }
+                        ],
+                        "conclusion": {"id": "C", "text": "claim 的結論命題。"},
+                        "scope_conditions": [
+                            "資料集、任務、方法、metric、baseline、研究設計、證據等級等限制。"
+                        ],
+                        "inference_rule": "modus_ponens | conjunction | scope_limited_conclusion | analogy | causal_inference | generalization | practical_recommendation | unclear",
+                        "implicit_assumptions": ["若沒有隱含假設，輸出空陣列。"],
+                        "missing_premises": ["若 C 需要但 context 未提供的前提；沒有則輸出空陣列。"],
+                    },
+                    "ready_for_formal_review": True,
+                    "normalization_notes": "繁體中文短註解。",
+                },
+            }
+        )
+    return {
+        "packet_type": "argument_normalization_l3a",
+        "language": "zh-TW",
+        "audit_summary": {
+            "passed_l1": result.get("passed"),
+            "final_score": result.get("final_score"),
+            "hard_gates": result.get("hard_gates", {}),
+            "note": "L3a 只把自然語言 claim 轉成 argument form，不判斷前提真偽、不重算 L1 分數。",
+        },
+        "argument_normalization_instructions": [
+            "只使用每個 item 的 original_claim、context 與 citation 線索。",
+            "把 claim 拆成 premises、conclusion、scope_conditions、inference_rule、implicit_assumptions、missing_premises。",
+            "不要加入外部知識；如果結論需要未提供的前提，放入 missing_premises。",
+            "前提的 evidence_status 若尚未由 L2 驗證，標記 pending_l2。",
+            "L3a 的輸出供 L3b formal validity review 使用；L3a 本身不得輸出 valid/invalid verdict。",
+        ],
+        "items": items,
+    }
+
+def build_reasoning_packet(result: dict, max_items: int = 40) -> dict:
+    candidates = result.get("reasoning_candidates", [])[:max_items]
+    items = []
+    for index, candidate in enumerate(candidates, start=1):
+        items.append(
+            {
+                "id": f"L3-{index:03d}",
+                "claim": candidate.get("claim", ""),
+                "has_citation": candidate.get("has_citation", False),
+                "risk_labels": candidate.get("risk_labels", []),
+                "context": candidate.get("context", ""),
+                "required_review_frame": {
+                    "claim": "被審查的結論句或分析句。",
+                    "premises": [
+                        "P1: 只能從 context/citation 中抽出的原文事實。",
+                        "P2: 只能從 context/citation 中抽出的原文事實。",
+                        "P3: 報告或來源明確保留的限制條件。",
+                    ],
+                    "inference_steps": [
+                        "I1: 說明 P1/P2 如何推出較小的中間結論。",
+                        "I2: 說明 scope condition 如何限制最終結論。",
+                    ],
+                    "scope_conditions": [
+                        "資料集、任務、模型、metric、baseline、實驗設定、樣本範圍。",
+                    ],
+                    "conclusion": "只能在已驗證證據範圍內成立的版本。",
+                },
+                "model_output_schema": {
+                    "verdict": "valid | overgeneralized | causal_jump | missing_condition | unsupported | unclear",
+                    "premises_used": ["P1", "P2"],
+                    "invalid_step": "若不是 valid，指出哪一步推太遠；若 valid 則填 none。",
+                    "scope_status": "preserved | narrowed_needed | missing | unclear",
+                    "reason": "繁體中文短理由。",
+                    "safer_conclusion": "改成不超出前提與限制條件的結論；若原句 valid 可填原句。",
+                    "appendix_markdown": "依 appendix_output_contract 產生可貼入報告附錄的 Markdown 區塊。",
+                },
+            }
+        )
+
+    return {
+        "packet_type": "reasoning_audit_l3",
+        "language": "zh-TW",
+        "audit_summary": {
+            "passed_l1": result.get("passed"),
+            "final_score": result.get("final_score"),
+            "hard_gates": result.get("hard_gates", {}),
+            "note": "L3 只審推論有效性，不重查文獻、不重算 L1 分數、不擴充前提。",
+        },
+        "reasoning_review_instructions": [
+            "只能使用每個 item 提供的 context、claim 與 citation 線索，不得加入外部知識。",
+            "先抽出 premises，再判斷 conclusion 是否只能由 premises 推出。",
+            "檢查 overgeneralization、causal jump、missing condition、scope creep、把相關性寫成因果性。",
+            "若前提不足以推出 claim，標記 unsupported 或 unclear，不要替作者補前提。",
+            "結論必須保留資料集、任務、方法、metric、baseline、實驗設定等限制條件。",
+            "輸出只能是推論形式審查、safer conclusion 與附錄 Markdown，不得給新的 L1 分數。",
+            "推論審查附錄不得替正文補新證據；它只能暴露前提、推論步驟、限制條件與 verdict。",
+        ],
+        "appendix_output_contract": {
+            "section_title": "推論有效性審查附錄",
+            "placement": "放在報告正文之後；不要插入主敘事段落。",
+            "purpose": "讓讀者追蹤每個結論如何由已驗證前提推出，或哪一步推論失效。",
+            "required_fields": [
+                "原結論",
+                "已驗證前提",
+                "推論檢查",
+                "限制條件",
+                "Verdict",
+                "問題",
+                "安全結論",
+            ],
+            "rules": [
+                "若 verdict 不是 valid，安全結論必須比原結論更窄或要求補證據。",
+                "若 premises 不足，標記 unsupported 或 unclear，不得自行補外部前提。",
+                "附錄可以引用 L1/L2 審查結果，但不得覆寫 L1 分數。",
+            ],
+        },
+        "acceptance_rule": (
+            "verified source evidence + complete premises + valid inference + preserved scope conditions "
+            "= conclusion acceptable within evidence scope"
+        ),
+        "items": items,
+    }
+
+
+def build_reasoning_appendix_template(result: dict, max_items: int = 40) -> str:
+    candidates = result.get("reasoning_candidates", [])[:max_items]
+    lines = [
+        "## 推論有效性審查附錄",
+        "",
+        "> 本附錄只審查報告中結論與分析句的推論形式。它不得替正文補新證據，也不得覆寫 L1 deterministic audit 分數。",
+        "",
+        "接受條件：`verified source evidence + complete premises + valid inference + preserved scope conditions = conclusion acceptable within evidence scope`",
+        "",
+        "| ID | 原結論 | 已驗證前提 | 推論檢查 | 限制條件 | Verdict | 問題 | 安全結論 |",
+        "|---|---|---|---|---|---|---|---|",
+    ]
+    if not candidates:
+        lines.append("| L3-000 | 無可審查推論型 claim | - | - | - | unclear | 未偵測到候選項 | - |")
+        return "\n".join(lines) + "\n"
+
+    for index, candidate in enumerate(candidates, start=1):
+        claim = markdown_escape(candidate.get("claim", ""))
+        labels = ", ".join(candidate.get("risk_labels", [])) or "cited_claim"
+        lines.append(
+            "| {id} | {claim} | 待 L3 從已驗證 evidence/context 抽出 P1/P2/P3 | "
+            "待 L3 寫出 I1/I2，檢查是否由前提推出結論 | 待 L3 保留資料集/任務/method/metric/baseline 等 scope | "
+            "pending | risk_labels: {labels} | 待 L3 產生不超出前提的 safer conclusion |".format(
+                id=f"L3-{index:03d}",
+                claim=claim,
+                labels=markdown_escape(labels),
+            )
+        )
+    return "\n".join(lines) + "\n"
+
+
+
+def write_argument_packet(path: Path, result: dict) -> Path:
+    packet_path = path.with_name(path.stem + ".argument_packet.json")
+    packet_path.write_text(json.dumps(build_argument_packet(result), ensure_ascii=False, indent=2), encoding="utf-8")
+    return packet_path
+
+
 def write_semantic_packet(path: Path, result: dict) -> Path:
     packet_path = path.with_name(path.stem + ".semantic_audit_packet.json")
     packet_path.write_text(json.dumps(build_semantic_packet(result), ensure_ascii=False, indent=2), encoding="utf-8")
     return packet_path
+
+
+def write_reasoning_packet(path: Path, result: dict) -> Path:
+    packet_path = path.with_name(path.stem + ".reasoning_audit_packet.json")
+    packet_path.write_text(json.dumps(build_reasoning_packet(result), ensure_ascii=False, indent=2), encoding="utf-8")
+    return packet_path
+
+
+def write_reasoning_appendix(path: Path, result: dict) -> Path:
+    appendix_path = path.with_name(path.stem + ".reasoning_appendix.md")
+    appendix_path.write_text(build_reasoning_appendix_template(result), encoding="utf-8")
+    return appendix_path
 
 
 def write_rewrite_packet(path: Path, result: dict) -> Path:
@@ -1237,6 +1761,29 @@ def main() -> int:
         help="Write .semantic_audit_packet.json for L2 model semantic review",
     )
     parser.add_argument(
+        "--argument-packet",
+        action="store_true",
+        help="Write .argument_packet.json for L3a model argument normalization",
+    )
+    parser.add_argument(
+        "--reasoning-packet",
+        action="store_true",
+        help="Write .reasoning_audit_packet.json for L3 model inference-validity review",
+    )
+    parser.add_argument(
+        "--reasoning-appendix",
+        action="store_true",
+        help="Write .reasoning_appendix.md as a report appendix scaffold for L3 review",
+    )
+    parser.add_argument("--semantic-verdicts", type=Path, help="L2 model verdict JSON to merge into final review")
+    parser.add_argument("--reasoning-verdicts", type=Path, help="L3 model verdict JSON to merge into final review")
+    parser.add_argument("--final-review-out", type=Path, help="Write merged final review JSON to this path")
+    parser.add_argument(
+        "--require-model-reviews",
+        action="store_true",
+        help="Require both L2 and L3 verdict files for pass/fail closure; missing files become blocking issues",
+    )
+    parser.add_argument(
         "--fail-on-audit-fail",
         action="store_true",
         help="Return exit code 2 when the report fails. Default is to return 0 after a complete audit.",
@@ -1253,6 +1800,17 @@ def main() -> int:
         verify_citation_metadata_enabled=not args.no_verify_citation_metadata,
     )
 
+    if args.semantic_verdicts or args.reasoning_verdicts or args.final_review_out or args.require_model_reviews:
+        final_review = build_final_review(
+            result,
+            semantic_verdicts=args.semantic_verdicts,
+            reasoning_verdicts=args.reasoning_verdicts,
+            require_model_reviews=args.require_model_reviews,
+        )
+        apply_final_review(result, final_review)
+        final_review_path = args.final_review_out or default_final_review_path(args.report)
+        result["final_review_path"] = str(write_final_review(final_review_path, final_review))
+
     if args.write and result["passed"]:
         append_audit(args.report, result)
 
@@ -1261,6 +1819,15 @@ def main() -> int:
 
     if args.semantic_packet:
         result["semantic_packet_path"] = str(write_semantic_packet(args.report, result))
+
+    if args.argument_packet:
+        result["argument_packet_path"] = str(write_argument_packet(args.report, result))
+
+    if args.reasoning_packet:
+        result["reasoning_packet_path"] = str(write_reasoning_packet(args.report, result))
+
+    if args.reasoning_appendix:
+        result["reasoning_appendix_path"] = str(write_reasoning_appendix(args.report, result))
 
     if args.json_out:
         args.json_out.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")

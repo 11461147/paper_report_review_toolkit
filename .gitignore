@@ -11,3 +11,10 @@ env/
 *_audit.json
 *.audit_rewrite_contexts.json
 *.semantic_audit_packet.json
+*.reasoning_audit_packet.json
+*.reasoning_appendix.md
+*.semantic_verdicts.json
+*.reasoning_verdicts.json
+*.final_review.json
+*.argument_packet.json
+outputs/

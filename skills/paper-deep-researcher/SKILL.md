@@ -176,6 +176,55 @@ Title keywords    必須匹配
 - [ ] 已標出 contradictions、limitations、open challenges。
 - [ ] References 已去重。
 - [ ] 無法驗證的來源已標為 `UNVERIFIED` 或省略。
+- [ ] 若使用 report_auditor，先以 L1 deterministic audit 檢查證據與格式，再用 L2 semantic packet 審 citation 是否支撐 claim，先用 L3a argument packet 輸出結構化 premises/conclusion/scope/inference rule，再用 L3b reasoning packet 審前提到結論的推論有效性；模型不得自行重算 L1 分數。
+
+## 報告後審查流程
+
+完成報告後，建議使用分層審查：
+
+```text
+L1 deterministic evidence checks
+  用 code 檢查 citation、URL、DOI/arXiv、數字、章節、格式、metadata 與 hard gates。
+
+L2 semantic support review
+  模型只判斷 citation/context 是否真的支撐 claim，不重算分數。
+
+L3a argument normalization
+  模型先把自然語言 claim 拆成 premises、conclusion、scope conditions、inference rule、implicit assumptions 與 missing premises；不判斷前提真偽。
+
+L3b inference validity review
+  模型只判斷已驗證前提能否推出結論，檢查 overgeneralization、causal jump、
+  missing condition、scope creep。
+```
+
+L3 推論審查應放在正文後面的附錄，不要混入主要報告敘事：
+
+```md
+## 推論有效性審查附錄
+
+| ID | 原結論 | 已驗證前提 | 推論檢查 | 限制條件 | Verdict | 問題 | 安全結論 |
+|---|---|---|---|---|---|---|---|
+```
+
+附錄只能審正文既有 claim 與 L1/L2 提供的 evidence/context，不得替正文補新證據。若 verdict 不是 `valid`，安全結論必須縮小範圍、保留限制條件，或要求補證據。
+
+正式閉環審查必須把模型 verdict 回灌 auditor：
+
+```powershell
+python tools/report_auditor.py report.md --source paper_extracted.md --json-out report_audit_closed.json --semantic-verdicts report.semantic_verdicts.json --reasoning-verdicts report.reasoning_verdicts.json --final-review-out report.final_review.json --require-model-reviews
+```
+
+L2/L3 verdict 不得覆寫 L1 分數；但若出現 `unsupported`、`unverifiable`、`overgeneralized`、`causal_jump`、`missing_condition`、`unclear` 等 blocking verdict，最終報告不得標示為通過，必須先改寫、補證據或刪除 claim 後重跑。
+
+可接受結論的條件：
+
+```text
+verified source evidence
++ complete premises
++ valid inference
++ preserved scope conditions
+= conclusion acceptable within evidence scope
+```
 
 ## Bundled Resources
 
