@@ -1,0 +1,63 @@
+{
+  "job_id": "CHAPTER-SEC-002-WRITE",
+  "context_policy": "fresh",
+  "paper": {
+    "paper_id": "arxiv:2404.16130",
+    "source_file": "/tmp/graphrag-2404.16130.pdf",
+    "source_type": "pdf",
+    "extractor": "automatic-multisyntax-v1",
+    "manual_correction_required": false,
+    "status": "complete",
+    "section_count": 40
+  },
+  "section": {
+    "section_id": "SEC-002",
+    "number": "1",
+    "title": "Introduction",
+    "level": 1,
+    "text": "Retrieval augmented generation (RAG) (Lewis et al., 2020) is an established approach to using\n                                         LLMs to answer queries based on data that is too large to contain in a language model’s context\n                                         window, meaning the maximum number of tokens (units of text) that can be processed by the LLM\n                                         at once (Kuratov et al., 2024; Liu et al., 2023). In the canonical RAG setup, the system has access to\n                                         a large external corpus of text records and retrieves a subset of records that are individually relevant\n                                         to the query and collectively small enough to fit into the context window of the LLM. The LLM then\n\n                                         Preprint. Under review.\n\ngenerates a response based on both the query and the retrieved records (Baumel et al., 2018; Dang,\n2006; Laskar et al., 2020; Yao et al., 2017). This conventional approach, which we collectively call\nvector RAG, works well for queries that can be answered with information localized within a small\nset of records. However, vector RAG approaches do not support sensemaking queries, meaning\nqueries that require global understanding of the entire dataset, such as ”What are the key trends in\nhow scientific discoveries are influenced by interdisciplinary research over the past decade?”\nSensemaking tasks require reasoning over “connections (which can be among people, places, and\nevents) in order to anticipate their trajectories and act effectively” (Klein et al., 2006). LLMs such\nas GPT (Achiam et al., 2023; Brown et al., 2020), Llama (Touvron et al., 2023), and Gemini (Anil\net al., 2023) excel at sensemaking in complex domains like scientific discovery (Microsoft, 2023)\nand intelligence analysis (Ranade and Joshi, 2023). Given a sensemaking query and a text with an\nimplicit and interconnected set of concepts, an LLM can generate a summary that answers the query.\nThe challenge, however, arises when the volume of data requires a RAG approach, since vector RAG\napproaches are unable to support sensemaking over an entire corpus.\nIn this paper, we present GraphRAG – a graph-based RAG approach that enables sensemaking over\nthe entirety of a large text corpus. GraphRAG first uses an LLM to construct a knowledge graph,\nwhere nodes correspond to key entities in the corpus and edges represent relationships between those\nentities. Next, it partitions the graph into a hierarchy of communities of closely related entities,\nbefore using an LLM to generate community-level summaries. These summaries are generated in\na bottom-up manner following the hierarchical structure of extracted communities, with summaries\nat higher levels of the hierarchy recursively incorporating lower-level summaries. Together, these\ncommunity summaries provide global descriptions and insights over the corpus. Finally, GraphRAG\nanswers queries through map-reduce processing of community summaries; in the map step, the\nsummaries are used to provide partial answers to the query independently and in parallel, then in the\nreduce step, the partial answers are combined and used to generate a final global answer.\nThe GraphRAG method and its ability to perform global sensemaking over an entire corpus form\nthe main contribution of this work. To demonstrate this ability, we developed a novel application\nof the LLM-as-a-judge technique (Zheng et al., 2024) suitable for questions targeting broad issues\nand themes where there is no ground-truth answer. This approach first uses one LLM to generate\na diverse set of global sensemaking questions based on corpus-specific use cases, before using a\nsecond LLM to judge the answers of two different RAG systems using predefined criteria (defined\nin Section 3.3). We use this approach to compare GraphRAG to vector RAG on two representative\nreal-world text datasets. Results show GraphRAG strongly outperforms vector RAG when using\nGPT-4 as the LLM.\nGraphRAG is available as open-source software at https://github.com/microsoft/graphrag. In ad-\ndition, versions of the GraphRAG approach are also available as extensions to multiple open-\nsource libraries, including LangChain (LangChain, 2024), LlamaIndex (LlamaIndex, 2024), Nebu-\nlaGraph (NebulaGraph, 2024), and Neo4J (Neo4J, 2024).",
+    "start_line": 51,
+    "end_line": 100,
+    "page_start": 1,
+    "page_end": 1,
+    "heading_confidence": 0.94,
+    "detection_source": [
+      "numbering",
+      "line-layout"
+    ]
+  },
+  "instructions": [
+    "Analyze only the supplied section text.",
+    "Do not use results or facts absent from this section.",
+    "Every factual claim must include an exact evidence_text quote and location.",
+    "Do not write the paper-wide conclusion; chapter_conclusion is limited to this section.",
+    "Return JSON only and conform to output_schema."
+  ],
+  "output_schema": {
+    "section_id": "SEC-NNN",
+    "chapter_purpose": "string",
+    "chapter_summary": "string",
+    "claims": [
+      {
+        "claim_id": "SEC-NNN-CLM-NNN",
+        "text": "string",
+        "evidence_text": "exact quote",
+        "location": {
+          "section": "string",
+          "page": "integer|null",
+          "table": "string|null",
+          "figure": "string|null"
+        },
+        "claim_type": "direct|numeric|inference",
+        "citation": "string"
+      }
+    ],
+    "methods": [],
+    "numeric_evidence": [],
+    "tables_and_figures": [],
+    "limitations": [],
+    "links_to_other_sections": [],
+    "chapter_conclusion": "string"
+  },
+  "expected_output": "chapter_reports/SEC-002.json"
+}

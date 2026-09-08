@@ -1,0 +1,114 @@
+{
+  "section_id": "SEC-001",
+  "passed": true,
+  "claim_count": 7,
+  "verified_claim_count": 7,
+  "verified_claims": [
+    {
+      "claim_id": "SEC-001-CLM-001",
+      "text": "RAG 可藉由從外部知識來源擷取相關資訊，使 LLM 回答私人或先前未見文件集合的問題。",
+      "evidence_text": "The use of retrieval-augmented generation (RAG) to retrieve relevant informa-\n                                                  tion from an external knowledge source enables large language models (LLMs)\n                                                  to answer questions over private and/or previously unseen document collections.",
+      "location": {
+        "section": "Abstract",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Abstract]",
+      "section_id": "SEC-001",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-001-CLM-002",
+      "text": "RAG 無法妥善處理針對整個文本語料庫的全域問題，因為這本質上是 query-focused summarization，而非明確檢索任務。",
+      "evidence_text": "However, RAG fails on global questions directed at an entire text corpus, such\n                                                  as “What are the main themes in the dataset?”, since this is inherently a query-\n                                                  focused summarization (QFS) task, rather than an explicit retrieval task.",
+      "location": {
+        "section": "Abstract",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Abstract]",
+      "section_id": "SEC-001",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-001-CLM-003",
+      "text": "既有 QFS 方法無法擴展至典型 RAG 系統所索引的文本規模。",
+      "evidence_text": "Prior\n                                                  QFS methods, meanwhile, do not scale to the quantities of text indexed by typ-\n                                                  ical RAG systems.",
+      "location": {
+        "section": "Abstract",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Abstract]",
+      "section_id": "SEC-001",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-001-CLM-004",
+      "text": "GraphRAG 是面向私人文本語料問答的圖式方法，旨在同時因應使用者問題的一般性與來源文本數量。",
+      "evidence_text": "we\n                                                  propose GraphRAG, a graph-based approach to question answering over private\n                                                  text corpora that scales with both the generality of user questions and the quantity\n                                                  of source text.",
+      "location": {
+        "section": "Abstract",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Abstract]",
+      "section_id": "SEC-001",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-001-CLM-005",
+      "text": "GraphRAG 的索引建立分為兩階段：先從來源文件導出實體知識圖，再為所有密切相關實體群組預先生成社群摘要。",
+      "evidence_text": "Our approach uses an LLM to build a graph index in two stages:\n                                                  first, to derive an entity knowledge graph from the source documents, then to pre-\n                                                  generate community summaries for all groups of closely related entities.",
+      "location": {
+        "section": "Abstract",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Abstract]",
+      "section_id": "SEC-001",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-001-CLM-006",
+      "text": "回答問題時，每份社群摘要先生成部分回答，再將所有部分回答彙整為提供給使用者的最終回答。",
+      "evidence_text": "Given a\n                                                  question, each community summary is used to generate a partial response, before\n                                                  all partial responses are again summarized in a final response to the user.",
+      "location": {
+        "section": "Abstract",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Abstract]",
+      "section_id": "SEC-001",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-001-CLM-007",
+      "text": "在約一百萬 token 資料集的一類全域理解問題上，GraphRAG 相較傳統 RAG 基線，顯著改善生成答案的完整性與多樣性。",
+      "evidence_text": "For a\n                                                  class of global sensemaking questions over datasets in the 1 million token range,\n                                                  we show that GraphRAG leads to substantial improvements over a conventional\n                                                  RAG baseline for both the comprehensiveness and diversity of generated answers.",
+      "location": {
+        "section": "Abstract",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "numeric",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Abstract]",
+      "section_id": "SEC-001",
+      "chapter_audit_status": "passed"
+    }
+  ],
+  "findings": []
+}

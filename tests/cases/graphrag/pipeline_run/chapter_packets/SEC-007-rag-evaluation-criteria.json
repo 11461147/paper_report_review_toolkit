@@ -1,0 +1,63 @@
+{
+  "job_id": "CHAPTER-SEC-007-WRITE",
+  "context_policy": "fresh",
+  "paper": {
+    "paper_id": "arxiv:2404.16130",
+    "source_file": "/tmp/graphrag-2404.16130.pdf",
+    "source_type": "pdf",
+    "extractor": "automatic-multisyntax-v1",
+    "manual_correction_required": false,
+    "status": "complete",
+    "section_count": 40
+  },
+  "section": {
+    "section_id": "SEC-007",
+    "number": "2.4",
+    "title": "RAG evaluation criteria",
+    "level": 2,
+    "text": "Our evaluation relies on the LLM to evaluate how well the RAG system answers the generated ques-\ntions. Prior work has shown LLMs to be good evaluators of natural language generation, includ-\ning work where LLMs evaluations were competitive with human evaluations (Wang et al., 2023a;\nZheng et al., 2024). Some prior work proposes criteria for having LLMs quantify the quality of\n\n\n                                                   3\n\n             Source Documents                                     Global Answer\n                      text extraction                                      query-focused\n                      and chunking                                         summarization\n               Text Chunks                                     Community Answers\n                      domain-tailored                                      query-focused\n                      summarization                                        summarization\n          Entities & Relationships                            Community Summaries\n                      domain-tailored                                      domain-tailored\n                      summarization        community                       summarization\n                                            detection\n             Knowledge Graph                                    Graph Communities\n\n\n\n               Indexing Time            Pipeline Stage              Query Time\n\nFigure 1: Graph RAG pipeline using an LLM-derived graph index of source document text. This\ngraph index spans nodes (e.g., entities), edges (e.g., relationships), and covariates (e.g., claims)\nthat have been detected, extracted, and summarized by LLM prompts tailored to the domain of the\ndataset. Community detection (e.g., Leiden, Traag et al., 2019) is used to partition the graph index\ninto groups of elements (nodes, edges, covariates) that the LLM can summarize in parallel at both\nindexing time and query time. The “global answer” to a given query is produced using a final round\nof query-focused summarization over all community summaries reporting relevance to that query.\n\n\ngenerated texts such as “fluency” (Wang et al., 2023a) Some of these criteria are generic to vector\nRAG systems and not relevant to global sensemaking, such as “context relevance”, “faithfulness”,\nand “answer relevance” (RAGAS, Es et al. 2023). Lacking a gold standard for evaluation, one can\nquantify relative performance for a given criterion by prompting the LLM to compare generations\nfrom two different competing models (LLM-as-a-judge, (Zheng et al., 2024)). In this work, we de-\nsign criteria for evaluating RAG-generated answers to global sensemaking questions and evaluate\nour results using the comparative approach. We also validate results using statistics derived from\nLLM-extracted statements of verifiable facts, or “claims.”",
+    "start_line": 174,
+    "end_line": 218,
+    "page_start": 1,
+    "page_end": 1,
+    "heading_confidence": 0.82,
+    "detection_source": [
+      "numbering",
+      "line-layout"
+    ]
+  },
+  "instructions": [
+    "Analyze only the supplied section text.",
+    "Do not use results or facts absent from this section.",
+    "Every factual claim must include an exact evidence_text quote and location.",
+    "Do not write the paper-wide conclusion; chapter_conclusion is limited to this section.",
+    "Return JSON only and conform to output_schema."
+  ],
+  "output_schema": {
+    "section_id": "SEC-NNN",
+    "chapter_purpose": "string",
+    "chapter_summary": "string",
+    "claims": [
+      {
+        "claim_id": "SEC-NNN-CLM-NNN",
+        "text": "string",
+        "evidence_text": "exact quote",
+        "location": {
+          "section": "string",
+          "page": "integer|null",
+          "table": "string|null",
+          "figure": "string|null"
+        },
+        "claim_type": "direct|numeric|inference",
+        "citation": "string"
+      }
+    ],
+    "methods": [],
+    "numeric_evidence": [],
+    "tables_and_figures": [],
+    "limitations": [],
+    "links_to_other_sections": [],
+    "chapter_conclusion": "string"
+  },
+  "expected_output": "chapter_reports/SEC-007.json"
+}

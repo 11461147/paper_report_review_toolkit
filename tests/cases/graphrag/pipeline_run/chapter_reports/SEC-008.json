@@ -1,0 +1,18 @@
+{
+  "section_id": "SEC-008",
+  "chapter_purpose": "本章說明 GraphRAG 的索引、社群摘要與全域作答流程，以及全域意義建構問題與成對評估的設計。",
+  "chapter_summary": "文件先切塊並抽取實體、關係與主張，再聚合為知識圖譜、以階層式 Leiden 偵測社群並建立摘要；查詢時以 map-reduce 產生全域答案。評估題目由角色、任務及問題逐步生成，答案則由 LLM 依多項準則成對比較。",
+  "claims": [
+    {"claim_id":"SEC-008-CLM-001","text":"文字區塊大小形成成本與召回率權衡。","evidence_text":"Selecting the size of the chunk is a fundamental design\ndecision; longer text chunks require fewer LLM calls for such extraction (which reduces cost) but\nsuffer from degraded recall of information that appears early in the chunk (Kuratov et al., 2024; Liu\net al., 2023).","location":{"section":"3.1.1 Source Documents → Text Chunks","page":4,"table":null,"figure":null},"claim_type":"direct","citation":"[Edge et al., 2025, arXiv:2404.16130, Section 3]"},
+    {"claim_id":"SEC-008-CLM-002","text":"語言模型抽取重要實體及關係，並為兩者產生簡短描述。","evidence_text":"In this step, the LLM is prompted to extract instances of important entities and the relationships\nbetween the entities from a given chunk. Additionally, the LLM generates short descriptions for the\nentities and relationships.","location":{"section":"3.1.2 Text Chunks → Entities & Relationships","page":4,"table":null,"figure":null},"claim_type":"direct","citation":"[Edge et al., 2025, arXiv:2404.16130, Section 3]"},
+    {"claim_id":"SEC-008-CLM-003","text":"GraphRAG 以階層方式遞迴套用 Leiden 社群偵測，直到葉社群不能再分割。","evidence_text":"In our pipeline, we use Leiden community\ndetection (Traag et al., 2019) in a hierarchical manner, recursively detecting sub-communities within\neach detected community until reaching leaf communities that can no longer be partitioned.","location":{"section":"3.1.4 Knowledge Graph → Graph Communities","page":5,"table":null,"figure":null},"claim_type":"direct","citation":"[Edge et al., 2025, arXiv:2404.16130, Section 3]"},
+    {"claim_id":"SEC-008-CLM-004","text":"評估設定令 K、M、N 都等於 5，每個資料集共 125 個測試問題。","evidence_text":"For our evaluation, we set K = M = N = 5 for a total of 125 test questions per dataset.","location":{"section":"3.2 Global Sensemaking Question Generation","page":7,"table":null,"figure":null},"claim_type":"numeric","citation":"[Edge et al., 2025, arXiv:2404.16130, Section 3]"},
+    {"claim_id":"SEC-008-CLM-005","text":"缺乏標準答案時，作者採用 LLM 評估者進行成對比較。","evidence_text":"Given the lack of gold standard answers to our activity-based sensemaking questions, we adopt\nthe head-to-head comparison approach using an LLM evaluator that judges relative performance\naccording to specific criteria.","location":{"section":"3.3 Criteria for Evaluating Global Sensemaking","page":7,"table":null,"figure":null},"claim_type":"direct","citation":"[Edge et al., 2025, arXiv:2404.16130, Section 3]"}
+  ],
+  "methods": ["文件切塊、資訊抽取、圖聚合、階層社群偵測、社群摘要與 map-reduce 全域作答。", "以角色、任務、問題三階段產生評估題，並由 LLM 成對評估答案。"],
+  "numeric_evidence": ["K = M = N = 5；每個資料集 125 題。"],
+  "tables_and_figures": ["Figure 1：GraphRAG 高層資料流。", "Algorithm 1：問題生成程序。", "Table 1：使用者、任務與問題範例。"],
+  "limitations": ["實體匹配採精確字串比對。", "無標準答案，評估依賴 LLM 相對判斷。"],
+  "links_to_other_sections": ["Section 3.1.6 指出社群層級選擇在 Section 4 評估。", "Section 3.3 將評估提示指向 Appendix F。"],
+  "chapter_conclusion": "本章局部建立了從圖索引與階層社群摘要到全域答案的完整方法，以及相應問題生成與評估程序；本章不主張實驗成效。"
+}

@@ -1,0 +1,54 @@
+{
+  "section_id": "SEC-030",
+  "passed": true,
+  "claim_count": 3,
+  "verified_claim_count": 3,
+  "verified_claims": [
+    {
+      "claim_id": "SEC-030-CLM-001",
+      "text": "作者將 GraphRAG 總結為結合知識圖譜生成與 query-focused summarization（QFS）的 RAG 方法，用以支援人們理解完整文本語料庫。",
+      "evidence_text": "We have presented GraphRAG, a RAG approach that combines knowledge graph generation and\nquery-focused summarization (QFS) to support human sensemaking over entire text corpora.",
+      "location": {
+        "section": "7 Conclusion",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 7]",
+      "section_id": "SEC-030",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-030-CLM-002",
+      "text": "初步評估顯示，GraphRAG 相較向量 RAG 基線，回答的 comprehensiveness 與 diversity 有顯著改善；相較採用 map-reduce 來源文本摘要的全局但無圖方法，其表現也較有利。",
+      "evidence_text": "Initial\nevaluations show substantial improvements over a vector RAG baseline for both the comprehensive-\nness and diversity of answers, as well as favorable comparisons to a global but graph-free approach\nusing map-reduce source text summarization.",
+      "location": {
+        "section": "7 Conclusion",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 7]",
+      "section_id": "SEC-030",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-030-CLM-003",
+      "text": "在同一資料集需要大量全局查詢的情境中，實體式圖索引的根層社群摘要可作為優於向量 RAG 的資料索引，並以少量 token 成本達到與其他全局方法具競爭力的表現。",
+      "evidence_text": "For situations requiring many global queries over the\nsame dataset, summaries of root-level communities in the entity-based graph index provide a data\nindex that is both superior to vector RAG and achieves competitive performance to other global\nmethods at a fraction of the token cost.",
+      "location": {
+        "section": "7 Conclusion",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 7]",
+      "section_id": "SEC-030",
+      "chapter_audit_status": "passed"
+    }
+  ],
+  "findings": []
+}

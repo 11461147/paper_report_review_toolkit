@@ -1,0 +1,114 @@
+{
+  "section_id": "SEC-002",
+  "passed": true,
+  "claim_count": 7,
+  "verified_claim_count": 7,
+  "verified_claims": [
+    {
+      "claim_id": "SEC-002-CLM-001",
+      "text": "典型 RAG 從大型外部文本語料擷取一組與查詢個別相關、且合計可放入語言模型脈絡窗口的紀錄。",
+      "evidence_text": "In the canonical RAG setup, the system has access to a large external corpus of text records and retrieves a subset of records that are individually relevant to the query and collectively small enough to fit into the context window of the LLM.",
+      "location": {
+        "section": "1 Introduction",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 1]",
+      "section_id": "SEC-002",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-002-CLM-002",
+      "text": "向量式 RAG 適合以少量局部紀錄即可回答的查詢，但不支援要求理解整個資料集的意義建構查詢。",
+      "evidence_text": "This conventional approach, which we collectively call vector RAG, works well for queries that can be answered with information localized within a small set of records. However, vector RAG approaches do not support sensemaking queries, meaning queries that require global understanding of the entire dataset",
+      "location": {
+        "section": "1 Introduction",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 1]",
+      "section_id": "SEC-002",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-002-CLM-003",
+      "text": "GraphRAG 先用語言模型建立以實體為節點、以實體間關係為邊的知識圖譜。",
+      "evidence_text": "GraphRAG first uses an LLM to construct a knowledge graph, where nodes correspond to key entities in the corpus and edges represent relationships between those entities.",
+      "location": {
+        "section": "1 Introduction",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 1]",
+      "section_id": "SEC-002",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-002-CLM-004",
+      "text": "GraphRAG 將圖分割為相關實體的階層式社群，並沿社群階層由下而上產生摘要，使高層摘要遞迴納入低層摘要。",
+      "evidence_text": "Next, it partitions the graph into a hierarchy of communities of closely related entities, before using an LLM to generate community-level summaries. These summaries are generated in a bottom-up manner following the hierarchical structure of extracted communities, with summaries at higher levels of the hierarchy recursively incorporating lower-level summaries.",
+      "location": {
+        "section": "1 Introduction",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 1]",
+      "section_id": "SEC-002",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-002-CLM-005",
+      "text": "GraphRAG 以 map-reduce 處理社群摘要：map 階段獨立且平行地產生部分答案，reduce 階段再合併部分答案形成最終全域答案。",
+      "evidence_text": "Finally, GraphRAG answers queries through map-reduce processing of community summaries; in the map step, the summaries are used to provide partial answers to the query independently and in parallel, then in the reduce step, the partial answers are combined and used to generate a final global answer.",
+      "location": {
+        "section": "1 Introduction",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 1]",
+      "section_id": "SEC-002",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-002-CLM-006",
+      "text": "本節概述的評估先由一個語言模型依語料特定使用案例產生多樣的全域意義建構問題，再由第二個語言模型依預定準則判斷兩套 RAG 系統的答案。",
+      "evidence_text": "This approach first uses one LLM to generate a diverse set of global sensemaking questions based on corpus-specific use cases, before using a second LLM to judge the answers of two different RAG systems using predefined criteria (defined in Section 3.3).",
+      "location": {
+        "section": "1 Introduction",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 1]",
+      "section_id": "SEC-002",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-002-CLM-007",
+      "text": "作者在兩個具代表性的真實世界文本資料集上比較 GraphRAG 與向量式 RAG，並在使用 GPT-4 時觀察到 GraphRAG 明顯優於向量式 RAG。",
+      "evidence_text": "We use this approach to compare GraphRAG to vector RAG on two representative real-world text datasets. Results show GraphRAG strongly outperforms vector RAG when using GPT-4 as the LLM.",
+      "location": {
+        "section": "1 Introduction",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 1]",
+      "section_id": "SEC-002",
+      "chapter_audit_status": "passed"
+    }
+  ],
+  "findings": []
+}

@@ -1,0 +1,63 @@
+{
+  "job_id": "CHAPTER-SEC-027-WRITE",
+  "context_policy": "fresh",
+  "paper": {
+    "paper_id": "arxiv:2404.16130",
+    "source_file": "/tmp/graphrag-2404.16130.pdf",
+    "source_type": "pdf",
+    "extractor": "automatic-multisyntax-v1",
+    "manual_correction_required": false,
+    "status": "complete",
+    "section_count": 40
+  },
+  "section": {
+    "section_id": "SEC-027",
+    "number": "6",
+    "title": "Discussion",
+    "level": 1,
+    "text": "6.1 Limitations of evaluation approach\nOur evaluation to date has focused on sensemaking questions specific to two corpora each containing\napproximately 1 million tokens. More work is needed to understand how performance generalizes to\ndatasets from various domains with different use cases. Comparison of fabrication rates, e.g., using\napproaches like SelfCheckGPT (Manakul et al., 2023), would also strengthen the current analysis.\n\n\n                                                  11\n\nTable 4: Average number of clusters across different distance thresholds, reported by condition and\ndataset type. Bolded values represent the highest score in each row.\n\n                                                         Average Number of Clusters\n         Dataset          Distance Threshold\n                                                 C0      C1       C2       C3      TS       SS\n                                 0.5           23.42    21.85    21.90   22.13    21.80   17.92\n                                 0.6           21.65    20.38    20.30   20.52    20.13   16.78\n      News Articles\n                                 0.7           20.19    19.06    19.03   19.13    18.62   15.80\n                                 0.8           18.86    17.78    17.82   17.79    17.30   14.80\n                                 0.5           23.16    22.62    22.52   21.93    21.14   18.55\n                                 0.6           21.65    21.33    21.21   20.62    19.70   17.39\n    Podcast Transcripts\n                                 0.7           20.41    20.04    19.79   19.22    18.08   16.28\n                                 0.8           19.26    18.77    18.46   17.89    16.66   15.07\n\n6.2 Future work\nThe graph index, rich text annotations, and hierarchical community structure supporting the current\nGraphRAG approach offer many possibilities for refinement and adaptation. This includes RAG\napproaches that operate in a more local manner, via embedding-based matching of user queries and\ngraph annotations. In particular, we see potential in hybrid RAG schemes that combine embedding-\nbased matching with just-in-time community report generation before employing our map-reduce\nsummarization mechanisms. This “roll-up” approach could also be extended across multiple levels\nof the community hierarchy, as well as implemented as a more exploratory “drill down” mechanism\nthat follows the information scent contained in higher-level community summaries.\nBroader impacts. As a mechanism for question answering over large document collections, there\nare risks to downstream sensemaking and decision-making tasks if the generated answers do not\naccurately represent the source data. System use should be accompanied by clear disclosures of AI\nuse and the potential for errors in outputs. Compared to vector RAG, however, GraphRAG shows\npromise as a way to mitigate these downstream risks for questions of a global nature, which might\notherwise be answered by samples of retrieved facts falsely presented as global summaries.",
+    "start_line": 640,
+    "end_line": 686,
+    "page_start": 1,
+    "page_end": 1,
+    "heading_confidence": 0.94,
+    "detection_source": [
+      "numbering",
+      "line-layout"
+    ]
+  },
+  "instructions": [
+    "Analyze only the supplied section text.",
+    "Do not use results or facts absent from this section.",
+    "Every factual claim must include an exact evidence_text quote and location.",
+    "Do not write the paper-wide conclusion; chapter_conclusion is limited to this section.",
+    "Return JSON only and conform to output_schema."
+  ],
+  "output_schema": {
+    "section_id": "SEC-NNN",
+    "chapter_purpose": "string",
+    "chapter_summary": "string",
+    "claims": [
+      {
+        "claim_id": "SEC-NNN-CLM-NNN",
+        "text": "string",
+        "evidence_text": "exact quote",
+        "location": {
+          "section": "string",
+          "page": "integer|null",
+          "table": "string|null",
+          "figure": "string|null"
+        },
+        "claim_type": "direct|numeric|inference",
+        "citation": "string"
+      }
+    ],
+    "methods": [],
+    "numeric_evidence": [],
+    "tables_and_figures": [],
+    "limitations": [],
+    "links_to_other_sections": [],
+    "chapter_conclusion": "string"
+  },
+  "expected_output": "chapter_reports/SEC-027.json"
+}

@@ -1,0 +1,63 @@
+{
+  "job_id": "CHAPTER-SEC-001-WRITE",
+  "context_policy": "fresh",
+  "paper": {
+    "paper_id": "arxiv:2404.16130",
+    "source_file": "/tmp/graphrag-2404.16130.pdf",
+    "source_type": "pdf",
+    "extractor": "automatic-multisyntax-v1",
+    "manual_correction_required": false,
+    "status": "complete",
+    "section_count": 40
+  },
+  "section": {
+    "section_id": "SEC-001",
+    "number": "",
+    "title": "Abstract",
+    "level": 1,
+    "text": "The use of retrieval-augmented generation (RAG) to retrieve relevant informa-\n                                                  tion from an external knowledge source enables large language models (LLMs)\n                                                  to answer questions over private and/or previously unseen document collections.\n                                                  However, RAG fails on global questions directed at an entire text corpus, such\n                                                  as “What are the main themes in the dataset?”, since this is inherently a query-\n                                                  focused summarization (QFS) task, rather than an explicit retrieval task. Prior\n                                                  QFS methods, meanwhile, do not scale to the quantities of text indexed by typ-\n                                                  ical RAG systems. To combine the strengths of these contrasting methods, we\n                                                  propose GraphRAG, a graph-based approach to question answering over private\n                                                  text corpora that scales with both the generality of user questions and the quantity\n                                                  of source text. Our approach uses an LLM to build a graph index in two stages:\n                                                  first, to derive an entity knowledge graph from the source documents, then to pre-\n                                                  generate community summaries for all groups of closely related entities. Given a\n                                                  question, each community summary is used to generate a partial response, before\n                                                  all partial responses are again summarized in a final response to the user. For a\n                                                  class of global sensemaking questions over datasets in the 1 million token range,\n                                                  we show that GraphRAG leads to substantial improvements over a conventional\n                                                  RAG baseline for both the comprehensiveness and diversity of generated answers.",
+    "start_line": 29,
+    "end_line": 50,
+    "page_start": 1,
+    "page_end": 1,
+    "heading_confidence": 0.88,
+    "detection_source": [
+      "standard-title",
+      "line-layout"
+    ]
+  },
+  "instructions": [
+    "Analyze only the supplied section text.",
+    "Do not use results or facts absent from this section.",
+    "Every factual claim must include an exact evidence_text quote and location.",
+    "Do not write the paper-wide conclusion; chapter_conclusion is limited to this section.",
+    "Return JSON only and conform to output_schema."
+  ],
+  "output_schema": {
+    "section_id": "SEC-NNN",
+    "chapter_purpose": "string",
+    "chapter_summary": "string",
+    "claims": [
+      {
+        "claim_id": "SEC-NNN-CLM-NNN",
+        "text": "string",
+        "evidence_text": "exact quote",
+        "location": {
+          "section": "string",
+          "page": "integer|null",
+          "table": "string|null",
+          "figure": "string|null"
+        },
+        "claim_type": "direct|numeric|inference",
+        "citation": "string"
+      }
+    ],
+    "methods": [],
+    "numeric_evidence": [],
+    "tables_and_figures": [],
+    "limitations": [],
+    "links_to_other_sections": [],
+    "chapter_conclusion": "string"
+  },
+  "expected_output": "chapter_reports/SEC-001.json"
+}

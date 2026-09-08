@@ -10,16 +10,19 @@ import json
 import sys
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from report_auditor import (
+    MIN_REPORT_CHARS,
     apply_final_review,
     audit_report,
     build_final_review,
     build_reasoning_appendix_template,
     build_argument_packet,
     build_reasoning_packet,
+    read_source_text,
 )
 
 
@@ -56,7 +59,14 @@ def complete_report() -> str:
         sections[8]: "適用場景建議限定在與原文任務相近的資料條件下，不作跨領域保證。[Lee et al., 2024, Section 6]",
         sections[9]: "- Lee et al. (2024). Example Paper. https://doi.org/10.1000/example",
     }
-    return "\n\n".join(f"## {section}\n\n{body[section]}" for section in sections)
+    report = "\n\n".join(f"## {section}\n\n{body[section]}" for section in sections)
+    padding = (
+        "補充說明維持原文的資料集、方法、評估指標與限制條件，不加入來源未支持的泛化結論。"
+        "[Lee et al., 2024, Section 6]"
+    )
+    while len(report) < MIN_REPORT_CHARS + 100:
+        report += "\n\n" + padding
+    return report
 
 
 def test_empty_report_fails() -> None:
@@ -84,6 +94,26 @@ def test_argument_packet_contains_normalization_schema() -> None:
     assert "conclusion" in schema
     assert "scope_conditions" in schema
     assert "inference_rule" in schema
+
+
+def test_pdf_source_is_converted_to_text() -> None:
+    with TemporaryDirectory() as tmp:
+        pdf_path = Path(tmp) / "paper.pdf"
+        pdf_path.write_bytes(b"%PDF-1.4 test fixture")
+        with patch("report_auditor.shutil.which", return_value="/usr/bin/pdftotext"), patch(
+            "report_auditor.subprocess.run"
+        ) as run:
+            run.return_value.returncode = 0
+            run.return_value.stdout = "論文原文 76.8%".encode("utf-8")
+            run.return_value.stderr = b""
+            text = read_source_text(pdf_path)
+
+        assert text == "論文原文 76.8%"
+        run.assert_called_once_with(
+            ["/usr/bin/pdftotext", "-layout", str(pdf_path), "-"],
+            capture_output=True,
+            check=False,
+        )
 
 
 def test_reasoning_outputs_include_appendix_contract() -> None:
@@ -129,6 +159,8 @@ def main() -> int:
     test_empty_report_fails()
     test_uncited_report_fails()
     test_complete_report_passes_hard_gates()
+    test_argument_packet_contains_normalization_schema()
+    test_pdf_source_is_converted_to_text()
     test_reasoning_outputs_include_appendix_contract()
     test_required_model_reviews_block_when_missing()
     test_reasoning_verdict_blocks_final_pass()

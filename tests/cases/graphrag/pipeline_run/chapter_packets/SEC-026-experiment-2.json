@@ -1,0 +1,63 @@
+{
+  "job_id": "CHAPTER-SEC-026-WRITE",
+  "context_policy": "fresh",
+  "paper": {
+    "paper_id": "arxiv:2404.16130",
+    "source_file": "/tmp/graphrag-2404.16130.pdf",
+    "source_type": "pdf",
+    "extractor": "automatic-multisyntax-v1",
+    "manual_correction_required": false,
+    "status": "complete",
+    "section_count": 40
+  },
+  "section": {
+    "section_id": "SEC-026",
+    "number": "5.2",
+    "title": "Experiment 2",
+    "level": 2,
+    "text": "Table 3 shows the results for the average number of extracted claims (i.e., the claim-based measure\nof comprehensiveness) per condition. For both the News and Podcast datasets, all global search\nconditions (C0-C3) and source text summarization (TS) had greater comprehensiveness than vector\nRAG (SS). The differences were statistically significant (p<.05) in all cases. These findings align\nwith the LLM-based win rates from Experiment 1.\nTable 4 contains the results for the average number of clusters, the claim-based measure of diver-\nsity. For the Podcast dataset, all global search conditions had significantly greater diversity than SS\nacross all distance thresholds (p<.05), consistent with the win rates observed in Experiment 1. For\nthe News dataset, however, only C0 significantly outperformed SS across all distance thresholds\n(p<.05). While C1-C3 also achieved higher average cluster counts than SS, the differences were\nstatistically significant only at certain distance thresholds. In Experiment 1, all global search con-\nditions significantly outperformed SS in the News dataset – not just C0. However, the differences\nin mean diversity scores between SS and the global search conditions were smaller for the News\ndataset than for the Podcast dataset, aligning directionally with the claim-based results.\nFor both comprehensiveness and diversity, across both datasets, there were no statistically significant\ndifferences observed among the global search conditions or between global search and TS.\nFinally, for each pairwise comparison in Experiment 1, we tested whether the answer preferred by\nthe LLM aligned with the winner based on the claim-based metrics. Since each pairwise comparison\nin Experiment 1 was performed five times, while the claim-based metrics provided only one outcome\nper comparison, we aggregated the Experiment 1 results into a single label using majority voting.\nFor example, if C0 won over SS in three out of five judgments for comprehensiveness on a given\nquestion, C0 was labeled the winner and SS the loser. However, if C0 won twice, SS won once, and\nthey tied twice, then there was no majority outcome, so the final label was a tie.\nWe found that exact ties were rare for the claim-based metrics. One possible solution is to define a\ntie based on a threshold (e.g., the absolute difference between the claim-based results for condition\nA and condition B must be less than or equal to x). However, we observed that the results were\nsensitive to the choice of threshold. As a result, we focused on cases where the aggregated LLM\nlabel was not a tie, representing 33% and 39% of pairwise comparisons for comprehensiveness and\ndiversity, respectively. In these cases, the aggregated LLM label matched the claim-based label in\n78% of pairwise comparisons for comprehensiveness and 69-70% for diversity (across all distance\nthresholds), indicating moderately strong alignment.",
+    "start_line": 605,
+    "end_line": 639,
+    "page_start": 1,
+    "page_end": 1,
+    "heading_confidence": 0.82,
+    "detection_source": [
+      "numbering",
+      "line-layout"
+    ]
+  },
+  "instructions": [
+    "Analyze only the supplied section text.",
+    "Do not use results or facts absent from this section.",
+    "Every factual claim must include an exact evidence_text quote and location.",
+    "Do not write the paper-wide conclusion; chapter_conclusion is limited to this section.",
+    "Return JSON only and conform to output_schema."
+  ],
+  "output_schema": {
+    "section_id": "SEC-NNN",
+    "chapter_purpose": "string",
+    "chapter_summary": "string",
+    "claims": [
+      {
+        "claim_id": "SEC-NNN-CLM-NNN",
+        "text": "string",
+        "evidence_text": "exact quote",
+        "location": {
+          "section": "string",
+          "page": "integer|null",
+          "table": "string|null",
+          "figure": "string|null"
+        },
+        "claim_type": "direct|numeric|inference",
+        "citation": "string"
+      }
+    ],
+    "methods": [],
+    "numeric_evidence": [],
+    "tables_and_figures": [],
+    "limitations": [],
+    "links_to_other_sections": [],
+    "chapter_conclusion": "string"
+  },
+  "expected_output": "chapter_reports/SEC-026.json"
+}

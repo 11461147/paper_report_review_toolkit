@@ -36,7 +36,9 @@ description: 嚴謹的學術論文深度調研與證據合成 skill，適用於�
 - `find academic papers on ...`
 - `compare these papers ...`
 
-## 四階段執行流程
+## 執行流程
+
+單篇論文必須使用「自動逐章調研」流程；多篇文獻回顧則使用下列四階段流程。
 
 ### Phase 1: Query Planning and Expansion
 
@@ -96,6 +98,56 @@ description: 嚴謹的學術論文深度調研與證據合成 skill，適用於�
 - References / 已驗證參考文獻。
 
 報告不要輸出 Query Matrix。內部搜尋規劃與思考過程不應污染最終報告。
+
+## 單篇論文：自動逐章調研與最終合成
+
+單篇論文不得直接從全文生成總結，必須依序完成：
+
+```text
+PDF 與 metadata
+  → 自動章節解析
+  → 每章獨立 fresh context 撰寫
+  → 每章 L1/L2 audit
+  → verified claim registry
+  → 全新 context 進行跨章 synthesis
+  → L3a/L3b 與 final review
+```
+
+### 1. 自動解析 PDF 章節
+
+- 直接讀取 PDF；需要純文字時自動轉換，並保留頁碼、行號與版面線索。
+- 依序使用 PDF bookmarks/目錄、編號序列、排版特徵、常見學術章節名與 heading patterns 判定邊界與層級；過濾頁眉頁腳、圖說、表格列與 References 內的偽標題。
+- 低信心候選由受限制的模型 job 自動判定；模型只能回傳 `is_heading`、`number`、`title`、`level` 與 `confidence`，不得改寫內文或創造章節。
+- 小節不可靠時自動退回可靠的主章層級；連主章都無法可靠辨識時，以 `section_extraction_failed` 停止 pipeline。不得靜默猜測，也不得要求使用者人工修正。
+- 輸出 `sections.json`；每章至少包含 section ID、number、title、level、text、start/end line、page range、confidence 與 detection source。
+
+### 2. 每章使用獨立 fresh context
+
+- 每個主要章節必須是獨立無狀態 job；章節之間以 JSON artifact 傳遞，不依賴前一個模型的對話歷史。
+- Writer 只可取得論文 metadata、當前章節原文、固定 schema，以及必要且已驗證的前置章節摘要。
+- 不得引用當前章未出現的結果，不得提前形成整篇論文結論。
+- 每章輸出至少包含：章節目的、依原文順序的解讀、claims、evidence passages 與位置、公式/數字/圖表、本章明示限制、與前後章關係、僅限本章證據的小結。
+
+### 3. 逐章 report 與 audit
+
+- 先用 L1 deterministic checks 驗證 section ID、evidence 原文存在性、數字、引用位置、必填欄位與跨章污染。
+- 再以獨立 reviewer fresh context 進行 L2 semantic support review；Reviewer 只看 claim、最小必要 evidence/context、位置與 L1 結果。
+- 未通過章節必須在新 context 中重寫並重審；其 claims 不得進入後續合成。
+- 每章 factual claim 必須可追溯至當章原文位置；無直接證據時明確標記 `No direct evidence found in evaluated literature.`
+
+### 4. Verified claim registry
+
+- 僅合併章節 audit 通過的 claims，並保留 `claim_id`、`section_id`、claim text、evidence text/location、citation ID、scope、verification status 與 contradictions。
+- Registry 是最終結論唯一允許使用的事實來源；不得在 synthesis 階段從原文或記憶新增未審核主張。
+- 衝突證據必須保留，不得為了產生單一結論而刪除。
+
+### 5. 最後 synthesis 與 L3
+
+- 所有必要章節通過後，才能在全新 synthesis context 撰寫跨章結論。
+- Synthesis 只取得已驗證章節摘要、claim registry、數字/圖表 records、限制與衝突，不重新自由閱讀整篇 PDF。
+- 每個跨章結論必須列出 supporting claim IDs，區分直接證據與 reviewer inference，並保留 dataset、task、method、metric、baseline 與實驗條件等 scope。
+- L3a 先正規化 premises/conclusion/scope/inference rule；L3b 再審查推論有效性。L3 只處理跨章合成、比較、因果、泛化與實務建議，不審查單純方法轉述、公式定義、直接表格數字或 References。
+- L1 分數不得由模型改寫；任一 L2/L3 blocking verdict 都必須阻止 final review，直到改寫、補證據或刪除主張後重跑。
 
 ## 工具使用規則
 

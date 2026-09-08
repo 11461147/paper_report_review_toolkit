@@ -1,0 +1,63 @@
+{
+  "job_id": "CHAPTER-SEC-035-WRITE",
+  "context_policy": "fresh",
+  "paper": {
+    "paper_id": "arxiv:2404.16130",
+    "source_file": "/tmp/graphrag-2404.16130.pdf",
+    "source_type": "pdf",
+    "extractor": "automatic-multisyntax-v1",
+    "manual_correction_required": false,
+    "status": "complete",
+    "section_count": 40
+  },
+  "section": {
+    "section_id": "SEC-035",
+    "number": "B",
+    "title": "Example Community Detection",
+    "level": 1,
+    "text": "18\n\n          (a) Root communities at level 0                       (b) Sub-communities at level 1\nFigure 4: Graph communities detected using the Leiden algorithm (Traag et al., 2019) over the\nMultiHop-RAG (Tang and Yang, 2024) dataset as indexed. Circles represent entity nodes with size\nproportional to their degree. Node layout was performed via OpenORD (Martin et al., 2011) and\nForce Atlas 2 (Jacomy et al., 2014). Node colors represent entity communities, shown at two levels\nof hierarchical clustering: (a) Level 0, corresponding to the hierarchical partition with maximum\nmodularity, and (b) Level 1, which reveals internal structure within these root-level communities.",
+    "start_line": 1021,
+    "end_line": 1034,
+    "page_start": 1,
+    "page_end": 1,
+    "heading_confidence": 0.82,
+    "detection_source": [
+      "numbering",
+      "line-layout"
+    ]
+  },
+  "instructions": [
+    "Analyze only the supplied section text.",
+    "Do not use results or facts absent from this section.",
+    "Every factual claim must include an exact evidence_text quote and location.",
+    "Do not write the paper-wide conclusion; chapter_conclusion is limited to this section.",
+    "Return JSON only and conform to output_schema."
+  ],
+  "output_schema": {
+    "section_id": "SEC-NNN",
+    "chapter_purpose": "string",
+    "chapter_summary": "string",
+    "claims": [
+      {
+        "claim_id": "SEC-NNN-CLM-NNN",
+        "text": "string",
+        "evidence_text": "exact quote",
+        "location": {
+          "section": "string",
+          "page": "integer|null",
+          "table": "string|null",
+          "figure": "string|null"
+        },
+        "claim_type": "direct|numeric|inference",
+        "citation": "string"
+      }
+    ],
+    "methods": [],
+    "numeric_evidence": [],
+    "tables_and_figures": [],
+    "limitations": [],
+    "links_to_other_sections": [],
+    "chapter_conclusion": "string"
+  },
+  "expected_output": "chapter_reports/SEC-035.json"
+}

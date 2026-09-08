@@ -1,0 +1,260 @@
+{
+  "passed": false,
+  "threshold": 80.0,
+  "final_score": 93.01,
+  "scores": {
+    "evidence_score": 90.0,
+    "inference_score": 94.87,
+    "structure_score": 96.5,
+    "hallucination_score": 5.13,
+    "citation_support_rate": 69.23,
+    "unsupported_claim_rate": 5.13,
+    "high_risk_inference_rate": 2.56,
+    "numeric_error_rate": 0.0,
+    "required_section_rate": 100.0,
+    "link_error_rate": 0.0,
+    "citation_metadata_mismatch_rate": 0.0,
+    "citation_metadata_fetch_error_rate": 0.0,
+    "table_error_rate": 0.0,
+    "reference_duplicate_rate": 0.0
+  },
+  "counts": {
+    "claims": 39,
+    "cited_claims": 27,
+    "unsupported_claims": 2,
+    "high_risk_inference_claims": 1,
+    "number_claims": 28,
+    "numeric_mismatches": 0,
+    "missing_sections": 0,
+    "urls": 1,
+    "citation_metadata_checked": 1,
+    "citation_metadata_mismatches": 0,
+    "citation_metadata_fetch_errors": 0,
+    "dois": 0,
+    "arxiv_ids": 1,
+    "tables": 0,
+    "bad_tables": 0,
+    "references": 1,
+    "duplicate_references": 0,
+    "undefined_acronyms": 7,
+    "vague_strong_words": 4,
+    "findings": 10
+  },
+  "missing_sections": [],
+  "deterministic_checks": {
+    "mojibake_markers": [],
+    "query_matrix_present": false,
+    "section_count": 12,
+    "url_count": 1,
+    "urls": [
+      "https://arxiv.org/abs/2404.16130"
+    ],
+    "url_status": [
+      {
+        "url": "https://arxiv.org/abs/2404.16130",
+        "ok": true,
+        "status": 200,
+        "error": ""
+      }
+    ],
+    "citation_metadata_verification_enabled": true,
+    "citation_metadata": [
+      {
+        "url": "https://arxiv.org/abs/2404.16130",
+        "domain": "arxiv.org",
+        "context": "1. Darren Edge, Ha Trinh, Newman Cheng, Joshua Bradley, Alex Chao, Apurva Mody, Steven Truitt, Dasha Metropolitansky, Robert Osazuwa Ness, Jonathan Larson. “From Local to Global: A GraphRAG Approach to Query-Focused Summarization.” arXiv:2404.16130v2, 2025. https://arxiv.org/abs/2404.16130",
+        "claimed": {
+          "titles": [
+            "From Local to Global: A GraphRAG Approach to Query-Focused Summarization."
+          ],
+          "bracket_citations": [],
+          "labels": [
+            "arXiv"
+          ],
+          "years": [
+            "2025"
+          ],
+          "first_author": ""
+        },
+        "expected_labels": [
+          "arXiv"
+        ],
+        "metadata": {
+          "title": "From Local to Global: A Graph RAG Approach to Query-Focused Summarization",
+          "authors": [
+            "Edge, Darren",
+            "Trinh, Ha",
+            "Cheng, Newman",
+            "Bradley, Joshua",
+            "Chao, Alex",
+            "Mody, Apurva",
+            "Truitt, Steven",
+            "Metropolitansky, Dasha",
+            "Ness, Robert Osazuwa",
+            "Larson, Jonathan",
+            "Edge, Darren",
+            "Trinh, Ha",
+            "Cheng, Newman",
+            "Bradley, Joshua",
+            "Chao, Alex",
+            "Mody, Apurva",
+            "Truitt, Steven",
+            "Metropolitansky, Dasha",
+            "Ness, Robert Osazuwa",
+            "Larson, Jonathan"
+          ],
+          "year": "2025",
+          "doi": "",
+          "content_type": "text/html; charset=utf-8"
+        },
+        "ok": true,
+        "issues": [],
+        "error": ""
+      }
+    ],
+    "citation_metadata_mismatches": [],
+    "citation_metadata_fetch_errors": [],
+    "doi_count": 0,
+    "dois": [],
+    "doi_urls_missing": [],
+    "arxiv_id_count": 1,
+    "arxiv_ids": [
+      "2404.16130"
+    ],
+    "arxiv_urls_missing": [],
+    "table_count": 0,
+    "bad_tables": [],
+    "reference_count": 1,
+    "duplicate_references": [],
+    "length": {
+      "chars": 5860,
+      "words": 645,
+      "section_count": 12,
+      "short_sections": [
+        {
+          "section": "GraphRAG 單篇論文調研報告",
+          "chars": 2
+        }
+      ]
+    },
+    "language_ratio": {
+      "cjk_chars": 1728,
+      "latin_chars": 2190,
+      "chinese_ratio": 44.1,
+      "english_ratio": 55.9
+    },
+    "vague_strong_words": [
+      {
+        "word": "顯著",
+        "context": "omprehensiveness 時，所有 global search 條件及 TS 都高於 SS；然而不同 global search 層級之間、以及 global search 與 TS 之間，在兩項 claim-based 指標上沒有顯著差異。[Edge et al., 2025, arXiv:2404.16130, §§4.2, 5.2, Tables 3–4]  LLM judge 的多數決結果與 claim-based winner 在 comprehensivene"
+      },
+      {
+        "word": "完全",
+        "context": "claim-based winner 在 comprehensiveness 上有 78% 一致，在 diversity 的不同距離門檻下有 69–70% 一致；作者將此描述為 moderately strong alignment，而非完全一致。[Edge et al., 2025, arXiv:2404.16130, §5.2]  ## ✅ 優缺點分析  優點之一是把昂貴的圖建構與社群摘要放在 indexing time，使同一語料後續可以回答多個全域問題；另一優點是同時與"
+      },
+      {
+        "word": "必須",
+        "context": ", §§1, 3.1, 5–6]  若應用要求回答簡短直接，或語料只會被查詢一次，向量 RAG 或直接 source-text summarization 仍可能更合適；本文顯示 SS 的 directness 較高，而 GraphRAG 必須先承擔圖抽取與摘要的 indexing cost。[Edge et al., 2025, arXiv:2404.16130, §§4.1.3, 5.1, Table 6]  在醫療、法律或決策支援等高風險情境，目前證據不足以直接建議部署。作"
+      },
+      {
+        "word": "證明",
+        "context": "生成回答未準確代表來源，可能傷害後續 sensemaking 與決策，並建議揭露 AI 使用及輸出可能出錯。[Edge et al., 2025, arXiv:2404.16130, §6.2]  ## 限制、風險與未來方向  本文尚未直接證明 GraphRAG 能泛化至不同領域、不同規模或不同類型問題，也沒有完成 fabrication-rate 比較。No direct evidence found in evaluated literature 能支持其在高風險專業領域的準"
+      }
+    ],
+    "undefined_acronyms": [
+      "C0",
+      "C1",
+      "C2",
+      "C3",
+      "RAM",
+      "SS",
+      "TS"
+    ],
+    "source_number_check_enabled": true,
+    "link_check_enabled": true
+  },
+  "rewrite_contexts": [
+    {
+      "severity": "minor",
+      "category": "section_length",
+      "score_impact": 1,
+      "message": "章節內容過短：GraphRAG 單篇論文調研報告",
+      "context": "2 chars",
+      "rewrite_hint": "補充該章節的證據、解釋、限制或實作細節。"
+    },
+    {
+      "severity": "minor",
+      "category": "language_ratio",
+      "score_impact": 2,
+      "message": "中文比例偏低，可能不符合中文報告要求。",
+      "context": "{\"cjk_chars\": 1728, \"latin_chars\": 2190, \"chinese_ratio\": 44.1, \"english_ratio\": 55.9}",
+      "rewrite_hint": "將摘要、分析、表格說明與結論改為中文；英文保留在術語或 citation。"
+    },
+    {
+      "severity": "minor",
+      "category": "vague_strong_word",
+      "score_impact": 1,
+      "message": "出現空泛或過強措辭：顯著",
+      "context": "omprehensiveness 時，所有 global search 條件及 TS 都高於 SS；然而不同 global search 層級之間、以及 global search 與 TS 之間，在兩項 claim-based 指標上沒有顯著差異。[Edge et al., 2025, arXiv:2404.16130, §§4.2, 5.2, Tables 3–4]  LLM judge 的多數決結果與 claim-based winner 在 comprehensivene",
+      "rewrite_hint": "若有直接證據，補 citation；否則改成更保守、可驗證的措辭。"
+    },
+    {
+      "severity": "minor",
+      "category": "vague_strong_word",
+      "score_impact": 1,
+      "message": "出現空泛或過強措辭：完全",
+      "context": "claim-based winner 在 comprehensiveness 上有 78% 一致，在 diversity 的不同距離門檻下有 69–70% 一致；作者將此描述為 moderately strong alignment，而非完全一致。[Edge et al., 2025, arXiv:2404.16130, §5.2]  ## ✅ 優缺點分析  優點之一是把昂貴的圖建構與社群摘要放在 indexing time，使同一語料後續可以回答多個全域問題；另一優點是同時與",
+      "rewrite_hint": "若有直接證據，補 citation；否則改成更保守、可驗證的措辭。"
+    },
+    {
+      "severity": "minor",
+      "category": "vague_strong_word",
+      "score_impact": 1,
+      "message": "出現空泛或過強措辭：必須",
+      "context": ", §§1, 3.1, 5–6]  若應用要求回答簡短直接，或語料只會被查詢一次，向量 RAG 或直接 source-text summarization 仍可能更合適；本文顯示 SS 的 directness 較高，而 GraphRAG 必須先承擔圖抽取與摘要的 indexing cost。[Edge et al., 2025, arXiv:2404.16130, §§4.1.3, 5.1, Table 6]  在醫療、法律或決策支援等高風險情境，目前證據不足以直接建議部署。作",
+      "rewrite_hint": "若有直接證據，補 citation；否則改成更保守、可驗證的措辭。"
+    },
+    {
+      "severity": "minor",
+      "category": "vague_strong_word",
+      "score_impact": 1,
+      "message": "出現空泛或過強措辭：證明",
+      "context": "生成回答未準確代表來源，可能傷害後續 sensemaking 與決策，並建議揭露 AI 使用及輸出可能出錯。[Edge et al., 2025, arXiv:2404.16130, §6.2]  ## 限制、風險與未來方向  本文尚未直接證明 GraphRAG 能泛化至不同領域、不同規模或不同類型問題，也沒有完成 fabrication-rate 比較。No direct evidence found in evaluated literature 能支持其在高風險專業領域的準",
+      "rewrite_hint": "若有直接證據，補 citation；否則改成更保守、可驗證的措辭。"
+    },
+    {
+      "severity": "minor",
+      "category": "undefined_acronym",
+      "score_impact": 2,
+      "message": "偵測到可能未定義縮寫。",
+      "context": "C0, C1, C2, C3, RAM, SS, TS",
+      "rewrite_hint": "第一次出現縮寫時補上中文/英文全名，例如 `檢索增強生成（RAG）`。"
+    },
+    {
+      "severity": "major",
+      "category": "unsupported_claim",
+      "score_impact": 3,
+      "message": "重要主張缺少 citation。",
+      "context": "ulness    │    └─ Reduce：排序、裁切、合成 final global answer ```  此圖將論文 Figure 1 與 §3.1 的 indexing-time、query-time 流程重新整理為文字表示；C0 是根層社群，C3 是本文實驗中最細的低層社群。[Edge et al., 2025, arXiv:2404.16130, Figure 1, §§3.1, 4.1.2]  ## 📐 數學公式  本文的問題生成程序使用三個參數：使用者 persona 數量為 K、每名使用者的任務數為 N、每個使用者—任務組合的問題數為 M，因此問題總數為：  ```text Q = K × N × M ```  實驗設定 K=N=M=5，所以每個資料集生成 125 個全域 sensemaking 問題。[Edge et al., 2025, arXiv:2404.16130, Algorithm 1, §3.2]  Claim-based diversity 使用階層式 agglomerative clustering；兩個 claim 之間的距離定義為：  ```text d(c_i,",
+      "rewrite_hint": "補上原論文章節/表格/URL citation；若找不到證據，改寫為推論或刪除。"
+    },
+    {
+      "severity": "major",
+      "category": "unsupported_claim",
+      "score_impact": 3,
+      "message": "重要主張缺少 citation。",
+      "context": "作者提出的後續方向包括：將 embedding-based matching 與即時 community report generation 結合、跨多層社群進行 roll-up，以及沿高層摘要中的 information scent 逐步 drill down。這些是 future work，而不是本文已驗證的功能。[Edge et al., 2025, arXiv:2404.16130, §6.2]  ## 📚 參考來源  1. Darren Edge, Ha Trinh, Newman Cheng, Joshua Bradley, Alex Chao, Apurva Mody, Steven Truitt, Dasha Metropolitansky, Robert Osazuwa Ness, Jonathan Larson. “From Local to Global: A GraphRAG Approach to Query-Focused Summarization.” arXiv:2404.16130v2, 2025. https://arxiv.org/abs/2404.16130",
+      "rewrite_hint": "補上原論文章節/表格/URL citation；若找不到證據，改寫為推論或刪除。"
+    },
+    {
+      "severity": "critical",
+      "category": "high_risk_inference",
+      "score_impact": 5,
+      "message": "高風險推論或因果語氣缺少證據。",
+      "context": "ulness    │    └─ Reduce：排序、裁切、合成 final global answer ```  此圖將論文 Figure 1 與 §3.1 的 indexing-time、query-time 流程重新整理為文字表示；C0 是根層社群，C3 是本文實驗中最細的低層社群。[Edge et al., 2025, arXiv:2404.16130, Figure 1, §§3.1, 4.1.2]  ## 📐 數學公式  本文的問題生成程序使用三個參數：使用者 persona 數量為 K、每名使用者的任務數為 N、每個使用者—任務組合的問題數為 M，因此問題總數為：  ```text Q = K × N × M ```  實驗設定 K=N=M=5，所以每個資料集生成 125 個全域 sensemaking 問題。[Edge et al., 2025, arXiv:2404.16130, Algorithm 1, §3.2]  Claim-based diversity 使用階層式 agglomerative clustering；兩個 claim 之間的距離定義為：  ```text d(c_i,",
+      "rewrite_hint": "避免使用『證明、必然、導致、最優』等強語氣；補 ablation/實驗 citation，或改成保守措辭。"
+    }
+  ],
+  "rewrite_packet_path": "tests/cases/graphrag/report.audit_rewrite_contexts.json",
+  "semantic_packet_path": "tests/cases/graphrag/report.semantic_audit_packet.json"
+}

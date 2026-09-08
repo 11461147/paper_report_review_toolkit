@@ -1,0 +1,129 @@
+{
+  "section_id": "SEC-027",
+  "passed": true,
+  "claim_count": 8,
+  "verified_claim_count": 8,
+  "verified_claims": [
+    {
+      "claim_id": "SEC-027-CLM-001",
+      "text": "目前評估聚焦於兩個各約一百萬 token 的語料庫及其特定 sensemaking 問題，仍需研究其表現能否泛化至不同領域與用途的資料集。",
+      "evidence_text": "Our evaluation to date has focused on sensemaking questions specific to two corpora each containing\napproximately 1 million tokens. More work is needed to understand how performance generalizes to\ndatasets from various domains with different use cases.",
+      "location": {
+        "section": "6.1 Limitations of evaluation approach",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 6]",
+      "section_id": "SEC-027",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-027-CLM-002",
+      "text": "作者認為，採用 SelfCheckGPT 等方法比較 fabrication rates，可強化現有分析。",
+      "evidence_text": "Comparison of fabrication rates, e.g., using\napproaches like SelfCheckGPT (Manakul et al., 2023), would also strengthen the current analysis.",
+      "location": {
+        "section": "6.1 Limitations of evaluation approach",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 6]",
+      "section_id": "SEC-027",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-027-CLM-003",
+      "text": "現有 GraphRAG 所依賴的圖索引、豐富文本註釋與階層式社群結構，為進一步改良與調適提供多種可能。",
+      "evidence_text": "The graph index, rich text annotations, and hierarchical community structure supporting the current\nGraphRAG approach offer many possibilities for refinement and adaptation.",
+      "location": {
+        "section": "6.2 Future work",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 6]",
+      "section_id": "SEC-027",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-027-CLM-004",
+      "text": "作者提出更局部式的 RAG：以 embedding 匹配使用者查詢與圖註釋；也看好先結合 embedding 匹配與即時社群報告生成，再採用 map-reduce 摘要的混合式方案。",
+      "evidence_text": "This includes RAG\napproaches that operate in a more local manner, via embedding-based matching of user queries and\ngraph annotations. In particular, we see potential in hybrid RAG schemes that combine embedding-\nbased matching with just-in-time community report generation before employing our map-reduce\nsummarization mechanisms.",
+      "location": {
+        "section": "6.2 Future work",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 6]",
+      "section_id": "SEC-027",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-027-CLM-005",
+      "text": "roll-up 方法可跨社群階層的多個層級延伸，也可實作為 drill-down 機制，沿高層社群摘要所含的資訊線索向下探索。",
+      "evidence_text": "This “roll-up” approach could also be extended across multiple levels\nof the community hierarchy, as well as implemented as a more exploratory “drill down” mechanism\nthat follows the information scent contained in higher-level community summaries.",
+      "location": {
+        "section": "6.2 Future work",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 6]",
+      "section_id": "SEC-027",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-027-CLM-006",
+      "text": "若生成回答未準確呈現來源資料，大型文件集合問答可能對下游 sensemaking 與決策任務造成風險。",
+      "evidence_text": "As a mechanism for question answering over large document collections, there\nare risks to downstream sensemaking and decision-making tasks if the generated answers do not\naccurately represent the source data.",
+      "location": {
+        "section": "6.2 Future work — Broader impacts",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 6]",
+      "section_id": "SEC-027",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-027-CLM-007",
+      "text": "系統使用時應清楚揭露 AI 的使用及輸出可能出錯。",
+      "evidence_text": "System use should be accompanied by clear disclosures of AI\nuse and the potential for errors in outputs.",
+      "location": {
+        "section": "6.2 Future work — Broader impacts",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 6]",
+      "section_id": "SEC-027",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-027-CLM-008",
+      "text": "作者認為，針對全局性問題，GraphRAG 相較向量 RAG 顯示出降低下游風險的潛力，因為後者可能把檢索到的事實樣本錯誤呈現為全局摘要。",
+      "evidence_text": "Compared to vector RAG, however, GraphRAG shows\npromise as a way to mitigate these downstream risks for questions of a global nature, which might\notherwise be answered by samples of retrieved facts falsely presented as global summaries.",
+      "location": {
+        "section": "6.2 Future work — Broader impacts",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 6]",
+      "section_id": "SEC-027",
+      "chapter_audit_status": "passed"
+    }
+  ],
+  "findings": []
+}

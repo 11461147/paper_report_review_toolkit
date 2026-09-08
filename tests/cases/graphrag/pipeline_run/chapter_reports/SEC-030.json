@@ -1,0 +1,52 @@
+{
+  "section_id": "SEC-030",
+  "chapter_purpose": "本節總結 GraphRAG 的核心組成、初步評估結果，以及根層社群摘要在同一資料集需處理大量全局查詢時的效能與 token 成本定位。",
+  "chapter_summary": "作者總結 GraphRAG 是結合知識圖譜生成與 query-focused summarization（QFS）的 RAG 方法，目標是支援人們理解完整文本語料庫。初步評估顯示，其回答的 comprehensiveness 與 diversity 相較向量 RAG 基線有顯著改善，與採用 map-reduce 來源文本摘要的全局但無圖方法相比也有有利表現。當同一資料集需要大量全局查詢時，實體式圖索引中的根層社群摘要可形成一種資料索引：其表現優於向量 RAG，並以少量 token 成本達到與其他全局方法具競爭力的表現。",
+  "claims": [
+    {
+      "claim_id": "SEC-030-CLM-001",
+      "text": "作者將 GraphRAG 總結為結合知識圖譜生成與 query-focused summarization（QFS）的 RAG 方法，用以支援人們理解完整文本語料庫。",
+      "evidence_text": "We have presented GraphRAG, a RAG approach that combines knowledge graph generation and\nquery-focused summarization (QFS) to support human sensemaking over entire text corpora.",
+      "location": {
+        "section": "7 Conclusion",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 7]"
+    },
+    {
+      "claim_id": "SEC-030-CLM-002",
+      "text": "初步評估顯示，GraphRAG 相較向量 RAG 基線，回答的 comprehensiveness 與 diversity 有顯著改善；相較採用 map-reduce 來源文本摘要的全局但無圖方法，其表現也較有利。",
+      "evidence_text": "Initial\nevaluations show substantial improvements over a vector RAG baseline for both the comprehensive-\nness and diversity of answers, as well as favorable comparisons to a global but graph-free approach\nusing map-reduce source text summarization.",
+      "location": {
+        "section": "7 Conclusion",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 7]"
+    },
+    {
+      "claim_id": "SEC-030-CLM-003",
+      "text": "在同一資料集需要大量全局查詢的情境中，實體式圖索引的根層社群摘要可作為優於向量 RAG 的資料索引，並以少量 token 成本達到與其他全局方法具競爭力的表現。",
+      "evidence_text": "For situations requiring many global queries over the\nsame dataset, summaries of root-level communities in the entity-based graph index provide a data\nindex that is both superior to vector RAG and achieves competitive performance to other global\nmethods at a fraction of the token cost.",
+      "location": {
+        "section": "7 Conclusion",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 7]"
+    }
+  ],
+  "methods": [],
+  "numeric_evidence": [],
+  "tables_and_figures": [],
+  "limitations": [],
+  "links_to_other_sections": [],
+  "chapter_conclusion": "Section 7 的結論是：GraphRAG 結合知識圖譜生成與 QFS 以支援完整語料庫的 sensemaking；初步評估顯示其在回答 comprehensiveness 與 diversity 上優於向量 RAG，且相較全局但無圖的 map-reduce 來源文本摘要方法亦有有利表現。對同一資料集的大量全局查詢，作者進一步總結根層社群摘要能以較低 token 成本提供優於向量 RAG、並與其他全局方法具競爭力的索引。"
+}

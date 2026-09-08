@@ -85,8 +85,10 @@ $env:PYTHONIOENCODING="utf-8"
 最常用的一次性審查命令：
 
 ```powershell
-python tools/report_auditor.py report.md --source paper_extracted.md --json-out report_audit.json --rewrite-packet --semantic-packet --argument-packet --reasoning-packet --reasoning-appendix
+python tools/report_auditor.py report.md --source paper.pdf --json-out report_audit.json --rewrite-packet --semantic-packet --argument-packet --reasoning-packet --reasoning-appendix
 ```
+
+`--source` 現在預設接受 PDF。工具會呼叫 Poppler 的 `pdftotext -layout`，直接把 PDF 轉成 UTF-8 文字供數字與 evidence checks 使用，不必先手動建立 `paper_extracted.md`。如果系統沒有 `pdftotext`，工具會停止並提示安裝 Poppler；仍可傳入預先抽取的 `.txt` 或 `.md`。
 
 如果只想先看報告是否過 L1 deterministic audit：
 
@@ -174,7 +176,7 @@ hard gates 是直接阻擋條件，不讓空報告或低證據報告靠加權分
 
 | Gate | 門檻 |
 |---|---:|
-| 報告長度 | 至少 `600` 字元 |
+| 報告長度 | 至少 `2,000` 字元 |
 | 可審核主張 | 至少 `3` 條 |
 | 有 citation 的主張 | 至少 `1` 條 |
 | citation 支撐率 | 至少 `35%` |
@@ -184,7 +186,7 @@ hard gates 是直接阻擋條件，不讓空報告或低證據報告靠加權分
 這些值目前寫在 `tools/report_auditor.py` 的常數中：
 
 ```python
-MIN_REPORT_CHARS = 600
+MIN_REPORT_CHARS = 2000
 MIN_CLAIMS = 3
 MIN_CITED_CLAIMS = 1
 MIN_CITATION_SUPPORT_RATE = 35.0
@@ -394,7 +396,7 @@ L1 passed
 ## CLI 選項摘要
 
 ```text
---source SOURCE                     原論文抽文，用於數字與 evidence checks
+--source SOURCE                     原論文 PDF／抽取文字；PDF 預設以 pdftotext 自動轉換
 --threshold THRESHOLD               通過分數，預設 80
 --json-out JSON_OUT                 寫出 audit JSON
 --check-links                       檢查 URL 是否可連線

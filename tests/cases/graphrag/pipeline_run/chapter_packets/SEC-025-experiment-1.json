@@ -1,0 +1,63 @@
+{
+  "job_id": "CHAPTER-SEC-025-WRITE",
+  "context_policy": "fresh",
+  "paper": {
+    "paper_id": "arxiv:2404.16130",
+    "source_file": "/tmp/graphrag-2404.16130.pdf",
+    "source_type": "pdf",
+    "extractor": "automatic-multisyntax-v1",
+    "manual_correction_required": false,
+    "status": "complete",
+    "section_count": 40
+  },
+  "section": {
+    "section_id": "SEC-025",
+    "number": "5.1",
+    "title": "Experiment 1",
+    "level": 2,
+    "text": "The indexing process resulted in a graph consisting of 8,564 nodes and 20,691 edges for the Podcast\ndataset, and a larger graph of 15,754 nodes and 19,520 edges for the News dataset. Table 2 shows\nthe number of community summaries at different levels of each graph community hierarchy.\nGlobal approaches vs. vector RAG. As shown in Figure 2 and Table 6, global approaches signifi-\ncantly outperformed conventional vector RAG (SS) in both comprehensiveness and diversity criteria\nacross datasets. Specifically, global approaches achieved comprehensiveness win rates between 72-\n83% (p<.001) for Podcast transcripts and 72-80% (p<.001) for News articles, while diversity win\nrates ranged from 75-82% (p<.001) and 62-71% (p<.01) respectively. Our use of directness as a\nvalidity test confirmed that vector RAG produces the most direct responses across all comparisons.\nEmpowerment. Empowerment comparisons showed mixed results for both global approaches ver-\nsus vector RAG (SS) and GraphRAG approaches versus source text summarization (TS). Using an\nLLM to analyze LLM reasoning for this measure indicated that the ability to provide specific exam-\n\n\n                                                  9\n\n                                       Podcast transcripts\n    SS TS C0 C1 C2 C3        SS TS C0 C1 C2 C3         SS TS C0 C1 C2 C3       SS TS C0 C1 C2 C3\nSS 50 17 28 25 22 21     SS 50 18 23 25 19 19       SS 50 42 57 52 49 51    SS 50 56 65 60 60 60\nTS 83 50 50 48 43 44     TS 82 50 50 50 43 46       TS 58 50 59 55 52 51    TS 44 50 55 52 51 52\nC0 72 50 50 53 50 49     C0 77 50 50 50 46 44       C0 43 41 50 49 47 48    C0 35 45 50 47 48 48\nC1 75 52 47 50 52 50     C1 75 50 50 50 44 45       C1 48 45 51 50 49 50    C1 40 48 53 50 50 50\nC2 78 57 50 48 50 52     C2 81 57 54 56 50 48       C2 51 48 53 51 50 51    C2 40 49 52 50 50 50\nC3 79 56 51 50 48 50     C3 81 54 56 55 52 50       C3 49 49 52 50 49 50    C3 40 48 52 50 50 50\n\n   Comprehensiveness             Diversity               Empowerment                Directness\n                                             News articles\n    SS TS C0 C1 C2 C3        SS TS C0 C1 C2 C3         SS TS C0 C1 C2 C3       SS TS C0 C1 C2 C3\nSS 50 20 28 25 21 21     SS 50 33 38 35 29 31       SS 50 47 57 49 50 50    SS 50 54 59 55 55 54\nTS 80 50 44 41 38 36     TS 67 50 53 45 44 40       TS 53 50 58 50 50 48    TS 46 50 55 53 52 52\nC0 72 56 50 52 54 52     C0 62 47 50 40 41 41       C0 43 42 50 42 45 44    C0 41 45 50 48 48 47\nC1 75 59 48 50 58 55     C1 65 55 60 50 50 50       C1 51 50 58 50 52 51    C1 45 47 52 50 49 49\nC2 79 62 46 42 50 59     C2 71 56 59 50 50 51       C2 50 50 55 48 50 50    C2 45 48 52 51 50 49\nC3 79 64 48 45 41 50     C3 69 60 59 50 49 50       C3 50 52 56 49 50 50    C3 46 48 53 51 51 50\n\n   Comprehensiveness             Diversity               Empowerment                Directness\n\nFigure 2: Head-to-head win rate percentages of (row condition) over (column condition) across two\ndatasets, four metrics, and 125 questions per comparison (each repeated five times and averaged).\nThe overall winner per dataset and metric is shown in bold. Self-win rates were not computed but\nare shown as the expected 50% for reference. All Graph RAG conditions outperformed naı̈ve RAG\non comprehensiveness and diversity. Conditions C1-C3 also showed slight improvements in answer\ncomprehensiveness and diversity over TS (global text summarization without a graph index).\n\nTable 2: Number of context units (community summaries for C0-C3 and text chunks for TS), corre-\nsponding token counts, and percentage of the maximum token count. Map-reduce summarization of\nsource texts is the most resource-intensive approach requiring the highest number of context tokens.\nRoot-level community summaries (C0) require dramatically fewer tokens per query (9x-43x).\n           Podcast Transcripts                           News Articles\n           C0       C1      C2        C3         TS      C0      C1        C2       C3      TS\n Units     34       367     969       1310       1669    55      555       1797     2142    3197\n Tokens    26657 225756 565720        746100     1014611 39770 352641      980898   1140266 1707694\n % Max     2.6      22.2    55.8      73.5       100     2.3     20.7      57.4     66.8    100\n\n\n\nples, quotes, and citations was judged to be key to helping users reach an informed understanding.\nTuning element extraction prompts may help to retain more of these details in the GraphRAG index.\nCommunity summaries vs. source texts. When comparing community summaries to source texts\nusing GraphRAG, community summaries generally provided a small but consistent improvement\nin answer comprehensiveness and diversity, except for root-level summaries. Intermediate-level\nsummaries in the Podcast dataset and low-level community summaries in the News dataset achieved\ncomprehensiveness win rates of 57% (p<.001) and 64% (p<.001), respectively. Diversity win rates\nwere 57% (p=.036) for Podcast intermediate-level summaries and 60% (p<.001) for News low-level\ncommunity summaries. Table 2 also illustrates the scalability advantages of GraphRAG compared\nto source text summarization: for low-level community summaries (C3), GraphRAG required 26-\n33% fewer context tokens, while for root-level community summaries (C0), it required over 97%\nfewer tokens. For a modest drop in performance compared with other global methods, root-level\nGraphRAG offers a highly efficient method for the iterative question answering that characterizes\nsensemaking activity, while retaining advantages in comprehensiveness (72% win rate) and diversity\n(62% win rate) over vector RAG.\n\n\n                                                  10\n\nTable 3: Average number of extracted claims, reported by condition and dataset type. Bolded values\nrepresent the highest score in each column.\n\n                                           Average Number of Claims\n                       Condition\n                                      News Articles     Podcast Transcripts\n                           C0             34.18                 32.21\n                           C1             32.50                 32.20\n                           C2             31.62                 32.46\n                           C3             33.14                 32.28\n                           TS             32.89                 31.39\n                           SS             25.23                 26.50",
+    "start_line": 514,
+    "end_line": 604,
+    "page_start": 1,
+    "page_end": 1,
+    "heading_confidence": 0.82,
+    "detection_source": [
+      "numbering",
+      "line-layout"
+    ]
+  },
+  "instructions": [
+    "Analyze only the supplied section text.",
+    "Do not use results or facts absent from this section.",
+    "Every factual claim must include an exact evidence_text quote and location.",
+    "Do not write the paper-wide conclusion; chapter_conclusion is limited to this section.",
+    "Return JSON only and conform to output_schema."
+  ],
+  "output_schema": {
+    "section_id": "SEC-NNN",
+    "chapter_purpose": "string",
+    "chapter_summary": "string",
+    "claims": [
+      {
+        "claim_id": "SEC-NNN-CLM-NNN",
+        "text": "string",
+        "evidence_text": "exact quote",
+        "location": {
+          "section": "string",
+          "page": "integer|null",
+          "table": "string|null",
+          "figure": "string|null"
+        },
+        "claim_type": "direct|numeric|inference",
+        "citation": "string"
+      }
+    ],
+    "methods": [],
+    "numeric_evidence": [],
+    "tables_and_figures": [],
+    "limitations": [],
+    "links_to_other_sections": [],
+    "chapter_conclusion": "string"
+  },
+  "expected_output": "chapter_reports/SEC-025.json"
+}

@@ -1,0 +1,63 @@
+{
+  "job_id": "CHAPTER-SEC-006-WRITE",
+  "context_policy": "fresh",
+  "paper": {
+    "paper_id": "arxiv:2404.16130",
+    "source_file": "/tmp/graphrag-2404.16130.pdf",
+    "source_type": "pdf",
+    "extractor": "automatic-multisyntax-v1",
+    "manual_correction_required": false,
+    "status": "complete",
+    "section_count": 40
+  },
+  "section": {
+    "section_id": "SEC-006",
+    "number": "2.3",
+    "title": "Adaptive benchmarking for RAG Evaluation",
+    "level": 2,
+    "text": "Many benchmark datasets for open-domain question answering exist, including HotPotQA (Yang\net al., 2018), MultiHop-RAG (Tang and Yang, 2024), and MT-Bench (Zheng et al., 2024). However,\nthese benchmarks are oriented towards vector RAG performance, i.e., they evaluate performance\non explicit fact retrieval. In this work, we propose an approach for generating a set of questions\nfor evaluating global sensemaking over the entirety of the corpus. Our approach is related to LLM\nmethods that use a corpus to generate questions whose answers would be summaries of the corpus,\nsuch as in Xu and Lapata (2021). However, in order to produce a fair evaluation, our method avoids\ngenerating the questions directly from the corpus itself (as an alternative implementation, one can\nuse a subset of the corpus held out from subsequent graph extraction and answer evaluation steps).\nAdaptive benchmarking refers to the process of dynamically generating evaluation benchmarks tai-\nlored to specific domains or use cases. Recent work has used LLMs for adaptive benchmarking\nto ensure relevance, diversity, and alignment with the target application or task (Yuan et al., 2024;\nZhang et al., 2024b). In this work, we propose an adaptive benchmarking approach to generating\nglobal sensemaking queries for the LLM. Our approach builds on prior work in LLM-based persona\ngeneration, where the LLM is used to generate diverse and authentic sets of personas (Kosinski,\n2024; Salminen et al., 2024; Shin et al., 2024). Our adaptive benchmarking procedure uses persona\ngeneration to create queries that are representative of real-world RAG system usage. Specifically,\nour approach uses the LLM to infer the potential users would use the RAG system and their use\ncases, which guide the generation of corpus-specific sensemaking queries.",
+    "start_line": 152,
+    "end_line": 173,
+    "page_start": 1,
+    "page_end": 1,
+    "heading_confidence": 0.82,
+    "detection_source": [
+      "numbering",
+      "line-layout"
+    ]
+  },
+  "instructions": [
+    "Analyze only the supplied section text.",
+    "Do not use results or facts absent from this section.",
+    "Every factual claim must include an exact evidence_text quote and location.",
+    "Do not write the paper-wide conclusion; chapter_conclusion is limited to this section.",
+    "Return JSON only and conform to output_schema."
+  ],
+  "output_schema": {
+    "section_id": "SEC-NNN",
+    "chapter_purpose": "string",
+    "chapter_summary": "string",
+    "claims": [
+      {
+        "claim_id": "SEC-NNN-CLM-NNN",
+        "text": "string",
+        "evidence_text": "exact quote",
+        "location": {
+          "section": "string",
+          "page": "integer|null",
+          "table": "string|null",
+          "figure": "string|null"
+        },
+        "claim_type": "direct|numeric|inference",
+        "citation": "string"
+      }
+    ],
+    "methods": [],
+    "numeric_evidence": [],
+    "tables_and_figures": [],
+    "limitations": [],
+    "links_to_other_sections": [],
+    "chapter_conclusion": "string"
+  },
+  "expected_output": "chapter_reports/SEC-006.json"
+}

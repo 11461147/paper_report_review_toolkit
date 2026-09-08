@@ -1,0 +1,84 @@
+{
+  "section_id": "SEC-008",
+  "passed": true,
+  "claim_count": 5,
+  "verified_claim_count": 5,
+  "verified_claims": [
+    {
+      "claim_id": "SEC-008-CLM-001",
+      "text": "文字區塊大小形成成本與召回率權衡。",
+      "evidence_text": "Selecting the size of the chunk is a fundamental design\ndecision; longer text chunks require fewer LLM calls for such extraction (which reduces cost) but\nsuffer from degraded recall of information that appears early in the chunk (Kuratov et al., 2024; Liu\net al., 2023).",
+      "location": {
+        "section": "3.1.1 Source Documents → Text Chunks",
+        "page": 4,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 3]",
+      "section_id": "SEC-008",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-008-CLM-002",
+      "text": "語言模型抽取重要實體及關係，並為兩者產生簡短描述。",
+      "evidence_text": "In this step, the LLM is prompted to extract instances of important entities and the relationships\nbetween the entities from a given chunk. Additionally, the LLM generates short descriptions for the\nentities and relationships.",
+      "location": {
+        "section": "3.1.2 Text Chunks → Entities & Relationships",
+        "page": 4,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 3]",
+      "section_id": "SEC-008",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-008-CLM-003",
+      "text": "GraphRAG 以階層方式遞迴套用 Leiden 社群偵測，直到葉社群不能再分割。",
+      "evidence_text": "In our pipeline, we use Leiden community\ndetection (Traag et al., 2019) in a hierarchical manner, recursively detecting sub-communities within\neach detected community until reaching leaf communities that can no longer be partitioned.",
+      "location": {
+        "section": "3.1.4 Knowledge Graph → Graph Communities",
+        "page": 5,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 3]",
+      "section_id": "SEC-008",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-008-CLM-004",
+      "text": "評估設定令 K、M、N 都等於 5，每個資料集共 125 個測試問題。",
+      "evidence_text": "For our evaluation, we set K = M = N = 5 for a total of 125 test questions per dataset.",
+      "location": {
+        "section": "3.2 Global Sensemaking Question Generation",
+        "page": 7,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "numeric",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 3]",
+      "section_id": "SEC-008",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-008-CLM-005",
+      "text": "缺乏標準答案時，作者採用 LLM 評估者進行成對比較。",
+      "evidence_text": "Given the lack of gold standard answers to our activity-based sensemaking questions, we adopt\nthe head-to-head comparison approach using an LLM evaluator that judges relative performance\naccording to specific criteria.",
+      "location": {
+        "section": "3.3 Criteria for Evaluating Global Sensemaking",
+        "page": 7,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 3]",
+      "section_id": "SEC-008",
+      "chapter_audit_status": "passed"
+    }
+  ],
+  "findings": []
+}

@@ -1,0 +1,63 @@
+{
+  "job_id": "CHAPTER-SEC-023-WRITE",
+  "context_policy": "fresh",
+  "paper": {
+    "paper_id": "arxiv:2404.16130",
+    "source_file": "/tmp/graphrag-2404.16130.pdf",
+    "source_type": "pdf",
+    "extractor": "automatic-multisyntax-v1",
+    "manual_correction_required": false,
+    "status": "complete",
+    "section_count": 40
+  },
+  "section": {
+    "section_id": "SEC-023",
+    "number": "4.2",
+    "title": "Experiment 2",
+    "level": 2,
+    "text": "To validate the comprehensiveness and diversity results from Experiment 1, we implemented claim-\nbased measures of these qualities. We use the definition of a factual claim from Ni et al. (2024),\nwhich is “a statement that explicitly presents some verifiable facts.” For example, the sentence\n“California and New York implemented incentives for renewable energy adoption, highlighting the\nbroader importance of sustainability in policy decisions” contains two factual claims: (1) California\nimplemented incentives for renewable energy adoption, and (2) New York implemented incentives\nfor renewable energy adoption.\nTo extract factual claims, we used Claimify (Metropolitansky and Larson, 2025), an LLM-based\nmethod that identifies sentences in an answer containing at least one factual claim, then decomposes\nthese sentences into simple, self-contained factual claims. We applied Claimify to the answers\ngenerated under the conditions from Experiment 1. After removing duplicate claims from each\nanswer, we extracted 47,075 unique claims, with an average of 31 claims per answer.\nWe defined two metrics, with higher values indicating better performance:\n\n        1. Comprehensiveness: Measured as the average number of claims extracted from the an-\n           swers generated under each condition.\n        2. Diversity: Measured by clustering the claims for each answer and calculating the average\n           number of clusters.\n\nFor clustering, we followed the approach described by Padmakumar and He (2024), which involved\nusing Scikit-learn’s implementation of agglomerative clustering (Pedregosa et al., 2011). Clusters\nwere merged through “complete” linkage, meaning they were combined only if the maximum dis-\ntance between their farthest points was less than or equal to a predefined distance threshold. The\ndistance metric used was 1 − ROUGE-L. Since the distance threshold influences the number of\nclusters, we report results across a range of thresholds.",
+    "start_line": 485,
+    "end_line": 512,
+    "page_start": 1,
+    "page_end": 1,
+    "heading_confidence": 0.82,
+    "detection_source": [
+      "numbering",
+      "line-layout"
+    ]
+  },
+  "instructions": [
+    "Analyze only the supplied section text.",
+    "Do not use results or facts absent from this section.",
+    "Every factual claim must include an exact evidence_text quote and location.",
+    "Do not write the paper-wide conclusion; chapter_conclusion is limited to this section.",
+    "Return JSON only and conform to output_schema."
+  ],
+  "output_schema": {
+    "section_id": "SEC-NNN",
+    "chapter_purpose": "string",
+    "chapter_summary": "string",
+    "claims": [
+      {
+        "claim_id": "SEC-NNN-CLM-NNN",
+        "text": "string",
+        "evidence_text": "exact quote",
+        "location": {
+          "section": "string",
+          "page": "integer|null",
+          "table": "string|null",
+          "figure": "string|null"
+        },
+        "claim_type": "direct|numeric|inference",
+        "citation": "string"
+      }
+    ],
+    "methods": [],
+    "numeric_evidence": [],
+    "tables_and_figures": [],
+    "limitations": [],
+    "links_to_other_sections": [],
+    "chapter_conclusion": "string"
+  },
+  "expected_output": "chapter_reports/SEC-023.json"
+}

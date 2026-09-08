@@ -1,0 +1,52 @@
+{
+  "jobs": [
+    {
+      "job_id": "CHAPTER-SEC-001-WRITE",
+      "packet": "chapter_packets/SEC-001-abstract.json",
+      "output": "chapter_reports/SEC-001.json",
+      "context_policy": "fresh"
+    },
+    {
+      "job_id": "CHAPTER-SEC-002-WRITE",
+      "packet": "chapter_packets/SEC-002-introduction.json",
+      "output": "chapter_reports/SEC-002.json",
+      "context_policy": "fresh"
+    },
+    {
+      "job_id": "CHAPTER-SEC-003-WRITE",
+      "packet": "chapter_packets/SEC-003-background.json",
+      "output": "chapter_reports/SEC-003.json",
+      "context_policy": "fresh"
+    },
+    {
+      "job_id": "CHAPTER-SEC-008-WRITE",
+      "packet": "chapter_packets/SEC-008-methods.json",
+      "output": "chapter_reports/SEC-008.json",
+      "context_policy": "fresh"
+    },
+    {
+      "job_id": "CHAPTER-SEC-019-WRITE",
+      "packet": "chapter_packets/SEC-019-analysis.json",
+      "output": "chapter_reports/SEC-019.json",
+      "context_policy": "fresh"
+    },
+    {
+      "job_id": "CHAPTER-SEC-024-WRITE",
+      "packet": "chapter_packets/SEC-024-results.json",
+      "output": "chapter_reports/SEC-024.json",
+      "context_policy": "fresh"
+    },
+    {
+      "job_id": "CHAPTER-SEC-027-WRITE",
+      "packet": "chapter_packets/SEC-027-discussion.json",
+      "output": "chapter_reports/SEC-027.json",
+      "context_policy": "fresh"
+    },
+    {
+      "job_id": "CHAPTER-SEC-030-WRITE",
+      "packet": "chapter_packets/SEC-030-conclusion.json",
+      "output": "chapter_reports/SEC-030.json",
+      "context_policy": "fresh"
+    }
+  ]
+}

@@ -1,0 +1,114 @@
+{
+  "section_id": "SEC-003",
+  "passed": true,
+  "claim_count": 7,
+  "verified_claim_count": 7,
+  "verified_claims": [
+    {
+      "claim_id": "SEC-003-CLM-001",
+      "text": "RAG 通常以使用者查詢從外部資料源檢索相關資訊，再將資訊納入 LLM 或其他生成式模型的回答生成過程。",
+      "evidence_text": "RAG generally refers to any system where a user query is used to retrieve relevant information from\nexternal data sources, whereupon this information is incorporated into the generation of a response\nto the query by an LLM (or other generative AI model, such as a multi-media model).",
+      "location": {
+        "section": "2.1 RAG Approaches and Systems",
+        "page": 2,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 2]",
+      "section_id": "SEC-003",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-003-CLM-002",
+      "text": "作者將主要依語意相似度檢索紀錄的傳統方法統稱為 vector RAG，並以 GraphRAG 能處理整體語料的全域意義建構查詢作為對比。",
+      "evidence_text": "While some RAG approaches may use alternative retrieval mechanisms, we collectively refer\nto the family of conventional approaches as vector RAG. GraphRAG contrasts with vector RAG in\nits ability to answer queries that require global sensemaking over the entire data corpus.",
+      "location": {
+        "section": "2.1 RAG Approaches and Systems",
+        "page": 2,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 2]",
+      "section_id": "SEC-003",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-003-CLM-003",
+      "text": "GraphRAG 與既有階層索引摘要方法的差異，在於先由來源資料建立圖索引，再以圖社群偵測建立資料的主題分區。",
+      "evidence_text": "GraphRAG contrasts\nwith these approaches by generating a graph index from the source data, then applying graph-based\ncommunity detection to create a thematic partitioning of the data.",
+      "location": {
+        "section": "2.1 RAG Approaches and Systems",
+        "page": 2,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 2]",
+      "section_id": "SEC-003",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-003-CLM-004",
+      "text": "GraphRAG 著重圖的模組性與將圖分割為巢狀模組社群的能力，並由 LLM 沿社群階層產生涵蓋範圍逐步擴大的摘要。",
+      "evidence_text": "GraphRAG contrasts with these approaches by focusing on a previously unexplored quality of\ngraphs in this context: their inherent modularity (Newman, 2006) and the ability to partition graphs\ninto nested modular communities of closely related nodes (e.g., Louvain, Blondel et al. 2008; Lei-\nden, Traag et al. 2019). Specifically, GraphRAG recursively creates increasingly global summaries\nby using the LLM to create summaries spanning this community hierarchy.",
+      "location": {
+        "section": "2.2 Using Knowledge Graphs with LLMs and RAG",
+        "page": 2,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 2]",
+      "section_id": "SEC-003",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-003-CLM-005",
+      "text": "作者的自適應基準程序利用 persona 生成，讓推定的 RAG 潛在使用者及其使用案例引導特定語料的意義建構查詢生成。",
+      "evidence_text": "Our adaptive benchmarking procedure uses persona\ngeneration to create queries that are representative of real-world RAG system usage. Specifically,\nour approach uses the LLM to infer the potential users would use the RAG system and their use\ncases, which guide the generation of corpus-specific sensemaking queries.",
+      "location": {
+        "section": "2.3 Adaptive benchmarking for RAG Evaluation",
+        "page": 2,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 2]",
+      "section_id": "SEC-003",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-003-CLM-006",
+      "text": "在缺乏標準答案時，可透過提示 LLM 比較兩個競爭模型的生成內容，量化特定準則下的相對表現。",
+      "evidence_text": "Lacking a gold standard for evaluation, one can\nquantify relative performance for a given criterion by prompting the LLM to compare generations\nfrom two different competing models (LLM-as-a-judge, (Zheng et al., 2024)).",
+      "location": {
+        "section": "2.4 RAG evaluation criteria",
+        "page": 3,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 2]",
+      "section_id": "SEC-003",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-003-CLM-007",
+      "text": "全域答案由所有回報與查詢相關的社群摘要，再經一輪以查詢為焦點的摘要而產生。",
+      "evidence_text": "The “global answer” to a given query is produced using a final round\nof query-focused summarization over all community summaries reporting relevance to that query.",
+      "location": {
+        "section": "2.4 RAG evaluation criteria",
+        "page": 3,
+        "table": null,
+        "figure": "Figure 1"
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 2]",
+      "section_id": "SEC-003",
+      "chapter_audit_status": "passed"
+    }
+  ],
+  "findings": []
+}

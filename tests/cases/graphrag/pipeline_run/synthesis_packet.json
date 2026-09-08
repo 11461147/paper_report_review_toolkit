@@ -1,0 +1,923 @@
+{
+  "job_id": "PAPER-SYNTHESIS-WRITE",
+  "context_policy": "fresh",
+  "paper": {
+    "paper_id": "arxiv:2404.16130",
+    "source_file": "/tmp/graphrag-2404.16130.pdf",
+    "source_type": "pdf",
+    "extractor": "automatic-multisyntax-v1",
+    "manual_correction_required": false,
+    "status": "complete",
+    "section_count": 40,
+    "evidence_passage_count": 67
+  },
+  "chapter_summaries": [
+    {
+      "section_id": "SEC-001",
+      "chapter_summary": "傳統 RAG 能從外部知識來源擷取相關資訊，讓 LLM 回答私人或先前未見文件集合的問題，但面對針對整個語料庫的全域問題時會失效，因為這類問題本質上屬於 query-focused summarization，而非明確檢索。[Edge et al., 2025, arXiv:2404.16130, Abstract] GraphRAG 先由來源文件建立實體知識圖，再為密切相關實體的各社群預先生成摘要；回答問題時，各社群摘要先產生部分回答，之後再彙整成最終回答。[Edge et al., 2025, arXiv:2404.16130, Abstract] 對約一百萬 token 資料集上的一類全域理解問題，摘要報告 GraphRAG 在回答的完整性與多樣性上均顯著優於傳統 RAG 基線。[Edge et al., 2025, arXiv:2404.16130, Abstract]",
+      "chapter_conclusion": "本摘要指出，GraphRAG 以實體知識圖與預先生成的社群摘要支援全域問題，並透過部分回答的再次彙整產生最終回答；其摘要層級的實驗陳述顯示，該方法在約一百萬 token 資料集的一類全域理解問題上改善了答案的完整性與多樣性。[Edge et al., 2025, arXiv:2404.16130, Abstract]"
+    },
+    {
+      "section_id": "SEC-002",
+      "chapter_summary": "本節先說明典型 RAG 會從大型外部語料擷取可放入模型脈絡窗口的相關紀錄，再由語言模型依查詢與紀錄作答；作者將這類方法統稱為 vector RAG，並指出其適合答案集中於少量紀錄的問題，卻無法處理需要理解整體資料集的 sensemaking queries。為此，本節提出 GraphRAG：先從語料建立實體—關係知識圖譜，再建立社群階層並由下而上產生社群摘要，最後以 map-reduce 整合各摘要形成全域答案。本節也概述一套適用於無標準答案之廣泛議題的 LLM-as-a-judge 評估方式。",
+      "chapter_conclusion": "本節的局部結論是：作者以階層式知識圖譜社群摘要與 map-reduce 查詢流程，將 RAG 的處理範圍由少量局部相關紀錄擴展到大型語料的全域意義建構；實證細節與評估準則則留待後續章節。"
+    },
+    {
+      "section_id": "SEC-003",
+      "chapter_summary": "本節先將典型 RAG 描述為以查詢從外部資料源檢索相關紀錄並納入生成提示的系統，且將主要依語意相似度檢索的傳統方法統稱為 vector RAG。GraphRAG 延續分段摘要與階層索引的研究，但以來源資料建立圖索引，再用圖社群偵測形成主題分區，並沿巢狀社群階層遞迴產生更全域的摘要。評估方面，本節提出以 persona 生成引導特定語料的全域意義建構查詢，並在缺乏標準答案時採 LLM 成對比較答案，另以可驗證事實陳述的統計量進行驗證。",
+      "chapter_conclusion": "本節的局部結論是：GraphRAG 的研究定位不只是以知識圖譜輔助局部檢索，而是利用圖的模組性形成巢狀社群，沿階層建立更全域的摘要；與此目標相配套的評估則以 persona 導引的語料特定查詢、LLM 成對判斷及可驗證 claims 統計量為基礎。"
+    },
+    {
+      "section_id": "SEC-008",
+      "chapter_summary": "文件先切塊並抽取實體、關係與主張，再聚合為知識圖譜、以階層式 Leiden 偵測社群並建立摘要；查詢時以 map-reduce 產生全域答案。評估題目由角色、任務及問題逐步生成，答案則由 LLM 依多項準則成對比較。",
+      "chapter_conclusion": "本章局部建立了從圖索引與階層社群摘要到全域答案的完整方法，以及相應問題生成與評估程序；本章不主張實驗成效。"
+    },
+    {
+      "section_id": "SEC-019",
+      "chapter_summary": "實驗 1 使用約百萬 token 規模的 podcast transcripts 與 news articles，比較 GraphRAG 四個社群層級、直接對來源文本進行 map-reduce 摘要的 TS，以及向量 RAG 語意搜尋 SS；各條件共用相同的 context window 大小與回答生成提示，主要差異是 context window 內容的建立方式。實驗設定採 8k-token context window，並交代圖索引、Leiden 社群偵測與提示來源。實驗 2 將實驗 1 的回答交由 Claimify 擷取並去除重複 factual claims，再以每份回答的平均 claim 數衡量 comprehensiveness，以 claim clustering 的平均 cluster 數衡量 diversity；分群採 agglomerative clustering、complete linkage 與 1 − ROUGE-L 距離，並跨多個距離閾值報告結果。",
+      "chapter_conclusion": "Section 4 建立了比較 GraphRAG 不同社群層級、直接文本摘要與向量檢索的受控實驗框架，並以 claim 數與 claim clusters 數將 comprehensiveness、diversity 操作化；但本節提供的原文止於方法與衡量設計，尚不足以支持任何條件優劣的結果結論。"
+    },
+    {
+      "section_id": "SEC-024",
+      "chapter_summary": "實驗 1 顯示，全域方法在兩個資料集的 comprehensiveness 與 diversity 上顯著優於向量 RAG，但向量 RAG 的回答最直接；GraphRAG 的 community summaries 相較來源文本通常帶來小幅而一致的 comprehensiveness 與 diversity 改善，root-level summaries 除外。GraphRAG 也降低 context-token 需求，其中 C3 少用 26–33%，C0 少用超過 97%。實驗 2 的平均 claim 數結果支持全域搜尋與 TS 的 comprehensiveness 高於 SS；diversity 結果在 Podcast 上一致，但 News 上只有 C0 在所有距離閾值均顯著優於 SS。對非平手案例，彙整後的 LLM 標籤與 claim-based 標籤在 comprehensiveness 上有 78% 一致，在 diversity 上有 69–70% 一致。",
+      "chapter_conclusion": "Section 5 的結果顯示，在本節所述兩個資料集與實驗設定內，全域方法相較向量 RAG 明顯提升 comprehensiveness 與 diversity，而 GraphRAG 可用較少 context tokens 達成這些優勢；向量 RAG 則保有 directness 優勢。Claim-based 評估大致支持主要結果，但 News diversity 的顯著性較受距離閾值影響，且 LLM 與 claim-based 標籤只呈現中度偏強、而非完全的一致。"
+    },
+    {
+      "section_id": "SEC-027",
+      "chapter_summary": "作者指出，目前評估僅涵蓋兩個各約一百萬 token 的語料庫與特定 sensemaking 問題，尚需檢驗跨領域、不同用途的泛化表現，並建議比較 fabrication rates。未來工作可利用圖索引、豐富文本註釋與階層式社群結構，發展以 embedding 匹配查詢和圖註釋的局部式 RAG，以及結合 embedding 匹配、即時社群報告與 map-reduce 摘要的混合方案；此 roll-up 構想也可跨社群階層延伸，或成為循高層摘要資訊線索向下探索的 drill-down 機制。就廣泛影響而言，回答若未準確呈現來源資料，可能危及下游理解與決策，因此系統應清楚揭露 AI 使用及輸出可能出錯；作者同時認為，對全局性問題而言，GraphRAG 相較向量 RAG 顯示出降低此類風險的潛力。",
+      "chapter_conclusion": "Section 6 的結論限於評估限制、未來研究與廣泛影響：現有證據範圍尚窄，後續應檢驗跨領域泛化與 fabrication rates，並探索局部式、混合式及跨階層的 GraphRAG；實際使用則需揭露 AI 與錯誤風險。作者僅將 GraphRAG 相對向量 RAG 的風險緩解描述為對全局性問題的潛力，而非已被本節證成的普遍優勢。"
+    },
+    {
+      "section_id": "SEC-030",
+      "chapter_summary": "作者總結 GraphRAG 是結合知識圖譜生成與 query-focused summarization（QFS）的 RAG 方法，目標是支援人們理解完整文本語料庫。初步評估顯示，其回答的 comprehensiveness 與 diversity 相較向量 RAG 基線有顯著改善，與採用 map-reduce 來源文本摘要的全局但無圖方法相比也有有利表現。當同一資料集需要大量全局查詢時，實體式圖索引中的根層社群摘要可形成一種資料索引：其表現優於向量 RAG，並以少量 token 成本達到與其他全局方法具競爭力的表現。",
+      "chapter_conclusion": "Section 7 的結論是：GraphRAG 結合知識圖譜生成與 QFS 以支援完整語料庫的 sensemaking；初步評估顯示其在回答 comprehensiveness 與 diversity 上優於向量 RAG，且相較全局但無圖的 map-reduce 來源文本摘要方法亦有有利表現。對同一資料集的大量全局查詢，作者進一步總結根層社群摘要能以較低 token 成本提供優於向量 RAG、並與其他全局方法具競爭力的索引。"
+    }
+  ],
+  "verified_claim_registry": [
+    {
+      "claim_id": "SEC-001-CLM-001",
+      "text": "RAG 可藉由從外部知識來源擷取相關資訊，使 LLM 回答私人或先前未見文件集合的問題。",
+      "evidence_text": "The use of retrieval-augmented generation (RAG) to retrieve relevant informa-\n                                                  tion from an external knowledge source enables large language models (LLMs)\n                                                  to answer questions over private and/or previously unseen document collections.",
+      "location": {
+        "section": "Abstract",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Abstract]",
+      "section_id": "SEC-001",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-001-CLM-002",
+      "text": "RAG 無法妥善處理針對整個文本語料庫的全域問題，因為這本質上是 query-focused summarization，而非明確檢索任務。",
+      "evidence_text": "However, RAG fails on global questions directed at an entire text corpus, such\n                                                  as “What are the main themes in the dataset?”, since this is inherently a query-\n                                                  focused summarization (QFS) task, rather than an explicit retrieval task.",
+      "location": {
+        "section": "Abstract",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Abstract]",
+      "section_id": "SEC-001",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-001-CLM-003",
+      "text": "既有 QFS 方法無法擴展至典型 RAG 系統所索引的文本規模。",
+      "evidence_text": "Prior\n                                                  QFS methods, meanwhile, do not scale to the quantities of text indexed by typ-\n                                                  ical RAG systems.",
+      "location": {
+        "section": "Abstract",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Abstract]",
+      "section_id": "SEC-001",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-001-CLM-004",
+      "text": "GraphRAG 是面向私人文本語料問答的圖式方法，旨在同時因應使用者問題的一般性與來源文本數量。",
+      "evidence_text": "we\n                                                  propose GraphRAG, a graph-based approach to question answering over private\n                                                  text corpora that scales with both the generality of user questions and the quantity\n                                                  of source text.",
+      "location": {
+        "section": "Abstract",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Abstract]",
+      "section_id": "SEC-001",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-001-CLM-005",
+      "text": "GraphRAG 的索引建立分為兩階段：先從來源文件導出實體知識圖，再為所有密切相關實體群組預先生成社群摘要。",
+      "evidence_text": "Our approach uses an LLM to build a graph index in two stages:\n                                                  first, to derive an entity knowledge graph from the source documents, then to pre-\n                                                  generate community summaries for all groups of closely related entities.",
+      "location": {
+        "section": "Abstract",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Abstract]",
+      "section_id": "SEC-001",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-001-CLM-006",
+      "text": "回答問題時，每份社群摘要先生成部分回答，再將所有部分回答彙整為提供給使用者的最終回答。",
+      "evidence_text": "Given a\n                                                  question, each community summary is used to generate a partial response, before\n                                                  all partial responses are again summarized in a final response to the user.",
+      "location": {
+        "section": "Abstract",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Abstract]",
+      "section_id": "SEC-001",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-001-CLM-007",
+      "text": "在約一百萬 token 資料集的一類全域理解問題上，GraphRAG 相較傳統 RAG 基線，顯著改善生成答案的完整性與多樣性。",
+      "evidence_text": "For a\n                                                  class of global sensemaking questions over datasets in the 1 million token range,\n                                                  we show that GraphRAG leads to substantial improvements over a conventional\n                                                  RAG baseline for both the comprehensiveness and diversity of generated answers.",
+      "location": {
+        "section": "Abstract",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "numeric",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Abstract]",
+      "section_id": "SEC-001",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-002-CLM-001",
+      "text": "典型 RAG 從大型外部文本語料擷取一組與查詢個別相關、且合計可放入語言模型脈絡窗口的紀錄。",
+      "evidence_text": "In the canonical RAG setup, the system has access to a large external corpus of text records and retrieves a subset of records that are individually relevant to the query and collectively small enough to fit into the context window of the LLM.",
+      "location": {
+        "section": "1 Introduction",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 1]",
+      "section_id": "SEC-002",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-002-CLM-002",
+      "text": "向量式 RAG 適合以少量局部紀錄即可回答的查詢，但不支援要求理解整個資料集的意義建構查詢。",
+      "evidence_text": "This conventional approach, which we collectively call vector RAG, works well for queries that can be answered with information localized within a small set of records. However, vector RAG approaches do not support sensemaking queries, meaning queries that require global understanding of the entire dataset",
+      "location": {
+        "section": "1 Introduction",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 1]",
+      "section_id": "SEC-002",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-002-CLM-003",
+      "text": "GraphRAG 先用語言模型建立以實體為節點、以實體間關係為邊的知識圖譜。",
+      "evidence_text": "GraphRAG first uses an LLM to construct a knowledge graph, where nodes correspond to key entities in the corpus and edges represent relationships between those entities.",
+      "location": {
+        "section": "1 Introduction",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 1]",
+      "section_id": "SEC-002",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-002-CLM-004",
+      "text": "GraphRAG 將圖分割為相關實體的階層式社群，並沿社群階層由下而上產生摘要，使高層摘要遞迴納入低層摘要。",
+      "evidence_text": "Next, it partitions the graph into a hierarchy of communities of closely related entities, before using an LLM to generate community-level summaries. These summaries are generated in a bottom-up manner following the hierarchical structure of extracted communities, with summaries at higher levels of the hierarchy recursively incorporating lower-level summaries.",
+      "location": {
+        "section": "1 Introduction",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 1]",
+      "section_id": "SEC-002",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-002-CLM-005",
+      "text": "GraphRAG 以 map-reduce 處理社群摘要：map 階段獨立且平行地產生部分答案，reduce 階段再合併部分答案形成最終全域答案。",
+      "evidence_text": "Finally, GraphRAG answers queries through map-reduce processing of community summaries; in the map step, the summaries are used to provide partial answers to the query independently and in parallel, then in the reduce step, the partial answers are combined and used to generate a final global answer.",
+      "location": {
+        "section": "1 Introduction",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 1]",
+      "section_id": "SEC-002",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-002-CLM-006",
+      "text": "本節概述的評估先由一個語言模型依語料特定使用案例產生多樣的全域意義建構問題，再由第二個語言模型依預定準則判斷兩套 RAG 系統的答案。",
+      "evidence_text": "This approach first uses one LLM to generate a diverse set of global sensemaking questions based on corpus-specific use cases, before using a second LLM to judge the answers of two different RAG systems using predefined criteria (defined in Section 3.3).",
+      "location": {
+        "section": "1 Introduction",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 1]",
+      "section_id": "SEC-002",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-002-CLM-007",
+      "text": "作者在兩個具代表性的真實世界文本資料集上比較 GraphRAG 與向量式 RAG，並在使用 GPT-4 時觀察到 GraphRAG 明顯優於向量式 RAG。",
+      "evidence_text": "We use this approach to compare GraphRAG to vector RAG on two representative real-world text datasets. Results show GraphRAG strongly outperforms vector RAG when using GPT-4 as the LLM.",
+      "location": {
+        "section": "1 Introduction",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 1]",
+      "section_id": "SEC-002",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-003-CLM-001",
+      "text": "RAG 通常以使用者查詢從外部資料源檢索相關資訊，再將資訊納入 LLM 或其他生成式模型的回答生成過程。",
+      "evidence_text": "RAG generally refers to any system where a user query is used to retrieve relevant information from\nexternal data sources, whereupon this information is incorporated into the generation of a response\nto the query by an LLM (or other generative AI model, such as a multi-media model).",
+      "location": {
+        "section": "2.1 RAG Approaches and Systems",
+        "page": 2,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 2]",
+      "section_id": "SEC-003",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-003-CLM-002",
+      "text": "作者將主要依語意相似度檢索紀錄的傳統方法統稱為 vector RAG，並以 GraphRAG 能處理整體語料的全域意義建構查詢作為對比。",
+      "evidence_text": "While some RAG approaches may use alternative retrieval mechanisms, we collectively refer\nto the family of conventional approaches as vector RAG. GraphRAG contrasts with vector RAG in\nits ability to answer queries that require global sensemaking over the entire data corpus.",
+      "location": {
+        "section": "2.1 RAG Approaches and Systems",
+        "page": 2,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 2]",
+      "section_id": "SEC-003",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-003-CLM-003",
+      "text": "GraphRAG 與既有階層索引摘要方法的差異，在於先由來源資料建立圖索引，再以圖社群偵測建立資料的主題分區。",
+      "evidence_text": "GraphRAG contrasts\nwith these approaches by generating a graph index from the source data, then applying graph-based\ncommunity detection to create a thematic partitioning of the data.",
+      "location": {
+        "section": "2.1 RAG Approaches and Systems",
+        "page": 2,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 2]",
+      "section_id": "SEC-003",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-003-CLM-004",
+      "text": "GraphRAG 著重圖的模組性與將圖分割為巢狀模組社群的能力，並由 LLM 沿社群階層產生涵蓋範圍逐步擴大的摘要。",
+      "evidence_text": "GraphRAG contrasts with these approaches by focusing on a previously unexplored quality of\ngraphs in this context: their inherent modularity (Newman, 2006) and the ability to partition graphs\ninto nested modular communities of closely related nodes (e.g., Louvain, Blondel et al. 2008; Lei-\nden, Traag et al. 2019). Specifically, GraphRAG recursively creates increasingly global summaries\nby using the LLM to create summaries spanning this community hierarchy.",
+      "location": {
+        "section": "2.2 Using Knowledge Graphs with LLMs and RAG",
+        "page": 2,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 2]",
+      "section_id": "SEC-003",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-003-CLM-005",
+      "text": "作者的自適應基準程序利用 persona 生成，讓推定的 RAG 潛在使用者及其使用案例引導特定語料的意義建構查詢生成。",
+      "evidence_text": "Our adaptive benchmarking procedure uses persona\ngeneration to create queries that are representative of real-world RAG system usage. Specifically,\nour approach uses the LLM to infer the potential users would use the RAG system and their use\ncases, which guide the generation of corpus-specific sensemaking queries.",
+      "location": {
+        "section": "2.3 Adaptive benchmarking for RAG Evaluation",
+        "page": 2,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 2]",
+      "section_id": "SEC-003",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-003-CLM-006",
+      "text": "在缺乏標準答案時，可透過提示 LLM 比較兩個競爭模型的生成內容，量化特定準則下的相對表現。",
+      "evidence_text": "Lacking a gold standard for evaluation, one can\nquantify relative performance for a given criterion by prompting the LLM to compare generations\nfrom two different competing models (LLM-as-a-judge, (Zheng et al., 2024)).",
+      "location": {
+        "section": "2.4 RAG evaluation criteria",
+        "page": 3,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 2]",
+      "section_id": "SEC-003",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-003-CLM-007",
+      "text": "全域答案由所有回報與查詢相關的社群摘要，再經一輪以查詢為焦點的摘要而產生。",
+      "evidence_text": "The “global answer” to a given query is produced using a final round\nof query-focused summarization over all community summaries reporting relevance to that query.",
+      "location": {
+        "section": "2.4 RAG evaluation criteria",
+        "page": 3,
+        "table": null,
+        "figure": "Figure 1"
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 2]",
+      "section_id": "SEC-003",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-008-CLM-001",
+      "text": "文字區塊大小形成成本與召回率權衡。",
+      "evidence_text": "Selecting the size of the chunk is a fundamental design\ndecision; longer text chunks require fewer LLM calls for such extraction (which reduces cost) but\nsuffer from degraded recall of information that appears early in the chunk (Kuratov et al., 2024; Liu\net al., 2023).",
+      "location": {
+        "section": "3.1.1 Source Documents → Text Chunks",
+        "page": 4,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 3]",
+      "section_id": "SEC-008",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-008-CLM-002",
+      "text": "語言模型抽取重要實體及關係，並為兩者產生簡短描述。",
+      "evidence_text": "In this step, the LLM is prompted to extract instances of important entities and the relationships\nbetween the entities from a given chunk. Additionally, the LLM generates short descriptions for the\nentities and relationships.",
+      "location": {
+        "section": "3.1.2 Text Chunks → Entities & Relationships",
+        "page": 4,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 3]",
+      "section_id": "SEC-008",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-008-CLM-003",
+      "text": "GraphRAG 以階層方式遞迴套用 Leiden 社群偵測，直到葉社群不能再分割。",
+      "evidence_text": "In our pipeline, we use Leiden community\ndetection (Traag et al., 2019) in a hierarchical manner, recursively detecting sub-communities within\neach detected community until reaching leaf communities that can no longer be partitioned.",
+      "location": {
+        "section": "3.1.4 Knowledge Graph → Graph Communities",
+        "page": 5,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 3]",
+      "section_id": "SEC-008",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-008-CLM-004",
+      "text": "評估設定令 K、M、N 都等於 5，每個資料集共 125 個測試問題。",
+      "evidence_text": "For our evaluation, we set K = M = N = 5 for a total of 125 test questions per dataset.",
+      "location": {
+        "section": "3.2 Global Sensemaking Question Generation",
+        "page": 7,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "numeric",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 3]",
+      "section_id": "SEC-008",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-008-CLM-005",
+      "text": "缺乏標準答案時，作者採用 LLM 評估者進行成對比較。",
+      "evidence_text": "Given the lack of gold standard answers to our activity-based sensemaking questions, we adopt\nthe head-to-head comparison approach using an LLM evaluator that judges relative performance\naccording to specific criteria.",
+      "location": {
+        "section": "3.3 Criteria for Evaluating Global Sensemaking",
+        "page": 7,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 3]",
+      "section_id": "SEC-008",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-019-CLM-001",
+      "text": "作者選用 podcast transcripts 與 news articles 兩個約百萬 token 規模、用以代表使用者真實活動中可能遇到語料的資料集。",
+      "evidence_text": "We selected two datasets in the one million token range, each representative of corpora that users\nmay encounter in their real-world activities:",
+      "location": {
+        "section": "4.1.1 Datasets",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 4]",
+      "section_id": "SEC-019",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-019-CLM-002",
+      "text": "Podcast 語料被切成 1669 個 600-token chunks，相鄰 chunks 重疊 100 tokens，總量約 100 萬 tokens。",
+      "evidence_text": "This corpus was divided into 1669 × 600-token text chunks, with 100-token\noverlaps between chunks (∼1 million tokens).",
+      "location": {
+        "section": "4.1.1 Datasets",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "numeric",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 4]",
+      "section_id": "SEC-019",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-019-CLM-003",
+      "text": "News 語料被切成 3197 個 600-token chunks，相鄰 chunks 重疊 100 tokens，總量約 1.7 million tokens。",
+      "evidence_text": "The corpus is divided into 3197 × 600-token text\nchunks, with 100-token overlaps between chunks (∼1.7 million tokens).",
+      "location": {
+        "section": "4.1.1 Datasets",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "numeric",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 4]",
+      "section_id": "SEC-019",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-019-CLM-004",
+      "text": "作者比較六個條件：GraphRAG 的 C0、C1、C2、C3 四個社群層級、文本摘要 TS，以及向量 RAG 語意搜尋 SS。",
+      "evidence_text": "We compared six conditions including GraphRAG at four different graph community levels (C0,\nC1, C2, C3), a text summarization method that applies our map-reduce approach directly to source\ntexts (TS), and a vector RAG “semantic search” approach (SS):",
+      "location": {
+        "section": "4.1.2 Conditions",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 4]",
+      "section_id": "SEC-019",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-019-CLM-005",
+      "text": "六個條件使用相同的 context window 大小與回答生成 prompts，條件間僅 context window 內容的建立方式不同。",
+      "evidence_text": "The size of the context window and the prompts used for answer generation are the same across\nall six conditions (except for minor modifications to reference styles to match the types of context\ninformation used). Conditions only differ in how the contents of the context window are created.",
+      "location": {
+        "section": "4.1.2 Conditions",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 4]",
+      "section_id": "SEC-019",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-019-CLM-006",
+      "text": "生成 community summaries、community answers 與 global answers 時使用固定 8k-token context window。",
+      "evidence_text": "We used a fixed context window size of 8k tokens for generating community summaries, community\nanswers, and global answers (explained in Appendix C).",
+      "location": {
+        "section": "4.1.3 Configuration",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "numeric",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 4]",
+      "section_id": "SEC-019",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-019-CLM-007",
+      "text": "Claimify 處理並去除每份回答中的重複 claims 後，共擷取 47,075 個 unique claims，平均每份回答 31 個 claims。",
+      "evidence_text": "After removing duplicate claims from each\nanswer, we extracted 47,075 unique claims, with an average of 31 claims per answer.",
+      "location": {
+        "section": "4.2 Experiment 2",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "numeric",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 4]",
+      "section_id": "SEC-019",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-019-CLM-008",
+      "text": "實驗 2 以每個條件所產生回答的平均 claim 數衡量 comprehensiveness，以每份回答中 claim clusters 的平均數衡量 diversity，且兩者皆以數值越高代表表現越好。",
+      "evidence_text": "We defined two metrics, with higher values indicating better performance:\n\n        1. Comprehensiveness: Measured as the average number of claims extracted from the an-\n           swers generated under each condition.\n        2. Diversity: Measured by clustering the claims for each answer and calculating the average\n           number of clusters.",
+      "location": {
+        "section": "4.2 Experiment 2",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 4]",
+      "section_id": "SEC-019",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-019-CLM-009",
+      "text": "Claim clustering 使用 Scikit-learn 的 agglomerative clustering，採 complete linkage，距離定義為 1 − ROUGE-L，並跨一系列距離閾值報告結果。",
+      "evidence_text": "For clustering, we followed the approach described by Padmakumar and He (2024), which involved\nusing Scikit-learn’s implementation of agglomerative clustering (Pedregosa et al., 2011). Clusters\nwere merged through “complete” linkage, meaning they were combined only if the maximum dis-\ntance between their farthest points was less than or equal to a predefined distance threshold. The\ndistance metric used was 1 − ROUGE-L. Since the distance threshold influences the number of\nclusters, we report results across a range of thresholds.",
+      "location": {
+        "section": "4.2 Experiment 2",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 4]",
+      "section_id": "SEC-019",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-024-CLM-001",
+      "text": "索引程序為 Podcast 資料集建立了 8,564 個 nodes、20,691 個 edges，為 News 資料集建立了 15,754 個 nodes、19,520 個 edges。",
+      "evidence_text": "The indexing process resulted in a graph consisting of 8,564 nodes and 20,691 edges for the Podcast\ndataset, and a larger graph of 15,754 nodes and 19,520 edges for the News dataset.",
+      "location": {
+        "section": "5.1 Experiment 1",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "numeric",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 5]",
+      "section_id": "SEC-024",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-024-CLM-002",
+      "text": "全域方法相對向量 RAG，在 Podcast 與 News 的 comprehensiveness 與 diversity 上皆顯著較佳。",
+      "evidence_text": "As shown in Figure 2 and Table 6, global approaches signifi-\ncantly outperformed conventional vector RAG (SS) in both comprehensiveness and diversity criteria\nacross datasets.",
+      "location": {
+        "section": "5.1 Experiment 1",
+        "page": 1,
+        "table": "Table 6",
+        "figure": "Figure 2"
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 5]",
+      "section_id": "SEC-024",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-024-CLM-003",
+      "text": "相對 SS，全域方法的 comprehensiveness win rates 在 Podcast 為 72–83%（p<.001）、News 為 72–80%（p<.001）；diversity win rates 分別為 75–82%（p<.001）與 62–71%（p<.01）。",
+      "evidence_text": "Specifically, global approaches achieved comprehensiveness win rates between 72-\n83% (p<.001) for Podcast transcripts and 72-80% (p<.001) for News articles, while diversity win\nrates ranged from 75-82% (p<.001) and 62-71% (p<.01) respectively.",
+      "location": {
+        "section": "5.1 Experiment 1",
+        "page": 1,
+        "table": "Table 6",
+        "figure": "Figure 2"
+      },
+      "claim_type": "numeric",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 5]",
+      "section_id": "SEC-024",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-024-CLM-004",
+      "text": "Directness 的 validity test 顯示，向量 RAG 在所有比較中產生最直接的回答。",
+      "evidence_text": "Our use of directness as a\nvalidity test confirmed that vector RAG produces the most direct responses across all comparisons.",
+      "location": {
+        "section": "5.1 Experiment 1",
+        "page": 1,
+        "table": null,
+        "figure": "Figure 2"
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 5]",
+      "section_id": "SEC-024",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-024-CLM-005",
+      "text": "GraphRAG 的 community summaries 相較 source texts，通常對回答的 comprehensiveness 與 diversity 帶來小幅但一致的改善，root-level summaries 是例外。",
+      "evidence_text": "When comparing community summaries to source texts\nusing GraphRAG, community summaries generally provided a small but consistent improvement\nin answer comprehensiveness and diversity, except for root-level summaries.",
+      "location": {
+        "section": "5.1 Experiment 1",
+        "page": 1,
+        "table": null,
+        "figure": "Figure 2"
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 5]",
+      "section_id": "SEC-024",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-024-CLM-006",
+      "text": "相較 source text summarization，C3 的 GraphRAG 少用 26–33% context tokens，C0 則少用超過 97%。",
+      "evidence_text": "Table 2 also illustrates the scalability advantages of GraphRAG compared\nto source text summarization: for low-level community summaries (C3), GraphRAG required 26-\n33% fewer context tokens, while for root-level community summaries (C0), it required over 97%\nfewer tokens.",
+      "location": {
+        "section": "5.1 Experiment 1",
+        "page": 1,
+        "table": "Table 2",
+        "figure": null
+      },
+      "claim_type": "numeric",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 5]",
+      "section_id": "SEC-024",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-024-CLM-007",
+      "text": "以平均 extracted claims 衡量時，News 與 Podcast 的所有 global search 條件 C0–C3 及 TS 都比 SS 更具 comprehensiveness，且所有差異皆達 p<.05。",
+      "evidence_text": "For both the News and Podcast datasets, all global search\nconditions (C0-C3) and source text summarization (TS) had greater comprehensiveness than vector\nRAG (SS). The differences were statistically significant (p<.05) in all cases.",
+      "location": {
+        "section": "5.2 Experiment 2",
+        "page": 1,
+        "table": "Table 3",
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 5]",
+      "section_id": "SEC-024",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-024-CLM-008",
+      "text": "Claim-based diversity 結果中，Podcast 的所有 global search 條件在所有距離閾值皆顯著優於 SS；News 則只有 C0 在所有距離閾值皆顯著優於 SS（p<.05）。",
+      "evidence_text": "For the Podcast dataset, all global search conditions had significantly greater diversity than SS\nacross all distance thresholds (p<.05), consistent with the win rates observed in Experiment 1. For\nthe News dataset, however, only C0 significantly outperformed SS across all distance thresholds\n(p<.05).",
+      "location": {
+        "section": "5.2 Experiment 2",
+        "page": 1,
+        "table": "Table 4",
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 5]",
+      "section_id": "SEC-024",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-024-CLM-009",
+      "text": "兩個資料集在 comprehensiveness 與 diversity 上，global search 各條件彼此之間以及 global search 與 TS 之間都沒有統計顯著差異。",
+      "evidence_text": "For both comprehensiveness and diversity, across both datasets, there were no statistically significant\ndifferences observed among the global search conditions or between global search and TS.",
+      "location": {
+        "section": "5.2 Experiment 2",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 5]",
+      "section_id": "SEC-024",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-024-CLM-010",
+      "text": "在彙整後 LLM 標籤不是 tie 的案例中，這些案例占 comprehensiveness 配對比較的 33%、diversity 的 39%；LLM 標籤與 claim-based 標籤的一致率分別為 78% 與 69–70%。",
+      "evidence_text": "As a result, we focused on cases where the aggregated LLM\nlabel was not a tie, representing 33% and 39% of pairwise comparisons for comprehensiveness and\ndiversity, respectively. In these cases, the aggregated LLM label matched the claim-based label in\n78% of pairwise comparisons for comprehensiveness and 69-70% for diversity (across all distance\nthresholds), indicating moderately strong alignment.",
+      "location": {
+        "section": "5.2 Experiment 2",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "numeric",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 5]",
+      "section_id": "SEC-024",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-027-CLM-001",
+      "text": "目前評估聚焦於兩個各約一百萬 token 的語料庫及其特定 sensemaking 問題，仍需研究其表現能否泛化至不同領域與用途的資料集。",
+      "evidence_text": "Our evaluation to date has focused on sensemaking questions specific to two corpora each containing\napproximately 1 million tokens. More work is needed to understand how performance generalizes to\ndatasets from various domains with different use cases.",
+      "location": {
+        "section": "6.1 Limitations of evaluation approach",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 6]",
+      "section_id": "SEC-027",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-027-CLM-002",
+      "text": "作者認為，採用 SelfCheckGPT 等方法比較 fabrication rates，可強化現有分析。",
+      "evidence_text": "Comparison of fabrication rates, e.g., using\napproaches like SelfCheckGPT (Manakul et al., 2023), would also strengthen the current analysis.",
+      "location": {
+        "section": "6.1 Limitations of evaluation approach",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 6]",
+      "section_id": "SEC-027",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-027-CLM-003",
+      "text": "現有 GraphRAG 所依賴的圖索引、豐富文本註釋與階層式社群結構，為進一步改良與調適提供多種可能。",
+      "evidence_text": "The graph index, rich text annotations, and hierarchical community structure supporting the current\nGraphRAG approach offer many possibilities for refinement and adaptation.",
+      "location": {
+        "section": "6.2 Future work",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 6]",
+      "section_id": "SEC-027",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-027-CLM-004",
+      "text": "作者提出更局部式的 RAG：以 embedding 匹配使用者查詢與圖註釋；也看好先結合 embedding 匹配與即時社群報告生成，再採用 map-reduce 摘要的混合式方案。",
+      "evidence_text": "This includes RAG\napproaches that operate in a more local manner, via embedding-based matching of user queries and\ngraph annotations. In particular, we see potential in hybrid RAG schemes that combine embedding-\nbased matching with just-in-time community report generation before employing our map-reduce\nsummarization mechanisms.",
+      "location": {
+        "section": "6.2 Future work",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 6]",
+      "section_id": "SEC-027",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-027-CLM-005",
+      "text": "roll-up 方法可跨社群階層的多個層級延伸，也可實作為 drill-down 機制，沿高層社群摘要所含的資訊線索向下探索。",
+      "evidence_text": "This “roll-up” approach could also be extended across multiple levels\nof the community hierarchy, as well as implemented as a more exploratory “drill down” mechanism\nthat follows the information scent contained in higher-level community summaries.",
+      "location": {
+        "section": "6.2 Future work",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 6]",
+      "section_id": "SEC-027",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-027-CLM-006",
+      "text": "若生成回答未準確呈現來源資料，大型文件集合問答可能對下游 sensemaking 與決策任務造成風險。",
+      "evidence_text": "As a mechanism for question answering over large document collections, there\nare risks to downstream sensemaking and decision-making tasks if the generated answers do not\naccurately represent the source data.",
+      "location": {
+        "section": "6.2 Future work — Broader impacts",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 6]",
+      "section_id": "SEC-027",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-027-CLM-007",
+      "text": "系統使用時應清楚揭露 AI 的使用及輸出可能出錯。",
+      "evidence_text": "System use should be accompanied by clear disclosures of AI\nuse and the potential for errors in outputs.",
+      "location": {
+        "section": "6.2 Future work — Broader impacts",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 6]",
+      "section_id": "SEC-027",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-027-CLM-008",
+      "text": "作者認為，針對全局性問題，GraphRAG 相較向量 RAG 顯示出降低下游風險的潛力，因為後者可能把檢索到的事實樣本錯誤呈現為全局摘要。",
+      "evidence_text": "Compared to vector RAG, however, GraphRAG shows\npromise as a way to mitigate these downstream risks for questions of a global nature, which might\notherwise be answered by samples of retrieved facts falsely presented as global summaries.",
+      "location": {
+        "section": "6.2 Future work — Broader impacts",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 6]",
+      "section_id": "SEC-027",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-030-CLM-001",
+      "text": "作者將 GraphRAG 總結為結合知識圖譜生成與 query-focused summarization（QFS）的 RAG 方法，用以支援人們理解完整文本語料庫。",
+      "evidence_text": "We have presented GraphRAG, a RAG approach that combines knowledge graph generation and\nquery-focused summarization (QFS) to support human sensemaking over entire text corpora.",
+      "location": {
+        "section": "7 Conclusion",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 7]",
+      "section_id": "SEC-030",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-030-CLM-002",
+      "text": "初步評估顯示，GraphRAG 相較向量 RAG 基線，回答的 comprehensiveness 與 diversity 有顯著改善；相較採用 map-reduce 來源文本摘要的全局但無圖方法，其表現也較有利。",
+      "evidence_text": "Initial\nevaluations show substantial improvements over a vector RAG baseline for both the comprehensive-\nness and diversity of answers, as well as favorable comparisons to a global but graph-free approach\nusing map-reduce source text summarization.",
+      "location": {
+        "section": "7 Conclusion",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 7]",
+      "section_id": "SEC-030",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-030-CLM-003",
+      "text": "在同一資料集需要大量全局查詢的情境中，實體式圖索引的根層社群摘要可作為優於向量 RAG 的資料索引，並以少量 token 成本達到與其他全局方法具競爭力的表現。",
+      "evidence_text": "For situations requiring many global queries over the\nsame dataset, summaries of root-level communities in the entity-based graph index provide a data\nindex that is both superior to vector RAG and achieves competitive performance to other global\nmethods at a fraction of the token cost.",
+      "location": {
+        "section": "7 Conclusion",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 7]",
+      "section_id": "SEC-030",
+      "chapter_audit_status": "passed"
+    }
+  ],
+  "instructions": [
+    "Use only claims in verified_claim_registry.",
+    "Cite supporting claim_ids for every conclusion.",
+    "Separate direct evidence from cross-chapter inference.",
+    "Preserve dataset, method, metric, baseline, and experimental scope.",
+    "Report contradictions and unavailable evidence; do not invent missing facts."
+  ],
+  "output_schema": {
+    "paper_summary": "string",
+    "conclusions": [
+      {
+        "conclusion_id": "SYN-NNN",
+        "text": "string",
+        "conclusion_type": "direct|cross_chapter_inference",
+        "supported_by": [
+          "claim_id"
+        ],
+        "scope": {},
+        "limitations": []
+      }
+    ],
+    "unsupported_or_unknown": [],
+    "overall_limitations": []
+  },
+  "expected_output": "synthesis_report.json"
+}

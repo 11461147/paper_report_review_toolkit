@@ -1,0 +1,63 @@
+{
+  "job_id": "CHAPTER-SEC-003-WRITE",
+  "context_policy": "fresh",
+  "paper": {
+    "paper_id": "arxiv:2404.16130",
+    "source_file": "/tmp/graphrag-2404.16130.pdf",
+    "source_type": "pdf",
+    "extractor": "automatic-multisyntax-v1",
+    "manual_correction_required": false,
+    "status": "complete",
+    "section_count": 40
+  },
+  "section": {
+    "section_id": "SEC-003",
+    "number": "2",
+    "title": "Background",
+    "level": 1,
+    "text": "2.1 RAG Approaches and Systems\nRAG generally refers to any system where a user query is used to retrieve relevant information from\nexternal data sources, whereupon this information is incorporated into the generation of a response\nto the query by an LLM (or other generative AI model, such as a multi-media model). The query and\nretrieved records populate a prompt template, which is then passed to the LLM (Ram et al., 2023).\nRAG is ideal when the total number of records in a data source is too large to include in a single\nprompt to the LLM, i.e. the amount of text in the data source exceeds the LLM’s context window.\nIn canonical RAG approaches, the retrieval process returns a set number of records that are seman-\ntically similar to the query and the generated answer uses only the information in those retrieved\nrecords. A common approach to conventional RAG is to use text embeddings, retrieving records\nclosest to the query in vector space where closeness corresponds to semantic similarity (Gao et al.,\n2023). While some RAG approaches may use alternative retrieval mechanisms, we collectively refer\nto the family of conventional approaches as vector RAG. GraphRAG contrasts with vector RAG in\nits ability to answer queries that require global sensemaking over the entire data corpus.\n\n\n                                                  2\n\nGraphRAG builds upon prior work on advanced RAG strategies. GraphRAG leverages summaries\nover large sections of the data source as a form of ”self-memory” (described in Cheng et al. 2024),\nwhich are later used to answer queries as in Mao et al. 2020). These summaries are generated in\nparallel and iteratively aggregated into global summaries, similar to prior techniques (Feng et al.,\n2023; Gao et al., 2023; Khattab et al., 2022; Shao et al., 2023; Su et al., 2020; Trivedi et al., 2022;\nWang et al., 2024). In particular, GraphRAG is similar to other approaches that use hierarchical\nindexing to create summaries (similar to Kim et al. 2023; Sarthi et al. 2024). GraphRAG contrasts\nwith these approaches by generating a graph index from the source data, then applying graph-based\ncommunity detection to create a thematic partitioning of the data.\n\n2.2 Using Knowledge Graphs with LLMs and RAG\nApproaches to knowledge graph extraction from natural language text corpora include rule-\nmatching, statistical pattern recognition, clustering, and embeddings (Etzioni et al., 2004; Kim et al.,\n2016; Mooney and Bunescu, 2005; Yates et al., 2007). GraphRAG falls into a more recent body of\nresearch that use of LLMs for knowledge graph extraction (Ban et al., 2023; Melnyk et al., 2022;\nOpenAI, 2023; Tan et al., 2017; Trajanoska et al., 2023; Yao et al., 2023; Yates et al., 2007; Zhang\net al., 2024a). It also adds to a growing body of RAG approaches that use a knowledge graph as\nan index (Gao et al., 2023). Some techniques use subgraphs, elements of the graph, or properties\nof the graph structure directly in the prompt (Baek et al., 2023; He et al., 2024; Zhang, 2023)\nor as factual grounding for generated outputs (Kang et al., 2023; Ranade and Joshi, 2023). Other\ntechniques (Wang et al., 2023b) use the knowledge graph to enhance retrieval, where at query time\nan LLM-based agent dynamically traverses a graph with nodes representing document elements\n(e.g., passages, tables) and edges encoding lexical and semantical similarity or structural relation-\nships. GraphRAG contrasts with these approaches by focusing on a previously unexplored quality of\ngraphs in this context: their inherent modularity (Newman, 2006) and the ability to partition graphs\ninto nested modular communities of closely related nodes (e.g., Louvain, Blondel et al. 2008; Lei-\nden, Traag et al. 2019). Specifically, GraphRAG recursively creates increasingly global summaries\nby using the LLM to create summaries spanning this community hierarchy.\n\n2.3 Adaptive benchmarking for RAG Evaluation\nMany benchmark datasets for open-domain question answering exist, including HotPotQA (Yang\net al., 2018), MultiHop-RAG (Tang and Yang, 2024), and MT-Bench (Zheng et al., 2024). However,\nthese benchmarks are oriented towards vector RAG performance, i.e., they evaluate performance\non explicit fact retrieval. In this work, we propose an approach for generating a set of questions\nfor evaluating global sensemaking over the entirety of the corpus. Our approach is related to LLM\nmethods that use a corpus to generate questions whose answers would be summaries of the corpus,\nsuch as in Xu and Lapata (2021). However, in order to produce a fair evaluation, our method avoids\ngenerating the questions directly from the corpus itself (as an alternative implementation, one can\nuse a subset of the corpus held out from subsequent graph extraction and answer evaluation steps).\nAdaptive benchmarking refers to the process of dynamically generating evaluation benchmarks tai-\nlored to specific domains or use cases. Recent work has used LLMs for adaptive benchmarking\nto ensure relevance, diversity, and alignment with the target application or task (Yuan et al., 2024;\nZhang et al., 2024b). In this work, we propose an adaptive benchmarking approach to generating\nglobal sensemaking queries for the LLM. Our approach builds on prior work in LLM-based persona\ngeneration, where the LLM is used to generate diverse and authentic sets of personas (Kosinski,\n2024; Salminen et al., 2024; Shin et al., 2024). Our adaptive benchmarking procedure uses persona\ngeneration to create queries that are representative of real-world RAG system usage. Specifically,\nour approach uses the LLM to infer the potential users would use the RAG system and their use\ncases, which guide the generation of corpus-specific sensemaking queries.\n\n2.4 RAG evaluation criteria\nOur evaluation relies on the LLM to evaluate how well the RAG system answers the generated ques-\ntions. Prior work has shown LLMs to be good evaluators of natural language generation, includ-\ning work where LLMs evaluations were competitive with human evaluations (Wang et al., 2023a;\nZheng et al., 2024). Some prior work proposes criteria for having LLMs quantify the quality of\n\n\n                                                   3\n\n             Source Documents                                     Global Answer\n                      text extraction                                      query-focused\n                      and chunking                                         summarization\n               Text Chunks                                     Community Answers\n                      domain-tailored                                      query-focused\n                      summarization                                        summarization\n          Entities & Relationships                            Community Summaries\n                      domain-tailored                                      domain-tailored\n                      summarization        community                       summarization\n                                            detection\n             Knowledge Graph                                    Graph Communities\n\n\n\n               Indexing Time            Pipeline Stage              Query Time\n\nFigure 1: Graph RAG pipeline using an LLM-derived graph index of source document text. This\ngraph index spans nodes (e.g., entities), edges (e.g., relationships), and covariates (e.g., claims)\nthat have been detected, extracted, and summarized by LLM prompts tailored to the domain of the\ndataset. Community detection (e.g., Leiden, Traag et al., 2019) is used to partition the graph index\ninto groups of elements (nodes, edges, covariates) that the LLM can summarize in parallel at both\nindexing time and query time. The “global answer” to a given query is produced using a final round\nof query-focused summarization over all community summaries reporting relevance to that query.\n\n\ngenerated texts such as “fluency” (Wang et al., 2023a) Some of these criteria are generic to vector\nRAG systems and not relevant to global sensemaking, such as “context relevance”, “faithfulness”,\nand “answer relevance” (RAGAS, Es et al. 2023). Lacking a gold standard for evaluation, one can\nquantify relative performance for a given criterion by prompting the LLM to compare generations\nfrom two different competing models (LLM-as-a-judge, (Zheng et al., 2024)). In this work, we de-\nsign criteria for evaluating RAG-generated answers to global sensemaking questions and evaluate\nour results using the comparative approach. We also validate results using statistics derived from\nLLM-extracted statements of verifiable facts, or “claims.”",
+    "start_line": 101,
+    "end_line": 218,
+    "page_start": 1,
+    "page_end": 1,
+    "heading_confidence": 0.94,
+    "detection_source": [
+      "numbering",
+      "line-layout"
+    ]
+  },
+  "instructions": [
+    "Analyze only the supplied section text.",
+    "Do not use results or facts absent from this section.",
+    "Every factual claim must include an exact evidence_text quote and location.",
+    "Do not write the paper-wide conclusion; chapter_conclusion is limited to this section.",
+    "Return JSON only and conform to output_schema."
+  ],
+  "output_schema": {
+    "section_id": "SEC-NNN",
+    "chapter_purpose": "string",
+    "chapter_summary": "string",
+    "claims": [
+      {
+        "claim_id": "SEC-NNN-CLM-NNN",
+        "text": "string",
+        "evidence_text": "exact quote",
+        "location": {
+          "section": "string",
+          "page": "integer|null",
+          "table": "string|null",
+          "figure": "string|null"
+        },
+        "claim_type": "direct|numeric|inference",
+        "citation": "string"
+      }
+    ],
+    "methods": [],
+    "numeric_evidence": [],
+    "tables_and_figures": [],
+    "limitations": [],
+    "links_to_other_sections": [],
+    "chapter_conclusion": "string"
+  },
+  "expected_output": "chapter_reports/SEC-003.json"
+}

@@ -1,0 +1,81 @@
+{
+  "section_id": "SEC-003",
+  "chapter_purpose": "本節回顧 RAG、LLM 與知識圖譜結合，以及自適應基準與 RAG 評估的相關研究，並據此界定 GraphRAG 利用圖的模組性建立階層式社群摘要、支援全域意義建構的定位。",
+  "chapter_summary": "本節先將典型 RAG 描述為以查詢從外部資料源檢索相關紀錄並納入生成提示的系統，且將主要依語意相似度檢索的傳統方法統稱為 vector RAG。GraphRAG 延續分段摘要與階層索引的研究，但以來源資料建立圖索引，再用圖社群偵測形成主題分區，並沿巢狀社群階層遞迴產生更全域的摘要。評估方面，本節提出以 persona 生成引導特定語料的全域意義建構查詢，並在缺乏標準答案時採 LLM 成對比較答案，另以可驗證事實陳述的統計量進行驗證。",
+  "claims": [
+    {
+      "claim_id": "SEC-003-CLM-001",
+      "text": "RAG 通常以使用者查詢從外部資料源檢索相關資訊，再將資訊納入 LLM 或其他生成式模型的回答生成過程。",
+      "evidence_text": "RAG generally refers to any system where a user query is used to retrieve relevant information from\nexternal data sources, whereupon this information is incorporated into the generation of a response\nto the query by an LLM (or other generative AI model, such as a multi-media model).",
+      "location": {"section": "2.1 RAG Approaches and Systems", "page": 2, "table": null, "figure": null},
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 2]"
+    },
+    {
+      "claim_id": "SEC-003-CLM-002",
+      "text": "作者將主要依語意相似度檢索紀錄的傳統方法統稱為 vector RAG，並以 GraphRAG 能處理整體語料的全域意義建構查詢作為對比。",
+      "evidence_text": "While some RAG approaches may use alternative retrieval mechanisms, we collectively refer\nto the family of conventional approaches as vector RAG. GraphRAG contrasts with vector RAG in\nits ability to answer queries that require global sensemaking over the entire data corpus.",
+      "location": {"section": "2.1 RAG Approaches and Systems", "page": 2, "table": null, "figure": null},
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 2]"
+    },
+    {
+      "claim_id": "SEC-003-CLM-003",
+      "text": "GraphRAG 與既有階層索引摘要方法的差異，在於先由來源資料建立圖索引，再以圖社群偵測建立資料的主題分區。",
+      "evidence_text": "GraphRAG contrasts\nwith these approaches by generating a graph index from the source data, then applying graph-based\ncommunity detection to create a thematic partitioning of the data.",
+      "location": {"section": "2.1 RAG Approaches and Systems", "page": 2, "table": null, "figure": null},
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 2]"
+    },
+    {
+      "claim_id": "SEC-003-CLM-004",
+      "text": "GraphRAG 著重圖的模組性與將圖分割為巢狀模組社群的能力，並由 LLM 沿社群階層產生涵蓋範圍逐步擴大的摘要。",
+      "evidence_text": "GraphRAG contrasts with these approaches by focusing on a previously unexplored quality of\ngraphs in this context: their inherent modularity (Newman, 2006) and the ability to partition graphs\ninto nested modular communities of closely related nodes (e.g., Louvain, Blondel et al. 2008; Lei-\nden, Traag et al. 2019). Specifically, GraphRAG recursively creates increasingly global summaries\nby using the LLM to create summaries spanning this community hierarchy.",
+      "location": {"section": "2.2 Using Knowledge Graphs with LLMs and RAG", "page": 2, "table": null, "figure": null},
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 2]"
+    },
+    {
+      "claim_id": "SEC-003-CLM-005",
+      "text": "作者的自適應基準程序利用 persona 生成，讓推定的 RAG 潛在使用者及其使用案例引導特定語料的意義建構查詢生成。",
+      "evidence_text": "Our adaptive benchmarking procedure uses persona\ngeneration to create queries that are representative of real-world RAG system usage. Specifically,\nour approach uses the LLM to infer the potential users would use the RAG system and their use\ncases, which guide the generation of corpus-specific sensemaking queries.",
+      "location": {"section": "2.3 Adaptive benchmarking for RAG Evaluation", "page": 2, "table": null, "figure": null},
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 2]"
+    },
+    {
+      "claim_id": "SEC-003-CLM-006",
+      "text": "在缺乏標準答案時，可透過提示 LLM 比較兩個競爭模型的生成內容，量化特定準則下的相對表現。",
+      "evidence_text": "Lacking a gold standard for evaluation, one can\nquantify relative performance for a given criterion by prompting the LLM to compare generations\nfrom two different competing models (LLM-as-a-judge, (Zheng et al., 2024)).",
+      "location": {"section": "2.4 RAG evaluation criteria", "page": 3, "table": null, "figure": null},
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 2]"
+    },
+    {
+      "claim_id": "SEC-003-CLM-007",
+      "text": "全域答案由所有回報與查詢相關的社群摘要，再經一輪以查詢為焦點的摘要而產生。",
+      "evidence_text": "The “global answer” to a given query is produced using a final round\nof query-focused summarization over all community summaries reporting relevance to that query.",
+      "location": {"section": "2.4 RAG evaluation criteria", "page": 3, "table": null, "figure": "Figure 1"},
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 2]"
+    }
+  ],
+  "methods": [
+    "自適應基準：由 LLM 推定潛在使用者及使用案例，再生成特定語料的全域意義建構查詢。",
+    "比較式評估：在無標準答案的條件下，以 LLM-as-a-judge 比較兩套系統對同一問題的生成答案。",
+    "輔助驗證：使用由 LLM 擷取的可驗證事實陳述（claims）所衍生的統計量驗證結果。"
+  ],
+  "numeric_evidence": [],
+  "tables_and_figures": [
+    "Figure 1：GraphRAG 流程圖呈現從來源文件、文本區塊、實體與關係、知識圖譜、圖社群與社群摘要，到社群答案及全域答案的索引與查詢流程。"
+  ],
+  "limitations": [
+    "本節主要建立相關工作與評估設計的背景，未提供 GraphRAG 與其他方法的量化比較結果。",
+    "本節指出全域意義建構評估缺乏 gold standard，因此採相對的成對模型比較，並以擷取出的可驗證 claims 統計量輔助驗證。"
+  ],
+  "links_to_other_sections": [
+    "Figure 1 概述後續方法章將展開的 GraphRAG 索引時間與查詢時間流程。",
+    "本節提出的自適應查詢生成、比較式評估準則與 claims 驗證構成後續實驗評估的設計基礎。"
+  ],
+  "chapter_conclusion": "本節的局部結論是：GraphRAG 的研究定位不只是以知識圖譜輔助局部檢索，而是利用圖的模組性形成巢狀社群，沿階層建立更全域的摘要；與此目標相配套的評估則以 persona 導引的語料特定查詢、LLM 成對判斷及可驗證 claims 統計量為基礎。"
+}

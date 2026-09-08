@@ -1,0 +1,168 @@
+{
+  "section_id": "SEC-024",
+  "chapter_purpose": "本節報告兩項實驗的結果：實驗 1 比較全域方法、向量 RAG 與來源文本摘要在 comprehensiveness、diversity、empowerment、directness 及 context-token 成本上的表現；實驗 2 以 claim-based 指標檢驗主要結果，並分析 LLM 評判與 claim-based 標籤的一致程度。",
+  "chapter_summary": "實驗 1 顯示，全域方法在兩個資料集的 comprehensiveness 與 diversity 上顯著優於向量 RAG，但向量 RAG 的回答最直接；GraphRAG 的 community summaries 相較來源文本通常帶來小幅而一致的 comprehensiveness 與 diversity 改善，root-level summaries 除外。GraphRAG 也降低 context-token 需求，其中 C3 少用 26–33%，C0 少用超過 97%。實驗 2 的平均 claim 數結果支持全域搜尋與 TS 的 comprehensiveness 高於 SS；diversity 結果在 Podcast 上一致，但 News 上只有 C0 在所有距離閾值均顯著優於 SS。對非平手案例，彙整後的 LLM 標籤與 claim-based 標籤在 comprehensiveness 上有 78% 一致，在 diversity 上有 69–70% 一致。",
+  "claims": [
+    {
+      "claim_id": "SEC-024-CLM-001",
+      "text": "索引程序為 Podcast 資料集建立了 8,564 個 nodes、20,691 個 edges，為 News 資料集建立了 15,754 個 nodes、19,520 個 edges。",
+      "evidence_text": "The indexing process resulted in a graph consisting of 8,564 nodes and 20,691 edges for the Podcast\ndataset, and a larger graph of 15,754 nodes and 19,520 edges for the News dataset.",
+      "location": {
+        "section": "5.1 Experiment 1",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "numeric",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 5]"
+    },
+    {
+      "claim_id": "SEC-024-CLM-002",
+      "text": "全域方法相對向量 RAG，在 Podcast 與 News 的 comprehensiveness 與 diversity 上皆顯著較佳。",
+      "evidence_text": "As shown in Figure 2 and Table 6, global approaches signifi-\ncantly outperformed conventional vector RAG (SS) in both comprehensiveness and diversity criteria\nacross datasets.",
+      "location": {
+        "section": "5.1 Experiment 1",
+        "page": 1,
+        "table": "Table 6",
+        "figure": "Figure 2"
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 5]"
+    },
+    {
+      "claim_id": "SEC-024-CLM-003",
+      "text": "相對 SS，全域方法的 comprehensiveness win rates 在 Podcast 為 72–83%（p<.001）、News 為 72–80%（p<.001）；diversity win rates 分別為 75–82%（p<.001）與 62–71%（p<.01）。",
+      "evidence_text": "Specifically, global approaches achieved comprehensiveness win rates between 72-\n83% (p<.001) for Podcast transcripts and 72-80% (p<.001) for News articles, while diversity win\nrates ranged from 75-82% (p<.001) and 62-71% (p<.01) respectively.",
+      "location": {
+        "section": "5.1 Experiment 1",
+        "page": 1,
+        "table": "Table 6",
+        "figure": "Figure 2"
+      },
+      "claim_type": "numeric",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 5]"
+    },
+    {
+      "claim_id": "SEC-024-CLM-004",
+      "text": "Directness 的 validity test 顯示，向量 RAG 在所有比較中產生最直接的回答。",
+      "evidence_text": "Our use of directness as a\nvalidity test confirmed that vector RAG produces the most direct responses across all comparisons.",
+      "location": {
+        "section": "5.1 Experiment 1",
+        "page": 1,
+        "table": null,
+        "figure": "Figure 2"
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 5]"
+    },
+    {
+      "claim_id": "SEC-024-CLM-005",
+      "text": "GraphRAG 的 community summaries 相較 source texts，通常對回答的 comprehensiveness 與 diversity 帶來小幅但一致的改善，root-level summaries 是例外。",
+      "evidence_text": "When comparing community summaries to source texts\nusing GraphRAG, community summaries generally provided a small but consistent improvement\nin answer comprehensiveness and diversity, except for root-level summaries.",
+      "location": {
+        "section": "5.1 Experiment 1",
+        "page": 1,
+        "table": null,
+        "figure": "Figure 2"
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 5]"
+    },
+    {
+      "claim_id": "SEC-024-CLM-006",
+      "text": "相較 source text summarization，C3 的 GraphRAG 少用 26–33% context tokens，C0 則少用超過 97%。",
+      "evidence_text": "Table 2 also illustrates the scalability advantages of GraphRAG compared\nto source text summarization: for low-level community summaries (C3), GraphRAG required 26-\n33% fewer context tokens, while for root-level community summaries (C0), it required over 97%\nfewer tokens.",
+      "location": {
+        "section": "5.1 Experiment 1",
+        "page": 1,
+        "table": "Table 2",
+        "figure": null
+      },
+      "claim_type": "numeric",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 5]"
+    },
+    {
+      "claim_id": "SEC-024-CLM-007",
+      "text": "以平均 extracted claims 衡量時，News 與 Podcast 的所有 global search 條件 C0–C3 及 TS 都比 SS 更具 comprehensiveness，且所有差異皆達 p<.05。",
+      "evidence_text": "For both the News and Podcast datasets, all global search\nconditions (C0-C3) and source text summarization (TS) had greater comprehensiveness than vector\nRAG (SS). The differences were statistically significant (p<.05) in all cases.",
+      "location": {
+        "section": "5.2 Experiment 2",
+        "page": 1,
+        "table": "Table 3",
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 5]"
+    },
+    {
+      "claim_id": "SEC-024-CLM-008",
+      "text": "Claim-based diversity 結果中，Podcast 的所有 global search 條件在所有距離閾值皆顯著優於 SS；News 則只有 C0 在所有距離閾值皆顯著優於 SS（p<.05）。",
+      "evidence_text": "For the Podcast dataset, all global search conditions had significantly greater diversity than SS\nacross all distance thresholds (p<.05), consistent with the win rates observed in Experiment 1. For\nthe News dataset, however, only C0 significantly outperformed SS across all distance thresholds\n(p<.05).",
+      "location": {
+        "section": "5.2 Experiment 2",
+        "page": 1,
+        "table": "Table 4",
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 5]"
+    },
+    {
+      "claim_id": "SEC-024-CLM-009",
+      "text": "兩個資料集在 comprehensiveness 與 diversity 上，global search 各條件彼此之間以及 global search 與 TS 之間都沒有統計顯著差異。",
+      "evidence_text": "For both comprehensiveness and diversity, across both datasets, there were no statistically significant\ndifferences observed among the global search conditions or between global search and TS.",
+      "location": {
+        "section": "5.2 Experiment 2",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 5]"
+    },
+    {
+      "claim_id": "SEC-024-CLM-010",
+      "text": "在彙整後 LLM 標籤不是 tie 的案例中，這些案例占 comprehensiveness 配對比較的 33%、diversity 的 39%；LLM 標籤與 claim-based 標籤的一致率分別為 78% 與 69–70%。",
+      "evidence_text": "As a result, we focused on cases where the aggregated LLM\nlabel was not a tie, representing 33% and 39% of pairwise comparisons for comprehensiveness and\ndiversity, respectively. In these cases, the aggregated LLM label matched the claim-based label in\n78% of pairwise comparisons for comprehensiveness and 69-70% for diversity (across all distance\nthresholds), indicating moderately strong alignment.",
+      "location": {
+        "section": "5.2 Experiment 2",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "numeric",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 5]"
+    }
+  ],
+  "methods": [
+    "Experiment 1 以兩個資料集、四項指標與每次比較 125 個問題進行 head-to-head 評估；每個比較重複五次後取平均。",
+    "Experiment 2 以平均 extracted claims 作為 claim-based comprehensiveness 指標，以平均 clusters 數作為 claim-based diversity 指標。",
+    "為比較 LLM 與 claim-based 結果，實驗將每題五次 LLM 判斷以 majority voting 彙整成單一標籤，再與 claim-based outcome 對照。"
+  ],
+  "numeric_evidence": [
+    "Podcast graph：8,564 nodes、20,691 edges；News graph：15,754 nodes、19,520 edges。",
+    "相對 SS 的 comprehensiveness win rates：Podcast 72–83%（p<.001），News 72–80%（p<.001）。",
+    "相對 SS 的 diversity win rates：Podcast 75–82%（p<.001），News 62–71%（p<.01）。",
+    "相較 TS 的 context tokens：C3 少用 26–33%，C0 少用超過 97%。",
+    "Table 3 的平均 claims：News 中 C0 34.18、C1 32.50、C2 31.62、C3 33.14、TS 32.89、SS 25.23；Podcast 中依序為 32.21、32.20、32.46、32.28、31.39、26.50。",
+    "非 tie 的 LLM 標籤占 comprehensiveness pairwise comparisons 的 33%、diversity 的 39%；與 claim-based 標籤的一致率分別為 78% 與 69–70%。"
+  ],
+  "tables_and_figures": [
+    "Figure 2：呈現兩個資料集、四項指標、每次比較 125 個問題的各條件 head-to-head win rate percentages；每個比較重複五次並取平均。",
+    "Table 2：列出 C0–C3 community summaries 與 TS text chunks 的 context units、token counts 及占最大 token count 的百分比。",
+    "Table 3：列出 News Articles 與 Podcast Transcripts 各條件的平均 extracted claims。",
+    "Table 4：報告以平均 cluster 數衡量的 claim-based diversity 結果；其內容由本節正文概述。",
+    "Table 6：與 Figure 2 一同支持 global approaches 相對 SS 的 comprehensiveness 與 diversity 比較；表格本體未出現在 supplied section text。"
+  ],
+  "limitations": [
+    "Empowerment 的比較結果混合；作者指出提供具體 examples、quotes 與 citations 的能力會影響此指標，並提出調整 element extraction prompts 可能保留更多細節。",
+    "Claim-based metrics 的 exact ties 很少，而以差值閾值定義 tie 的結果對閾值選擇敏感，因此 LLM 與 claim-based 標籤的一致性分析只聚焦於彙整後 LLM 標籤不是 tie 的案例。",
+    "News 的 claim-based diversity 證據比 Experiment 1 的 LLM win-rate 結果弱：只有 C0 在所有距離閾值均顯著優於 SS，C1–C3 只在部分閾值顯著。"
+  ],
+  "links_to_other_sections": [
+    "Experiment 2 的 claim-based comprehensiveness 結果與 Experiment 1 的 LLM-based win rates 一致。",
+    "Podcast 的 claim-based diversity 結果與 Experiment 1 的 win rates 一致；News 的結果方向一致但顯著性範圍較窄。",
+    "本節以 Experiment 1 的五次 pairwise judgments 經 majority voting 後，連結至 Experiment 2 的單次 claim-based outcome。"
+  ],
+  "chapter_conclusion": "Section 5 的結果顯示，在本節所述兩個資料集與實驗設定內，全域方法相較向量 RAG 明顯提升 comprehensiveness 與 diversity，而 GraphRAG 可用較少 context tokens 達成這些優勢；向量 RAG 則保有 directness 優勢。Claim-based 評估大致支持主要結果，但 News diversity 的顯著性較受距離閾值影響，且 LLM 與 claim-based 標籤只呈現中度偏強、而非完全的一致。"
+}

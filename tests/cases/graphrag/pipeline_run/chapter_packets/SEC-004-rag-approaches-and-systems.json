@@ -1,0 +1,63 @@
+{
+  "job_id": "CHAPTER-SEC-004-WRITE",
+  "context_policy": "fresh",
+  "paper": {
+    "paper_id": "arxiv:2404.16130",
+    "source_file": "/tmp/graphrag-2404.16130.pdf",
+    "source_type": "pdf",
+    "extractor": "automatic-multisyntax-v1",
+    "manual_correction_required": false,
+    "status": "complete",
+    "section_count": 40
+  },
+  "section": {
+    "section_id": "SEC-004",
+    "number": "2.1",
+    "title": "RAG Approaches and Systems",
+    "level": 2,
+    "text": "RAG generally refers to any system where a user query is used to retrieve relevant information from\nexternal data sources, whereupon this information is incorporated into the generation of a response\nto the query by an LLM (or other generative AI model, such as a multi-media model). The query and\nretrieved records populate a prompt template, which is then passed to the LLM (Ram et al., 2023).\nRAG is ideal when the total number of records in a data source is too large to include in a single\nprompt to the LLM, i.e. the amount of text in the data source exceeds the LLM’s context window.\nIn canonical RAG approaches, the retrieval process returns a set number of records that are seman-\ntically similar to the query and the generated answer uses only the information in those retrieved\nrecords. A common approach to conventional RAG is to use text embeddings, retrieving records\nclosest to the query in vector space where closeness corresponds to semantic similarity (Gao et al.,\n2023). While some RAG approaches may use alternative retrieval mechanisms, we collectively refer\nto the family of conventional approaches as vector RAG. GraphRAG contrasts with vector RAG in\nits ability to answer queries that require global sensemaking over the entire data corpus.\n\n\n                                                  2\n\nGraphRAG builds upon prior work on advanced RAG strategies. GraphRAG leverages summaries\nover large sections of the data source as a form of ”self-memory” (described in Cheng et al. 2024),\nwhich are later used to answer queries as in Mao et al. 2020). These summaries are generated in\nparallel and iteratively aggregated into global summaries, similar to prior techniques (Feng et al.,\n2023; Gao et al., 2023; Khattab et al., 2022; Shao et al., 2023; Su et al., 2020; Trivedi et al., 2022;\nWang et al., 2024). In particular, GraphRAG is similar to other approaches that use hierarchical\nindexing to create summaries (similar to Kim et al. 2023; Sarthi et al. 2024). GraphRAG contrasts\nwith these approaches by generating a graph index from the source data, then applying graph-based\ncommunity detection to create a thematic partitioning of the data.",
+    "start_line": 103,
+    "end_line": 131,
+    "page_start": 1,
+    "page_end": 1,
+    "heading_confidence": 0.82,
+    "detection_source": [
+      "numbering",
+      "line-layout"
+    ]
+  },
+  "instructions": [
+    "Analyze only the supplied section text.",
+    "Do not use results or facts absent from this section.",
+    "Every factual claim must include an exact evidence_text quote and location.",
+    "Do not write the paper-wide conclusion; chapter_conclusion is limited to this section.",
+    "Return JSON only and conform to output_schema."
+  ],
+  "output_schema": {
+    "section_id": "SEC-NNN",
+    "chapter_purpose": "string",
+    "chapter_summary": "string",
+    "claims": [
+      {
+        "claim_id": "SEC-NNN-CLM-NNN",
+        "text": "string",
+        "evidence_text": "exact quote",
+        "location": {
+          "section": "string",
+          "page": "integer|null",
+          "table": "string|null",
+          "figure": "string|null"
+        },
+        "claim_type": "direct|numeric|inference",
+        "citation": "string"
+      }
+    ],
+    "methods": [],
+    "numeric_evidence": [],
+    "tables_and_figures": [],
+    "limitations": [],
+    "links_to_other_sections": [],
+    "chapter_conclusion": "string"
+  },
+  "expected_output": "chapter_reports/SEC-004.json"
+}

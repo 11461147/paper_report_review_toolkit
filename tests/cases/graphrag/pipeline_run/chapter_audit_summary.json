@@ -1,0 +1,64 @@
+{
+  "passed": true,
+  "chapter_count": 8,
+  "passed_chapters": 8,
+  "missing_reports": [],
+  "chapters": [
+    {
+      "section_id": "SEC-001",
+      "passed": true,
+      "claim_count": 7,
+      "verified_claim_count": 7,
+      "findings": []
+    },
+    {
+      "section_id": "SEC-002",
+      "passed": true,
+      "claim_count": 7,
+      "verified_claim_count": 7,
+      "findings": []
+    },
+    {
+      "section_id": "SEC-003",
+      "passed": true,
+      "claim_count": 7,
+      "verified_claim_count": 7,
+      "findings": []
+    },
+    {
+      "section_id": "SEC-008",
+      "passed": true,
+      "claim_count": 5,
+      "verified_claim_count": 5,
+      "findings": []
+    },
+    {
+      "section_id": "SEC-019",
+      "passed": true,
+      "claim_count": 9,
+      "verified_claim_count": 9,
+      "findings": []
+    },
+    {
+      "section_id": "SEC-024",
+      "passed": true,
+      "claim_count": 10,
+      "verified_claim_count": 10,
+      "findings": []
+    },
+    {
+      "section_id": "SEC-027",
+      "passed": true,
+      "claim_count": 8,
+      "verified_claim_count": 8,
+      "findings": []
+    },
+    {
+      "section_id": "SEC-030",
+      "passed": true,
+      "claim_count": 3,
+      "verified_claim_count": 3,
+      "findings": []
+    }
+  ]
+}

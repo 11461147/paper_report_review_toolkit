@@ -1,0 +1,63 @@
+{
+  "job_id": "CHAPTER-SEC-011-WRITE",
+  "context_policy": "fresh",
+  "paper": {
+    "paper_id": "arxiv:2404.16130",
+    "source_file": "/tmp/graphrag-2404.16130.pdf",
+    "source_type": "pdf",
+    "extractor": "automatic-multisyntax-v1",
+    "manual_correction_required": false,
+    "status": "complete",
+    "section_count": 40
+  },
+  "section": {
+    "section_id": "SEC-011",
+    "number": "3.1.2",
+    "title": "Text Chunks → Entities & Relationships",
+    "level": 3,
+    "text": "In this step, the LLM is prompted to extract instances of important entities and the relationships\nbetween the entities from a given chunk. Additionally, the LLM generates short descriptions for the\nentities and relationships. To illustrate, suppose a chunk contained the following text:\n\n\n                                                 4\n\n          NeoChip’s (NC) shares surged in their first week of trading on the NewTech Ex-\n          change. However, market analysts caution that the chipmaker’s public debut may\n          not reflect trends for other technology IPOs. NeoChip, previously a private entity,\n          was acquired by Quantum Systems in 2016. The innovative semiconductor firm\n          specializes in low-power processors for wearables and IoT devices.\n\nThe LLM is prompted such that it extracts the following:\n\n        • The entity NeoChip, with description “NeoChip is a publicly traded company specializing\n          in low-power processors for wearables and IoT devices.”\n        • The entity Quantum Systems, with description “Quantum Systems is a firm that previ-\n          ously owned NeoChip.”\n        • A relationship between NeoChip and Quantum Systems, with description “Quantum Sys-\n          tems owned NeoChip from 2016 until NeoChip became publicly traded.”\n\nThese prompts can be tailored to the domain of the document corpus by choosing domain appropriate\nfew-shot exemplars for in-context learning (Brown et al., 2020). For example, while our default\nprompt extracts the broad class of “named entities” like people, places, and organizations and is\ngenerally applicable, domains with specialized knowledge (e.g., science, medicine, law) will benefit\nfrom few-shot exemplars specialized to those domains.\nThe LLM can also be prompted to extract claims about detected entities. Claims are important\nfactual statements about entities, such as dates, events, and interactions with other entities. As\nwith entities and relationships, in-context learning exemplars can provide domain-specific guidance.\nClaim descriptions extracted from the example tetx chunk are as follows:\n\n        • NeoChip’s shares surged during their first week of trading on the NewTech Exchange.\n        • NeoChip debuted as a publicly listed company on the NewTech Exchange.\n        • Quantum Systems acquired NeoChip in 2016 and held ownership until NeoChip went pub-\n          lic.\n\nSee Appendix A for prompts and details on our implementation of entity and claim extraction.",
+    "start_line": 234,
+    "end_line": 274,
+    "page_start": 1,
+    "page_end": 1,
+    "heading_confidence": 0.82,
+    "detection_source": [
+      "numbering",
+      "line-layout"
+    ]
+  },
+  "instructions": [
+    "Analyze only the supplied section text.",
+    "Do not use results or facts absent from this section.",
+    "Every factual claim must include an exact evidence_text quote and location.",
+    "Do not write the paper-wide conclusion; chapter_conclusion is limited to this section.",
+    "Return JSON only and conform to output_schema."
+  ],
+  "output_schema": {
+    "section_id": "SEC-NNN",
+    "chapter_purpose": "string",
+    "chapter_summary": "string",
+    "claims": [
+      {
+        "claim_id": "SEC-NNN-CLM-NNN",
+        "text": "string",
+        "evidence_text": "exact quote",
+        "location": {
+          "section": "string",
+          "page": "integer|null",
+          "table": "string|null",
+          "figure": "string|null"
+        },
+        "claim_type": "direct|numeric|inference",
+        "citation": "string"
+      }
+    ],
+    "methods": [],
+    "numeric_evidence": [],
+    "tables_and_figures": [],
+    "limitations": [],
+    "links_to_other_sections": [],
+    "chapter_conclusion": "string"
+  },
+  "expected_output": "chapter_reports/SEC-011.json"
+}

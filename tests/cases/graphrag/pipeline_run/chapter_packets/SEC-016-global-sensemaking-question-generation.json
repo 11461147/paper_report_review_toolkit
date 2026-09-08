@@ -1,0 +1,63 @@
+{
+  "job_id": "CHAPTER-SEC-016-WRITE",
+  "context_policy": "fresh",
+  "paper": {
+    "paper_id": "arxiv:2404.16130",
+    "source_file": "/tmp/graphrag-2404.16130.pdf",
+    "source_type": "pdf",
+    "extractor": "automatic-multisyntax-v1",
+    "manual_correction_required": false,
+    "status": "complete",
+    "section_count": 40
+  },
+  "section": {
+    "section_id": "SEC-016",
+    "number": "3.2",
+    "title": "Global Sensemaking Question Generation",
+    "level": 2,
+    "text": "To evaluate the effectiveness of RAG systems for global sensemaking tasks, we use an LLM to\ngenerate a set of corpus-specific questions designed to asses high-level understanding of a given\ncorpus, without requiring retrieval of specific low-level facts. Instead, given a high-level description\nof a corpus and its purposes, the LLM is prompted to generate personas of hypothetical users of\nthe RAG system. For each hypothetical user, the LLM is then prompted to specify tasks that this\nuser would use the RAG system to complete. Finally, for each combination of user and task, the\nLLM is prompted to generate questions that require understanding of the entire corpus. Algorithm\n1 describes the approach.\n\n\n                                                   6\n\nAlgorithm 1: Prompting Procedure for Question Generation\n 1: Input: Description of a corpus, number of users K, number of tasks per user N , number of\n      questions per (user, task) combination M .\n 2: Output: A set of K ∗ N ∗ M high-level questions requiring global understanding of the corpus.\n 3: procedure G ENERATE Q UESTIONS\n 4:    Based on the corpus description, prompt the LLM to:\n      1. Describe personas of K potential users of the dataset.\n      2. For each user, identify N tasks relevant to the user.\n      3. Specific to each user & task pair, generate M high-level questions that:\n          • Require understanding of the entire corpus.\n          • Do not require retrieval of specific low-level facts.\n 5:     Collect the generated questions to produce K ∗ N ∗ M test questions for the dataset.\n 6: end procedure\n\n\nFor our evaluation, we set K = M = N = 5 for a total of 125 test questions per dataset. Table 1\nshows example questions for each of the two evaluation datasets.",
+    "start_line": 346,
+    "end_line": 377,
+    "page_start": 1,
+    "page_end": 1,
+    "heading_confidence": 0.82,
+    "detection_source": [
+      "numbering",
+      "line-layout"
+    ]
+  },
+  "instructions": [
+    "Analyze only the supplied section text.",
+    "Do not use results or facts absent from this section.",
+    "Every factual claim must include an exact evidence_text quote and location.",
+    "Do not write the paper-wide conclusion; chapter_conclusion is limited to this section.",
+    "Return JSON only and conform to output_schema."
+  ],
+  "output_schema": {
+    "section_id": "SEC-NNN",
+    "chapter_purpose": "string",
+    "chapter_summary": "string",
+    "claims": [
+      {
+        "claim_id": "SEC-NNN-CLM-NNN",
+        "text": "string",
+        "evidence_text": "exact quote",
+        "location": {
+          "section": "string",
+          "page": "integer|null",
+          "table": "string|null",
+          "figure": "string|null"
+        },
+        "claim_type": "direct|numeric|inference",
+        "citation": "string"
+      }
+    ],
+    "methods": [],
+    "numeric_evidence": [],
+    "tables_and_figures": [],
+    "limitations": [],
+    "links_to_other_sections": [],
+    "chapter_conclusion": "string"
+  },
+  "expected_output": "chapter_reports/SEC-016.json"
+}

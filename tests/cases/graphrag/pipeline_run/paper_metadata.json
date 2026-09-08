@@ -1,0 +1,10 @@
+{
+  "paper_id": "arxiv:2404.16130",
+  "source_file": "/tmp/graphrag-2404.16130.pdf",
+  "source_type": "pdf",
+  "extractor": "automatic-multisyntax-v1",
+  "manual_correction_required": false,
+  "status": "complete",
+  "section_count": 40,
+  "evidence_passage_count": 67
+}

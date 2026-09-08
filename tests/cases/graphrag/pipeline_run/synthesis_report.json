@@ -1,0 +1,34 @@
+{
+  "paper_id": "arxiv:2404.16130",
+  "title": "GraphRAG 跨章證據合成報告（原始論文題名未收錄於 synthesis packet）",
+  "used_claim_ids": [
+    "SEC-001-CLM-001", "SEC-001-CLM-002", "SEC-001-CLM-003", "SEC-001-CLM-004", "SEC-001-CLM-005", "SEC-001-CLM-006", "SEC-001-CLM-007",
+    "SEC-002-CLM-001", "SEC-002-CLM-002", "SEC-002-CLM-003", "SEC-002-CLM-004", "SEC-002-CLM-005", "SEC-002-CLM-006", "SEC-002-CLM-007",
+    "SEC-003-CLM-001", "SEC-003-CLM-002", "SEC-003-CLM-003", "SEC-003-CLM-004", "SEC-003-CLM-005", "SEC-003-CLM-006", "SEC-003-CLM-007",
+    "SEC-008-CLM-001", "SEC-008-CLM-002", "SEC-008-CLM-003", "SEC-008-CLM-004", "SEC-008-CLM-005",
+    "SEC-019-CLM-001", "SEC-019-CLM-002", "SEC-019-CLM-003", "SEC-019-CLM-004", "SEC-019-CLM-005", "SEC-019-CLM-006", "SEC-019-CLM-007", "SEC-019-CLM-008", "SEC-019-CLM-009",
+    "SEC-024-CLM-001", "SEC-024-CLM-002", "SEC-024-CLM-003", "SEC-024-CLM-004", "SEC-024-CLM-005", "SEC-024-CLM-006", "SEC-024-CLM-007", "SEC-024-CLM-008", "SEC-024-CLM-009", "SEC-024-CLM-010",
+    "SEC-027-CLM-001", "SEC-027-CLM-002", "SEC-027-CLM-003", "SEC-027-CLM-004", "SEC-027-CLM-005", "SEC-027-CLM-006", "SEC-027-CLM-007", "SEC-027-CLM-008",
+    "SEC-030-CLM-001", "SEC-030-CLM-002", "SEC-030-CLM-003"
+  ],
+  "paper_summary": "GraphRAG 以實體知識圖、階層式社群摘要與 map-reduce 支援完整語料的全域 sensemaking；在兩個約百萬 token 語料與特定全域問題的評估中，其 comprehensiveness 與 diversity 優於向量 RAG，但向量 RAG 的 directness 較佳，且跨領域泛化與 fabrication 仍待驗證。（SEC-002-CLM-003、SEC-002-CLM-004、SEC-002-CLM-005、SEC-024-CLM-002、SEC-024-CLM-004、SEC-027-CLM-001、SEC-027-CLM-002）",
+  "chapter_reports": [
+    {"chapter": "Abstract", "section_ids": ["SEC-001"], "summary": "界定全域 QFS 問題、GraphRAG 的兩階段索引與部分答案彙整，並報告約百萬 token 範圍內的摘要層級成效。", "supported_by": ["SEC-001-CLM-001", "SEC-001-CLM-002", "SEC-001-CLM-003", "SEC-001-CLM-004", "SEC-001-CLM-005", "SEC-001-CLM-006", "SEC-001-CLM-007"]},
+    {"chapter": "Introduction", "section_ids": ["SEC-002"], "summary": "對照 vector RAG 的局部檢索限制，介紹知識圖、階層社群摘要、map-reduce 與 LLM 成對評估。", "supported_by": ["SEC-002-CLM-001", "SEC-002-CLM-002", "SEC-002-CLM-003", "SEC-002-CLM-004", "SEC-002-CLM-005", "SEC-002-CLM-006", "SEC-002-CLM-007"]},
+    {"chapter": "Background", "section_ids": ["SEC-003"], "summary": "將 GraphRAG 定位為以圖模組性建立巢狀主題分區的階層摘要方法，並說明 persona 問題生成與無標準答案評估。", "supported_by": ["SEC-003-CLM-001", "SEC-003-CLM-002", "SEC-003-CLM-003", "SEC-003-CLM-004", "SEC-003-CLM-005", "SEC-003-CLM-006", "SEC-003-CLM-007"]},
+    {"chapter": "Methods", "section_ids": ["SEC-008"], "summary": "涵蓋文本切塊、實體關係抽取、Leiden 階層社群，以及每資料集 125 題與 LLM 成對比較。", "supported_by": ["SEC-008-CLM-001", "SEC-008-CLM-002", "SEC-008-CLM-003", "SEC-008-CLM-004", "SEC-008-CLM-005"]},
+    {"chapter": "Analysis", "section_ids": ["SEC-019"], "summary": "說明兩資料集、六條件、8k context 與 Claimify 指標和分群設定。", "supported_by": ["SEC-019-CLM-001", "SEC-019-CLM-002", "SEC-019-CLM-003", "SEC-019-CLM-004", "SEC-019-CLM-005", "SEC-019-CLM-006", "SEC-019-CLM-007", "SEC-019-CLM-008", "SEC-019-CLM-009"]},
+    {"chapter": "Results", "section_ids": ["SEC-024"], "summary": "全域方法在兩資料集的 comprehensiveness 與 diversity 優於 SS，SS directness 最佳；GraphRAG 節省 context tokens，但 News diversity 與評估一致性呈條件性。", "supported_by": ["SEC-024-CLM-001", "SEC-024-CLM-002", "SEC-024-CLM-003", "SEC-024-CLM-004", "SEC-024-CLM-005", "SEC-024-CLM-006", "SEC-024-CLM-007", "SEC-024-CLM-008", "SEC-024-CLM-009", "SEC-024-CLM-010"]},
+    {"chapter": "Discussion", "section_ids": ["SEC-027"], "summary": "限制包括僅兩語料與未比較 fabrication；未來方向包括局部、混合、roll-up 與 drill-down，部署需揭露 AI 與錯誤風險。", "supported_by": ["SEC-027-CLM-001", "SEC-027-CLM-002", "SEC-027-CLM-003", "SEC-027-CLM-004", "SEC-027-CLM-005", "SEC-027-CLM-006", "SEC-027-CLM-007", "SEC-027-CLM-008"]},
+    {"chapter": "Conclusion", "section_ids": ["SEC-030"], "summary": "GraphRAG 結合知識圖與 QFS；對同一資料集的大量全域查詢，根層摘要以較少 token 成本提供具競爭力的全域索引。", "supported_by": ["SEC-030-CLM-001", "SEC-030-CLM-002", "SEC-030-CLM-003"]}
+  ],
+  "conclusions": [
+    {"conclusion_id": "SYN-001", "text": "GraphRAG 將局部向量檢索擴展為以圖與階層摘要支援的全域 sensemaking 流程。", "conclusion_type": "cross_chapter_inference", "supported_by": ["SEC-002-CLM-002", "SEC-002-CLM-003", "SEC-002-CLM-004", "SEC-002-CLM-005"], "scope": {"task": "global sensemaking queries over large text corpora"}, "limitations": ["不表示所有局部查詢均優於 vector RAG"]},
+    {"conclusion_id": "SYN-002", "text": "在兩個約百萬 token 語料與既定評估中，全域方法相較 SS 提升 comprehensiveness 與 diversity，但 SS 較直接。", "conclusion_type": "direct", "supported_by": ["SEC-019-CLM-001", "SEC-024-CLM-002", "SEC-024-CLM-003", "SEC-024-CLM-004"], "scope": {"datasets": ["Podcast", "News"], "baseline": "SS/vector RAG", "metrics": ["comprehensiveness", "diversity", "directness"]}, "limitations": ["僅涵蓋特定 sensemaking 問題"]},
+    {"conclusion_id": "SYN-003", "text": "GraphRAG 的明確效率證據是 C3 與 C0 相較 TS 的 context-token 節省；現有 claim-based 結果不足以把全域品質收益全部單獨歸因於知識圖。", "conclusion_type": "cross_chapter_inference", "supported_by": ["SEC-024-CLM-005", "SEC-024-CLM-006", "SEC-024-CLM-009"], "scope": {"comparison": "GraphRAG community summaries vs source text summarization"}, "limitations": ["global search 與 TS 在兩項 claim-based 指標上無顯著差異"]}
+  ],
+  "cross_section_conclusion": {"text": "GraphRAG 適合作為同一大型語料上多次全域查詢的候選架構；證據支持特定 scope 內的完整性、多樣性與 token 效率，但不支持任意領域或任意查詢上的普遍優越性。", "conclusion_type": "cross_chapter_inference", "supported_by": ["SEC-024-CLM-002", "SEC-024-CLM-004", "SEC-024-CLM-006", "SEC-027-CLM-001", "SEC-030-CLM-003"], "scope": {"query_type": "global", "usage": "many queries over the same dataset"}, "limitations": ["兩個語料庫", "特定 sensemaking 問題", "未驗證跨領域泛化與 fabrication rates"]},
+  "unsupported_or_unknown": ["原始論文題名未收錄於 synthesis packet。", "沒有 registry 證據可支持對任意領域、任意局部查詢或任意錯誤型態的普遍優越性。"],
+  "overall_limitations": ["評估僅涵蓋兩個各約一百萬 token 的語料庫。", "News diversity 結果對距離閾值較敏感。", "LLM 與 claim-based 標籤並非完全一致。", "fabrication rates 尚未比較。"],
+  "final_report_path": "tests/cases/graphrag/pipeline_run/final_report.md"
+}

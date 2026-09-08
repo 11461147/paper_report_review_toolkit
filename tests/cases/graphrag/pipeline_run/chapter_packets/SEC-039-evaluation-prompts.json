@@ -1,0 +1,63 @@
+{
+  "job_id": "CHAPTER-SEC-039-WRITE",
+  "context_policy": "fresh",
+  "paper": {
+    "paper_id": "arxiv:2404.16130",
+    "source_file": "/tmp/graphrag-2404.16130.pdf",
+    "source_type": "pdf",
+    "extractor": "automatic-multisyntax-v1",
+    "manual_correction_required": false,
+    "status": "complete",
+    "section_count": 40
+  },
+  "section": {
+    "section_id": "SEC-039",
+    "number": "F",
+    "title": "Evaluation Prompts",
+    "level": 1,
+    "text": "F.1   Relative Assessment Prompt\n---Role---\n\nYou are a helpful assistant responsible for grading two answers to a question that are provided by two\ndifferent people.\n\n---Goal---\n\nGiven a question and two answers (Answer 1 and Answer 2), assess which answer is better according to\nthe following measure:\n\n{criteria}\n\nYour assessment should include two parts:\n- Winner: either 1 (if Answer 1 is better) and 2 (if Answer 2 is better) or 0 if they are fundamentally\nsimilar and the differences are immaterial.\n- Reasoning: a short explanation of why you chose the winner with respect to the measure described above.\n\nFormat your response as a JSON object with the following structure:\n{{\n\"winner\": <1, 2, or 0>,\n\"reasoning\": \"Answer 1 is better because <your reasoning>.\"\n}}\n\n---Question---\n\n{question}\n\n---Answer 1---\n\n{answer1}\n\n---Answer 2---\n\n{answer2}\n\nAssess which answer is better according to the following measure:\n\n{criteria}\n\nOutput:\n\n\nF.2   Relative Assessment Metrics\nCRITERIA = {\n\"comprehensiveness\": \"How much detail does the answer provide to cover all the aspects and details of the\nquestion? A comprehensive answer should be thorough and complete, without being redundant or irrelevant.\nFor example, if the question is ’What are the benefits and drawbacks of nuclear energy?’, a comprehensive\nanswer would provide both the positive and negative aspects of nuclear energy, such as its efficiency,\nenvironmental impact, safety, cost, etc. A comprehensive answer should not leave out any important points\nor provide irrelevant information. For example, an incomplete answer would only provide the benefits of\nnuclear energy without describing the drawbacks, or a redundant answer would repeat the same information\nmultiple times.\",\n\"diversity\": \"How varied and rich is the answer in providing different perspectives and insights\non the question? A diverse answer should be multi-faceted and multi-dimensional, offering different\nviewpoints and angles on the question. For example, if the question is ’What are the causes and effects\nof climate change?’, a diverse answer would provide different causes and effects of climate change, such\nas greenhouse gas emissions, deforestation, natural disasters, biodiversity loss, etc. A diverse answer\nshould also provide different sources and evidence to support the answer. For example, a single-source\nanswer would only cite one source or evidence, or a biased answer would only provide one perspective or\nopinion.\",\n\"directness\": \"How specifically and clearly does the answer address the question? A direct answer should\nprovide a clear and concise answer to the question. For example, if the question is ’What is the capital\nof France?’, a direct answer would be ’Paris’. A direct answer should not provide any irrelevant or\nunnecessary information that does not answer the question. For example, an indirect answer would be ’The\ncapital of France is located on the river Seine’.\",\n\"empowerment\": \"How well does the answer help the reader understand and make informed judgements about\nthe topic without being misled or making fallacious assumptions. Evaluate each answer on the quality of\nanswer as it relates to clearly explaining and providing reasoning and sources behind the claims in the\nanswer.\"\n}\n\n\n\n\n                                                    25",
+    "start_line": 1450,
+    "end_line": 1527,
+    "page_start": 1,
+    "page_end": 1,
+    "heading_confidence": 0.82,
+    "detection_source": [
+      "numbering",
+      "line-layout"
+    ]
+  },
+  "instructions": [
+    "Analyze only the supplied section text.",
+    "Do not use results or facts absent from this section.",
+    "Every factual claim must include an exact evidence_text quote and location.",
+    "Do not write the paper-wide conclusion; chapter_conclusion is limited to this section.",
+    "Return JSON only and conform to output_schema."
+  ],
+  "output_schema": {
+    "section_id": "SEC-NNN",
+    "chapter_purpose": "string",
+    "chapter_summary": "string",
+    "claims": [
+      {
+        "claim_id": "SEC-NNN-CLM-NNN",
+        "text": "string",
+        "evidence_text": "exact quote",
+        "location": {
+          "section": "string",
+          "page": "integer|null",
+          "table": "string|null",
+          "figure": "string|null"
+        },
+        "claim_type": "direct|numeric|inference",
+        "citation": "string"
+      }
+    ],
+    "methods": [],
+    "numeric_evidence": [],
+    "tables_and_figures": [],
+    "limitations": [],
+    "links_to_other_sections": [],
+    "chapter_conclusion": "string"
+  },
+  "expected_output": "chapter_reports/SEC-039.json"
+}

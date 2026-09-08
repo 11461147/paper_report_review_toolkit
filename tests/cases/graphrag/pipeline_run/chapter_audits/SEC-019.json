@@ -1,0 +1,144 @@
+{
+  "section_id": "SEC-019",
+  "passed": true,
+  "claim_count": 9,
+  "verified_claim_count": 9,
+  "verified_claims": [
+    {
+      "claim_id": "SEC-019-CLM-001",
+      "text": "作者選用 podcast transcripts 與 news articles 兩個約百萬 token 規模、用以代表使用者真實活動中可能遇到語料的資料集。",
+      "evidence_text": "We selected two datasets in the one million token range, each representative of corpora that users\nmay encounter in their real-world activities:",
+      "location": {
+        "section": "4.1.1 Datasets",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 4]",
+      "section_id": "SEC-019",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-019-CLM-002",
+      "text": "Podcast 語料被切成 1669 個 600-token chunks，相鄰 chunks 重疊 100 tokens，總量約 100 萬 tokens。",
+      "evidence_text": "This corpus was divided into 1669 × 600-token text chunks, with 100-token\noverlaps between chunks (∼1 million tokens).",
+      "location": {
+        "section": "4.1.1 Datasets",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "numeric",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 4]",
+      "section_id": "SEC-019",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-019-CLM-003",
+      "text": "News 語料被切成 3197 個 600-token chunks，相鄰 chunks 重疊 100 tokens，總量約 1.7 million tokens。",
+      "evidence_text": "The corpus is divided into 3197 × 600-token text\nchunks, with 100-token overlaps between chunks (∼1.7 million tokens).",
+      "location": {
+        "section": "4.1.1 Datasets",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "numeric",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 4]",
+      "section_id": "SEC-019",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-019-CLM-004",
+      "text": "作者比較六個條件：GraphRAG 的 C0、C1、C2、C3 四個社群層級、文本摘要 TS，以及向量 RAG 語意搜尋 SS。",
+      "evidence_text": "We compared six conditions including GraphRAG at four different graph community levels (C0,\nC1, C2, C3), a text summarization method that applies our map-reduce approach directly to source\ntexts (TS), and a vector RAG “semantic search” approach (SS):",
+      "location": {
+        "section": "4.1.2 Conditions",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 4]",
+      "section_id": "SEC-019",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-019-CLM-005",
+      "text": "六個條件使用相同的 context window 大小與回答生成 prompts，條件間僅 context window 內容的建立方式不同。",
+      "evidence_text": "The size of the context window and the prompts used for answer generation are the same across\nall six conditions (except for minor modifications to reference styles to match the types of context\ninformation used). Conditions only differ in how the contents of the context window are created.",
+      "location": {
+        "section": "4.1.2 Conditions",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 4]",
+      "section_id": "SEC-019",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-019-CLM-006",
+      "text": "生成 community summaries、community answers 與 global answers 時使用固定 8k-token context window。",
+      "evidence_text": "We used a fixed context window size of 8k tokens for generating community summaries, community\nanswers, and global answers (explained in Appendix C).",
+      "location": {
+        "section": "4.1.3 Configuration",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "numeric",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 4]",
+      "section_id": "SEC-019",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-019-CLM-007",
+      "text": "Claimify 處理並去除每份回答中的重複 claims 後，共擷取 47,075 個 unique claims，平均每份回答 31 個 claims。",
+      "evidence_text": "After removing duplicate claims from each\nanswer, we extracted 47,075 unique claims, with an average of 31 claims per answer.",
+      "location": {
+        "section": "4.2 Experiment 2",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "numeric",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 4]",
+      "section_id": "SEC-019",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-019-CLM-008",
+      "text": "實驗 2 以每個條件所產生回答的平均 claim 數衡量 comprehensiveness，以每份回答中 claim clusters 的平均數衡量 diversity，且兩者皆以數值越高代表表現越好。",
+      "evidence_text": "We defined two metrics, with higher values indicating better performance:\n\n        1. Comprehensiveness: Measured as the average number of claims extracted from the an-\n           swers generated under each condition.\n        2. Diversity: Measured by clustering the claims for each answer and calculating the average\n           number of clusters.",
+      "location": {
+        "section": "4.2 Experiment 2",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 4]",
+      "section_id": "SEC-019",
+      "chapter_audit_status": "passed"
+    },
+    {
+      "claim_id": "SEC-019-CLM-009",
+      "text": "Claim clustering 使用 Scikit-learn 的 agglomerative clustering，採 complete linkage，距離定義為 1 − ROUGE-L，並跨一系列距離閾值報告結果。",
+      "evidence_text": "For clustering, we followed the approach described by Padmakumar and He (2024), which involved\nusing Scikit-learn’s implementation of agglomerative clustering (Pedregosa et al., 2011). Clusters\nwere merged through “complete” linkage, meaning they were combined only if the maximum dis-\ntance between their farthest points was less than or equal to a predefined distance threshold. The\ndistance metric used was 1 − ROUGE-L. Since the distance threshold influences the number of\nclusters, we report results across a range of thresholds.",
+      "location": {
+        "section": "4.2 Experiment 2",
+        "page": 1,
+        "table": null,
+        "figure": null
+      },
+      "claim_type": "direct",
+      "citation": "[Edge et al., 2025, arXiv:2404.16130, Section 4]",
+      "section_id": "SEC-019",
+      "chapter_audit_status": "passed"
+    }
+  ],
+  "findings": []
+}

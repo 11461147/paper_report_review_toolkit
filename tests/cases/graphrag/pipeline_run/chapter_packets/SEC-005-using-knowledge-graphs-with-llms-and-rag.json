@@ -1,0 +1,63 @@
+{
+  "job_id": "CHAPTER-SEC-005-WRITE",
+  "context_policy": "fresh",
+  "paper": {
+    "paper_id": "arxiv:2404.16130",
+    "source_file": "/tmp/graphrag-2404.16130.pdf",
+    "source_type": "pdf",
+    "extractor": "automatic-multisyntax-v1",
+    "manual_correction_required": false,
+    "status": "complete",
+    "section_count": 40
+  },
+  "section": {
+    "section_id": "SEC-005",
+    "number": "2.2",
+    "title": "Using Knowledge Graphs with LLMs and RAG",
+    "level": 2,
+    "text": "Approaches to knowledge graph extraction from natural language text corpora include rule-\nmatching, statistical pattern recognition, clustering, and embeddings (Etzioni et al., 2004; Kim et al.,\n2016; Mooney and Bunescu, 2005; Yates et al., 2007). GraphRAG falls into a more recent body of\nresearch that use of LLMs for knowledge graph extraction (Ban et al., 2023; Melnyk et al., 2022;\nOpenAI, 2023; Tan et al., 2017; Trajanoska et al., 2023; Yao et al., 2023; Yates et al., 2007; Zhang\net al., 2024a). It also adds to a growing body of RAG approaches that use a knowledge graph as\nan index (Gao et al., 2023). Some techniques use subgraphs, elements of the graph, or properties\nof the graph structure directly in the prompt (Baek et al., 2023; He et al., 2024; Zhang, 2023)\nor as factual grounding for generated outputs (Kang et al., 2023; Ranade and Joshi, 2023). Other\ntechniques (Wang et al., 2023b) use the knowledge graph to enhance retrieval, where at query time\nan LLM-based agent dynamically traverses a graph with nodes representing document elements\n(e.g., passages, tables) and edges encoding lexical and semantical similarity or structural relation-\nships. GraphRAG contrasts with these approaches by focusing on a previously unexplored quality of\ngraphs in this context: their inherent modularity (Newman, 2006) and the ability to partition graphs\ninto nested modular communities of closely related nodes (e.g., Louvain, Blondel et al. 2008; Lei-\nden, Traag et al. 2019). Specifically, GraphRAG recursively creates increasingly global summaries\nby using the LLM to create summaries spanning this community hierarchy.",
+    "start_line": 132,
+    "end_line": 151,
+    "page_start": 1,
+    "page_end": 1,
+    "heading_confidence": 0.82,
+    "detection_source": [
+      "numbering",
+      "line-layout"
+    ]
+  },
+  "instructions": [
+    "Analyze only the supplied section text.",
+    "Do not use results or facts absent from this section.",
+    "Every factual claim must include an exact evidence_text quote and location.",
+    "Do not write the paper-wide conclusion; chapter_conclusion is limited to this section.",
+    "Return JSON only and conform to output_schema."
+  ],
+  "output_schema": {
+    "section_id": "SEC-NNN",
+    "chapter_purpose": "string",
+    "chapter_summary": "string",
+    "claims": [
+      {
+        "claim_id": "SEC-NNN-CLM-NNN",
+        "text": "string",
+        "evidence_text": "exact quote",
+        "location": {
+          "section": "string",
+          "page": "integer|null",
+          "table": "string|null",
+          "figure": "string|null"
+        },
+        "claim_type": "direct|numeric|inference",
+        "citation": "string"
+      }
+    ],
+    "methods": [],
+    "numeric_evidence": [],
+    "tables_and_figures": [],
+    "limitations": [],
+    "links_to_other_sections": [],
+    "chapter_conclusion": "string"
+  },
+  "expected_output": "chapter_reports/SEC-005.json"
+}

@@ -36,6 +36,8 @@ import argparse
 import html
 import json
 import re
+import shutil
+import subprocess
 import sys
 import urllib.error
 import urllib.parse
@@ -45,7 +47,7 @@ from pathlib import Path
 
 
 DEFAULT_THRESHOLD = 80.0
-MIN_REPORT_CHARS = 600
+MIN_REPORT_CHARS = 2000
 MIN_CLAIMS = 3
 MIN_CITED_CLAIMS = 1
 MIN_CITATION_SUPPORT_RATE = 35.0
@@ -83,7 +85,7 @@ CITATION_PATTERNS = [
 
 CLAIM_SPLIT_RE = re.compile(r"(?<=[。！？；;.!?])\s+|\n+")
 HEADING_RE = re.compile(r"^(#{1,6})\s+(.+)$", re.MULTILINE)
-NUMBER_RE = re.compile(r"(?<![\w.])(?:\d+(?:\.\d+)?%?|\d+x|[1-9]\d{3})(?![\w.])", re.IGNORECASE)
+NUMBER_RE = re.compile(r"(?<![\w.])(?:\d+(?:\.\d+)?%?|\d+x|[1-9]\d{3})(?!\w|\.\d)", re.IGNORECASE)
 URL_RE = re.compile(r"https?://[^\s\])>\"']+")
 DOI_RE = re.compile(r"\b10\.\d{4,9}/[-._;()/:A-Z0-9]+\b", re.IGNORECASE)
 ARXIV_RE = re.compile(r"\b(?:arXiv:)?(\d{4}\.\d{4,5})(?:v\d+)?\b", re.IGNORECASE)
@@ -218,6 +220,29 @@ def read_text(path: Path) -> str:
         except UnicodeDecodeError:
             continue
     return path.read_text(errors="replace")
+
+
+def read_source_text(path: Path) -> str:
+    """Read source text, converting PDF input through pdftotext by default."""
+    if path.suffix.lower() != ".pdf":
+        return read_text(path)
+
+    executable = shutil.which("pdftotext")
+    if not executable:
+        raise RuntimeError(
+            "PDF source requires pdftotext. Install Poppler, or convert the PDF "
+            "to UTF-8 text and pass that file with --source."
+        )
+
+    completed = subprocess.run(
+        [executable, "-layout", str(path), "-"],
+        capture_output=True,
+        check=False,
+    )
+    if completed.returncode != 0:
+        error = completed.stderr.decode("utf-8", errors="replace").strip()
+        raise RuntimeError("Unable to extract PDF source text: {}".format(error or "pdftotext failed"))
+    return completed.stdout.decode("utf-8", errors="replace")
 
 
 def has_citation(text: str) -> bool:
@@ -1740,7 +1765,11 @@ def append_audit(path: Path, result: dict) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser(description="Audit a paper report before final delivery.")
     parser.add_argument("report", type=Path, help="Markdown report path")
-    parser.add_argument("--source", type=Path, help="Optional source text extracted from paper")
+    parser.add_argument(
+        "--source",
+        type=Path,
+        help="Optional paper source (.pdf is converted with pdftotext; text/Markdown is read directly)",
+    )
     parser.add_argument("--threshold", type=float, default=DEFAULT_THRESHOLD)
     parser.add_argument("--json-out", type=Path, help="Write audit JSON to this path")
     parser.add_argument("--check-links", action="store_true", help="Check URL reachability with HTTP requests")
@@ -1791,7 +1820,10 @@ def main() -> int:
     args = parser.parse_args()
 
     report = read_text(args.report)
-    source = read_text(args.source) if args.source else ""
+    try:
+        source = read_source_text(args.source) if args.source else ""
+    except RuntimeError as exc:
+        parser.error(str(exc))
     result = audit_report(
         report,
         source=source,

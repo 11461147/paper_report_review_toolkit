@@ -1,0 +1,63 @@
+{
+  "job_id": "CHAPTER-SEC-032-WRITE",
+  "context_policy": "fresh",
+  "paper": {
+    "paper_id": "arxiv:2404.16130",
+    "source_file": "/tmp/graphrag-2404.16130.pdf",
+    "source_type": "pdf",
+    "extractor": "automatic-multisyntax-v1",
+    "manual_correction_required": false,
+    "status": "complete",
+    "section_count": 40
+  },
+  "section": {
+    "section_id": "SEC-032",
+    "number": "",
+    "title": "References",
+    "level": 1,
+    "text": "Achiam, J., Adler, S., Agarwal, S., Ahmad, L., Akkaya, I., Aleman, F. L., Almeida, D., Al-\n  tenschmidt, J., Altman, S., Anadkat, S., et al. (2023). Gpt-4 technical report. arXiv preprint\n  arXiv:2303.08774.\n\n\n                                                12\n\nAnil, R., Borgeaud, S., Wu, Y., Alayrac, J.-B., Yu, J., Soricut, R., Schalkwyk, J., Dai, A. M.,\n  Hauth, A., et al. (2023). Gemini: a family of highly capable multimodal models. arXiv preprint\n  arXiv:2312.11805.\n\nBaek, J., Aji, A. F., and Saffari, A. (2023). Knowledge-augmented language model prompting for\n  zero-shot knowledge graph question answering. arXiv preprint arXiv:2306.04136.\n\nBan, T., Chen, L., Wang, X., and Chen, H. (2023). From query tools to causal architects: Harnessing\n  large language models for advanced causal discovery from data.\n\nBarlaug, N. and Gulla, J. A. (2021). Neural networks for entity matching: A survey. ACM Transac-\n  tions on Knowledge Discovery from Data (TKDD), 15(3):1–37.\n\nBaumel, T., Eyal, M., and Elhadad, M. (2018). Query focused abstractive summarization: Incorpo-\n  rating query relevance, multi-document coverage, and summary length constraints into seq2seq\n  models. arXiv preprint arXiv:1801.07704.\n\nBlondel, V. D., Guillaume, J.-L., Lambiotte, R., and Lefebvre, E. (2008). Fast unfolding of\n  communities in large networks. Journal of statistical mechanics: theory and experiment,\n  2008(10):P10008.\n\nBrown, T., Mann, B., Ryder, N., Subbiah, M., Kaplan, J. D., Dhariwal, P., Neelakantan, A., Shyam,\n  P., Sastry, G., Askell, A., et al. (2020). Language models are few-shot learners. Advances in\n  neural information processing systems, 33:1877–1901.\n\nCheng, X., Luo, D., Chen, X., Liu, L., Zhao, D., and Yan, R. (2024). Lift yourself up: Retrieval-\n  augmented text generation with self-memory. Advances in Neural Information Processing Sys-\n  tems, 36.\n\nChristen, P. and Christen, P. (2012). The data matching process. Springer.\n\nChung, J., Pedigo, B. D., Bridgeford, E. W., Varjavand, B. K., Helm, H. S., and Vogelstein, J. T.\n  (2019). Graspy: Graph statistics in python. Journal of Machine Learning Research, 20(158):1–7.\n\nDang, H. T. (2006). Duc 2005: Evaluation of question-focused summarization systems. In Proceed-\n  ings of the Workshop on Task-Focused Summarization and Question Answering, pages 48–55.\n\nElmagarmid, A. K., Ipeirotis, P. G., and Verykios, V. S. (2006). Duplicate record detection: A\n  survey. IEEE Transactions on knowledge and data engineering, 19(1):1–16.\n\nEs, S., James, J., Espinosa-Anke, L., and Schockaert, S. (2023). Ragas: Automated evaluation of\n  retrieval augmented generation. arXiv preprint arXiv:2309.15217.\n\nEtzioni, O., Cafarella, M., Downey, D., Kok, S., Popescu, A.-M., Shaked, T., Soderland, S., Weld,",
+    "start_line": 705,
+    "end_line": 756,
+    "page_start": 1,
+    "page_end": 1,
+    "heading_confidence": 0.88,
+    "detection_source": [
+      "standard-title",
+      "line-layout"
+    ]
+  },
+  "instructions": [
+    "Analyze only the supplied section text.",
+    "Do not use results or facts absent from this section.",
+    "Every factual claim must include an exact evidence_text quote and location.",
+    "Do not write the paper-wide conclusion; chapter_conclusion is limited to this section.",
+    "Return JSON only and conform to output_schema."
+  ],
+  "output_schema": {
+    "section_id": "SEC-NNN",
+    "chapter_purpose": "string",
+    "chapter_summary": "string",
+    "claims": [
+      {
+        "claim_id": "SEC-NNN-CLM-NNN",
+        "text": "string",
+        "evidence_text": "exact quote",
+        "location": {
+          "section": "string",
+          "page": "integer|null",
+          "table": "string|null",
+          "figure": "string|null"
+        },
+        "claim_type": "direct|numeric|inference",
+        "citation": "string"
+      }
+    ],
+    "methods": [],
+    "numeric_evidence": [],
+    "tables_and_figures": [],
+    "limitations": [],
+    "links_to_other_sections": [],
+    "chapter_conclusion": "string"
+  },
+  "expected_output": "chapter_reports/SEC-032.json"
+}
