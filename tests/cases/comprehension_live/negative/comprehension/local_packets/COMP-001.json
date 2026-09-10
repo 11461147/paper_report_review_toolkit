@@ -1,0 +1,110 @@
+{
+  "job_id": "COMP-001-LOCAL-RESOLUTION",
+  "context_policy": "fresh",
+  "report_hash": "53f879ad3b07b75fa5541efc0342f87dfca2ca365269170661658fcfc33a3f02",
+  "issue": {
+    "id": "COMP-001",
+    "claim_text": "模型使用 ζ_align = 0.3 計算最終分數。",
+    "expression": "ζ_align",
+    "reader_question": "ζ_align 代表什麼量或參數？",
+    "first_use_text": "模型使用 ζ_align = 0.3 計算最終分數。",
+    "first_use_heading": "方法",
+    "issue": "undefined",
+    "answered_in_report": false,
+    "answer_text": null,
+    "severity": "blocking"
+  },
+  "local_report_context": "## 方法\n\n模型使用 ζ_align = 0.3 計算最終分數。\n",
+  "candidate_source_passages": [
+    {
+      "passage_id": "SEC-001-P001",
+      "section_id": "SEC-001",
+      "section_number": "2",
+      "section_title": "Method",
+      "page_start": 2,
+      "page_end": 2,
+      "text": "The model computes a final score. The paper does not define any alignment parameter."
+    }
+  ],
+  "instructions": [
+    "Decide whether the supplied report context already answers the reader question.",
+    "If source evidence supplies a missing definition, quote evidence_text exactly and identify passage_id.",
+    "Never answer from outside knowledge; missing evidence must remain unresolved.",
+    "Recommend keep, rewrite, delete, or mark_source_undefined. Do not edit the report."
+  ],
+  "output_schema": {
+    "id": "COMP-001",
+    "status": "resolved|unresolved",
+    "answer_from": "report|source|none",
+    "definition": "string|null",
+    "evidence_text": "exact quote|null",
+    "passage_id": "string|null",
+    "action": "keep|rewrite|delete|mark_source_undefined",
+    "reason": "string"
+  },
+  "json_schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "id": {
+        "type": "string"
+      },
+      "status": {
+        "type": "string",
+        "enum": [
+          "resolved",
+          "unresolved"
+        ]
+      },
+      "answer_from": {
+        "type": "string",
+        "enum": [
+          "report",
+          "source",
+          "none"
+        ]
+      },
+      "definition": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "evidence_text": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "passage_id": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "action": {
+        "type": "string",
+        "enum": [
+          "keep",
+          "rewrite",
+          "delete",
+          "mark_source_undefined"
+        ]
+      },
+      "reason": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "id",
+      "status",
+      "answer_from",
+      "definition",
+      "evidence_text",
+      "passage_id",
+      "action",
+      "reason"
+    ]
+  },
+  "expected_output": "comprehension/local_verdicts/COMP-001.json"
+}

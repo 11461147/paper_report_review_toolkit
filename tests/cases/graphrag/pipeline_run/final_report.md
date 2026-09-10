@@ -1,6 +1,6 @@
 # GraphRAG 跨章證據合成報告
 
-> 論文識別碼：`arxiv:2404.16130`。本報告只使用 synthesis packet 內已驗證的 claims；原始論文題名未包含於 packet，因此不另行補寫。
+> Edge 等人的 *From Local to Global: A Graph RAG Approach to Query-Focused Summarization*，arXiv:2404.16130v2。
 
 ## Abstract
 
@@ -67,3 +67,95 @@ LLM 與 claim-based 評估並非完全一致：只看彙整後 LLM 標籤非 tie
 證據也揭示三項不可忽略的平衡。第一，SS 的 directness 較佳，所以更完整、更多樣不等同於在每個品質維度都勝出。[Edge et al., 2025, arXiv:2404.16130, Section 5]（SEC-024-CLM-003、SEC-024-CLM-004）第二，GraphRAG 與無圖 TS 在 claim-based comprehensiveness、diversity 上未呈現統計顯著差異，因而不能把全域方法的所有收益都單獨歸因於知識圖；圖索引較明確的價值線索是預先社群摘要及其 token 節省，但因果歸因仍受現有比較限制。（SEC-024-CLM-005、SEC-024-CLM-006、SEC-024-CLM-009）第三，News diversity 只有 C0 能跨全部距離閾值顯著勝過 SS，而且兩種標籤的一致率不是完全一致，說明部分結果依賴資料集、閾值與評估方法。（SEC-024-CLM-008、SEC-024-CLM-010）後兩句均為由已驗證結果作出的限制性跨章推論。
 
 因此，最安全的實務定位是：當任務要求對同一大型語料進行多次全域意義建構查詢時，可將 GraphRAG 視為有實證支持的候選索引與摘要架構；若任務偏局部、重視回答直接性，或領域與現有兩個語料差異很大，則現有 registry 沒有足夠證據宣稱它必然優於向量 RAG。（SEC-024-CLM-004、SEC-027-CLM-001、SEC-030-CLM-003）。部署時仍應揭露 AI 與錯誤風險，並補充 fabrication、跨領域泛化及局部／混合檢索的評估。[Edge et al., 2025, arXiv:2404.16130, Section 6]（SEC-027-CLM-001、SEC-027-CLM-002、SEC-027-CLM-004、SEC-027-CLM-006、SEC-027-CLM-007）
+
+---
+
+# 讀者導向綜合報告
+
+## 📌 一句話總結
+
+GraphRAG 將大型語料先轉成實體關係圖與階層式社群摘要，再以 map-reduce 回答需要理解整份語料的全域問題；在本文限定的兩個約百萬 token 資料集與評估設定中，它提升了答案的 comprehensiveness 與 diversity，但沒有證明對所有查詢或品質面向都優於向量式 RAG。[Edge et al., 2025, arXiv:2404.16130, Abstract] [Edge et al., 2025, arXiv:2404.16130, Sections 5–6]
+
+## 🧭 論文定位與研究問題
+
+論文關注的不是「找出一段與問題最相似的文字」，而是「如何根據整個私人或未見過的大型語料，回答需要理解整體大型語料的 global sensemaking 問題」。作者指出，傳統向量式 RAG 適合答案集中在少量局部紀錄的情況；當問題要求概括整體語料時，任務更接近 query-focused summarization，而既有方法又難以擴展到典型 RAG 的資料量。[Edge et al., 2025, arXiv:2404.16130, Abstract] [Edge et al., 2025, arXiv:2404.16130, Sections 1–2]
+
+## 📖 詳細原理解說
+
+逐章證據顯示，GraphRAG 的核心是把全文處理拆成離線索引與線上回答。離線階段先切分文件，以語言模型抽取實體、關係及描述，聚合成知識圖；接著遞迴套用 Leiden community detection，形成由粗到細的階層式社群，並為各層社群預先產生摘要。[Edge et al., 2025, arXiv:2404.16130, Section 3]
+
+線上階段收到問題後，系統將社群摘要分批送進模型。map 階段對每批摘要產生部分答案與 helpfulness 分數，分數為零的答案被過濾；reduce 階段依 helpfulness 排序，在 context window 容量內組合較有用的部分答案，形成最後的 global answer。[Edge et al., 2025, arXiv:2404.16130, Sections 1 and 3]
+
+## 🎨 ASCII 圖解
+
+```text
+來源 PDF／文件
+      │
+      ▼
+文字切塊 ──► 實體、關係、描述抽取
+      │
+      ▼
+   知識圖譜
+      │
+      ▼
+Leiden 階層社群
+      │
+      ▼
+各層社群摘要（離線建立）
+      │
+使用者全域問題
+      │
+      ▼
+Map：各批摘要產生部分答案＋helpfulness
+      │
+      ▼
+Reduce：排序、過濾、彙整
+      │
+      ▼
+全域回答
+```
+
+此圖只重述已驗證的方法流程，不表示每個中間步驟都已由獨立消融實驗證明其因果貢獻。[Edge et al., 2025, arXiv:2404.16130, Sections 1 and 3]
+
+## 📐 數學公式
+
+本文評估中的兩個 claim-based 指標可用操作性形式表示：
+
+```text
+Comprehensiveness(answer) = 該回答抽取出的 claim 數
+Diversity(answer) = 該回答內 claim clusters 數
+```
+
+作者以 Claimify 抽取並去除回答內重複 claims，再用 agglomerative clustering、complete linkage 與 `1 − ROUGE-L` 距離形成 clusters；兩項指標都以數值較高代表表現較好。[Edge et al., 2025, arXiv:2404.16130, Section 4]
+
+## ⚙️ 實作細節
+
+切塊大小存在成本與召回率取捨：較長 chunk 減少語言模型抽取呼叫，卻可能降低位於 chunk 前段資訊的召回。本文實驗中的 Podcast 語料被切成 1669 個 600-token chunks，相鄰重疊 100 tokens；News 語料為 3197 個 600-token chunks，同樣重疊 100 tokens。community summaries、community answers 與 global answers 使用固定 8k-token context window。[Edge et al., 2025, arXiv:2404.16130, Sections 3–4]
+
+問題生成使用角色、任務與問題的階段式程序。`K` 表示假想使用者數，`N` 表示每位使用者的任務數，`M` 表示每組「使用者—任務」配對所生成的問題數；作者設定 `K = N = M = 5`，因此每個資料集得到 `K × N × M = 125` 個測試問題。由於沒有 gold-standard answers，作者採 LLM evaluator 對競爭答案作 head-to-head 比較。[Edge et al., 2025, arXiv:2404.16130, Section 3]
+
+## 🧪 實驗設計與結果
+
+實驗比較 GraphRAG 的 C0、C1、C2、C3 四個社群層級、直接對原文作 map-reduce 的 text summarization，以及向量 RAG semantic search。所有條件使用相同 context-window 大小與回答 prompts，差別主要在 context 如何建立。[Edge et al., 2025, arXiv:2404.16130, Section 4]
+
+結果必須分指標解讀：全域方法在 comprehensiveness 與 diversity 上優於 semantic search，但 semantic search 的 directness 較佳。相較 TS，C3 少用 26–33% context tokens，C0 少用逾 97%，但這些 token 降幅不表示統計顯著性；然而 GraphRAG global search 與無圖 text summarization 在 claim-based comprehensiveness、diversity 上沒有統計顯著差異，因此現有結果不足以把全部收益單獨歸因於知識圖。[Edge et al., 2025, arXiv:2404.16130, Section 5]
+
+## ✅ 優缺點分析
+
+優點是它把全域語料理解轉換成可預先計算的階層摘要索引，適合對同一資料集重複提出全域問題；方法同時保留不同社群層級，使細節與涵蓋範圍可以調整。實驗也提供 comprehensiveness、diversity、directness 與 token 使用等多角度比較。[Edge et al., 2025, arXiv:2404.16130, Sections 3–5]
+
+缺點是索引需要語言模型執行抽取與摘要，chunk 大小會形成成本和資訊召回的取捨。評估依賴 LLM 相對判斷，且 LLM 與 claim-based 評估並非完全一致；本文也沒有證明知識圖是相對無圖全域摘要取得品質差異的唯一原因。[Edge et al., 2025, arXiv:2404.16130, Sections 3–6]
+
+## 💡 適用場景建議
+
+對同一資料集的大量全域查詢，GraphRAG 根層摘要可作為候選索引。對只需少量局部事實或高度直接回答的問題，現有證據不足以宣稱 GraphRAG 必然優於向量式 RAG；局部與混合路徑應視為待評估方向。[Edge et al., 2025, arXiv:2404.16130, Sections 5–7]
+
+## 限制、風險與未來方向
+
+本文只評估兩個各約百萬 token 的語料及其特定 sensemaking 問題，不能直接外推至任意領域、任意查詢或任意資料規模。作者沒有比較 fabrication rates，並建議未來可加入 SelfCheckGPT 類檢查。其他方向包括以 embedding 匹配圖註釋的局部 RAG、結合即時社群報告的混合流程、跨層 roll-up，以及沿摘要線索向下探索的 drill-down。[Edge et al., 2025, arXiv:2404.16130, Section 6]
+
+部署風險不只是答案品質：若系統把局部事實錯誤表述為整體結論，可能影響後續 sensemaking 與決策。因此介面應揭露 AI 參與與錯誤可能性，並保留 evidence passage、section、claim ID 與 audit status，讓結論可以回查。[Edge et al., 2025, arXiv:2404.16130, Section 6]
+
+## 📚 參考來源
+
+- Edge, D., Trinh, H., Cheng, N., et al. (2025). *From Local to Global: A Graph RAG Approach to Query-Focused Summarization*. arXiv:2404.16130v2. https://arxiv.org/abs/2404.16130

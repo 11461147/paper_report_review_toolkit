@@ -1,0 +1,17 @@
+{
+  "report_hash": "53f879ad3b07b75fa5541efc0342f87dfca2ca365269170661658fcfc33a3f02",
+  "jobs": [
+    {
+      "job_id": "COMP-001-LOCAL-RESOLUTION",
+      "packet": "comprehension/local_packets/COMP-001.json",
+      "output": "comprehension/local_verdicts/COMP-001.json",
+      "context_policy": "fresh"
+    },
+    {
+      "job_id": "COMP-002-LOCAL-RESOLUTION",
+      "packet": "comprehension/local_packets/COMP-002.json",
+      "output": "comprehension/local_verdicts/COMP-002.json",
+      "context_policy": "fresh"
+    }
+  ]
+}

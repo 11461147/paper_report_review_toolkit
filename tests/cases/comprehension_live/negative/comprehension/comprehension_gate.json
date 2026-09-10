@@ -1,0 +1,32 @@
+{
+  "passed": false,
+  "report_hash": "53f879ad3b07b75fa5541efc0342f87dfca2ca365269170661658fcfc33a3f02",
+  "reasons": [
+    "local comprehension issues remain unresolved"
+  ],
+  "unresolved_count": 2,
+  "unresolved": [
+    {
+      "id": "COMP-001",
+      "status": "unresolved",
+      "answer_from": "none",
+      "definition": null,
+      "evidence_text": "The paper does not define any alignment parameter.",
+      "passage_id": "SEC-001-P001",
+      "action": "mark_source_undefined",
+      "reason": "報告僅提供 ζ_align 的數值與用途，未說明其代表的量或參數；來源段落亦明確表示論文未定義任何 alignment parameter，因此不能在缺乏證據下補寫定義。",
+      "validation_errors": []
+    },
+    {
+      "id": "COMP-002",
+      "status": "unresolved",
+      "answer_from": "source",
+      "definition": "來源僅指出論文未定義任何 alignment parameter，因此無法確定 ζ_align = 0.3 在最終分數計算中是權重、閾值或其他角色。",
+      "evidence_text": "The paper does not define any alignment parameter.",
+      "passage_id": "SEC-001-P001",
+      "action": "mark_source_undefined",
+      "reason": "報告只宣稱 ζ_align = 0.3 用於計算最終分數，未說明兩者關係；來源亦明確表示未定義 alignment parameter，故問題無法解答，應標記為來源未定義。",
+      "validation_errors": []
+    }
+  ]
+}

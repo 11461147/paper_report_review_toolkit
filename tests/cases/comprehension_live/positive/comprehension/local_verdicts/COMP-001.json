@@ -1,0 +1,11 @@
+{
+  "id": "COMP-001",
+  "status": "resolved",
+  "answer_from": "source",
+  "definition": "K 代表使用者數量，N 代表每位使用者的任務數量，M 代表每個（使用者、任務）組合的問題數量。",
+  "evidence_text": "Input: Description of a corpus, number of users K, number of tasks per user N, number of questions per (user, task) combination M. Output: A set of K * N * M high-level questions. For our evaluation, we set K = M = N = 5 for a total of 125 test questions per dataset.",
+  "passage_id": "SEC-001-P001",
+  "action": "rewrite",
+  "reason": "報告只提供 K、N、M 的數值，未定義其含義；來源段落明確定義三個變數，應重寫首次出現處以補充定義。",
+  "validation_errors": []
+}

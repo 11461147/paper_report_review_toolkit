@@ -148,6 +148,12 @@ PDF 與 metadata
 - 每個跨章結論必須列出 supporting claim IDs，區分直接證據與 reviewer inference，並保留 dataset、task、method、metric、baseline 與實驗條件等 scope。
 - L3a 先正規化 premises/conclusion/scope/inference rule；L3b 再審查推論有效性。L3 只處理跨章合成、比較、因果、泛化與實務建議，不審查單純方法轉述、公式定義、直接表格數字或 References。
 - L1 分數不得由模型改寫；任一 L2/L3 blocking verdict 都必須阻止 final review，直到改寫、補證據或刪除主張後重跑。
+- 最終 Markdown 先保留依原論文章節撰寫的逐章報告，然後在文末依序加入：`📌 一句話總結`、`🧭 論文定位與研究問題`、`📖 詳細原理解說`、`🎨 ASCII 圖解`、`📐 數學公式`、`⚙️ 實作細節`、`🧪 實驗設計與結果`、`✅ 優缺點分析`、`💡 適用場景建議`、`限制、風險與未來方向`、`📚 參考來源`。
+- 文末綜合章節仍只能使用 verified claim registry；完成後必須再次執行 L1、L2、L3 與 final review，不得因逐章報告已通過而略過最終審查。
+- 在 L2/L3 前執行兩階段 open-world comprehension audit：先讓全新 context 只讀完整報告，動態找出理解任何重要主張仍需回答的問題，不得依賴預設術語名單；再為每個缺口建立只含首次出現、局部上下文與候選原文 passages 的隔離 resolution job。
+- Resolution 不得用模型常識補定義；答案必須來自報告既有文字或可逐字驗證的來源 passage。修正文稿後必須再由全新 context 完整閱讀最終報告，任何未回答的符號意義、縮寫、數值關係、baseline、metric、dataset、方法角色或 scope 都是 blocking finding。
+- 校準 comprehension blocking：只有缺漏會實質改變主張意義、數值關係、比較或明示 scope 時才阻擋；不得要求理解該句所不需要的完整背景、資料集 provenance、普通詞定義或實作細節，也不得在最低必要定義已補齊後遞迴創造新問題。額外深度只能標 warning。
+- 不得把 prompt、packet、schema、mock 或人工代跑當成模型能力驗證。宣稱工具通過前，必須從使用者實際 CLI/API 入口呼叫真實 backend 跑正反 golden cases，分別驗證可修正案例能 closure、無來源定義案例會 fail closed，並保存 run artifacts。
 
 ## 工具使用規則
 

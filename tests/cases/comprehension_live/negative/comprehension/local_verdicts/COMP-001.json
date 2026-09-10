@@ -1,0 +1,11 @@
+{
+  "id": "COMP-001",
+  "status": "unresolved",
+  "answer_from": "none",
+  "definition": null,
+  "evidence_text": "The paper does not define any alignment parameter.",
+  "passage_id": "SEC-001-P001",
+  "action": "mark_source_undefined",
+  "reason": "報告僅提供 ζ_align 的數值與用途，未說明其代表的量或參數；來源段落亦明確表示論文未定義任何 alignment parameter，因此不能在缺乏證據下補寫定義。",
+  "validation_errors": []
+}

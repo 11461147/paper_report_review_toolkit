@@ -900,7 +900,22 @@
     "Cite supporting claim_ids for every conclusion.",
     "Separate direct evidence from cross-chapter inference.",
     "Preserve dataset, method, metric, baseline, and experimental scope.",
-    "Report contradictions and unavailable evidence; do not invent missing facts."
+    "Report contradictions and unavailable evidence; do not invent missing facts.",
+    "Write the original paper-section reports first, then append final_report_sections in the exact order given.",
+    "The appended sections are the reader-facing synthesis and must be audited after generation."
+  ],
+  "final_report_sections": [
+    "📌 一句話總結",
+    "🧭 論文定位與研究問題",
+    "📖 詳細原理解說",
+    "🎨 ASCII 圖解",
+    "📐 數學公式",
+    "⚙️ 實作細節",
+    "🧪 實驗設計與結果",
+    "✅ 優缺點分析",
+    "💡 適用場景建議",
+    "限制、風險與未來方向",
+    "📚 參考來源"
   ],
   "output_schema": {
     "paper_summary": "string",
@@ -917,7 +932,27 @@
       }
     ],
     "unsupported_or_unknown": [],
-    "overall_limitations": []
+    "overall_limitations": [],
+    "final_report": {
+      "path": "final_report.md",
+      "minimum_chars": 2000,
+      "required_sections": [
+        "📌 一句話總結",
+        "🧭 論文定位與研究問題",
+        "📖 詳細原理解說",
+        "🎨 ASCII 圖解",
+        "📐 數學公式",
+        "⚙️ 實作細節",
+        "🧪 實驗設計與結果",
+        "✅ 優缺點分析",
+        "💡 適用場景建議",
+        "限制、風險與未來方向",
+        "📚 參考來源"
+      ]
+    }
   },
-  "expected_output": "synthesis_report.json"
+  "expected_output": [
+    "synthesis_report.json",
+    "final_report.md"
+  ]
 }

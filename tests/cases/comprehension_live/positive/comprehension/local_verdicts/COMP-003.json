@@ -1,0 +1,11 @@
+{
+  "id": "COMP-003",
+  "status": "resolved",
+  "answer_from": "source",
+  "definition": "K 是使用者數量，N 是每位使用者的任務數量，M 是每個（使用者、任務）組合的問題數量；共有 K×N 個（使用者、任務）組合，每個組合產生 M 個問題，因此總數為 K×N×M。當 K=N=M=5 時，總數為 125。",
+  "evidence_text": "Input: Description of a corpus, number of users K, number of tasks per user N, number of questions per (user, task) combination M. Output: A set of K * N * M high-level questions. For our evaluation, we set K = M = N = 5 for a total of 125 test questions per dataset.",
+  "passage_id": "SEC-001-P001",
+  "action": "rewrite",
+  "reason": "報告只陳述參數值與結果，未解釋乘法關係；來源明確定義 K、N、M，並指出輸出問題數為 K×N×M，因此應改寫以補充各維度逐層組合的計數邏輯。",
+  "validation_errors": []
+}

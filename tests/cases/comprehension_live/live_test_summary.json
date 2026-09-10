@@ -1,0 +1,19 @@
+{
+  "entrypoint": "python3 tools/paper_pipeline.py run-comprehension",
+  "backend": "codex exec --ephemeral --sandbox read-only",
+  "positive_case": {
+    "input_issue": "K, N, M and 125 were unexplained",
+    "expected": "grounded rewrite and closure",
+    "passed": true,
+    "exit_code": 0,
+    "unresolved_count": 0
+  },
+  "negative_case": {
+    "input_issue": "zeta_align was undefined and absent from source evidence",
+    "expected": "no guessed definition and fail closed",
+    "passed": true,
+    "tool_exit_code": 2,
+    "final_gate_passed": false,
+    "report_unchanged": true
+  }
+}

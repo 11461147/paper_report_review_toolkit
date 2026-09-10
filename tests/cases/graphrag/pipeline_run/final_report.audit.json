@@ -1,23 +1,10 @@
 {
-  "passed": false,
+  "passed": true,
   "threshold": 80.0,
-  "final_score": 66.87,
+  "final_score": 90.17,
   "hard_gates": {
-    "passed": false,
-    "failures": [
-      {
-        "gate": "minimum_required_section_rate",
-        "message": "必要章節覆蓋率低於硬門檻 60.0%。",
-        "actual": 0.0,
-        "minimum": 60.0
-      },
-      {
-        "gate": "minimum_references",
-        "message": "參考來源區沒有可辨識文獻條目。",
-        "actual": 0,
-        "minimum": 1
-      }
-    ],
+    "passed": true,
+    "failures": [],
     "minimums": {
       "report_chars": 2000,
       "claims": 3,
@@ -28,15 +15,15 @@
     }
   },
   "scores": {
-    "evidence_score": 76.2,
-    "inference_score": 98.8,
-    "structure_score": 0.0,
-    "hallucination_score": 21.2,
-    "citation_support_rate": 96.0,
-    "unsupported_claim_rate": 4.0,
+    "evidence_score": 83.49,
+    "inference_score": 100.0,
+    "structure_score": 95.0,
+    "hallucination_score": 13.96,
+    "citation_support_rate": 78.43,
+    "unsupported_claim_rate": 3.92,
     "high_risk_inference_rate": 0.0,
-    "numeric_error_rate": 24.0,
-    "required_section_rate": 0.0,
+    "numeric_error_rate": 15.0,
+    "required_section_rate": 100.0,
     "link_error_rate": 0.0,
     "citation_metadata_mismatch_rate": 0.0,
     "citation_metadata_fetch_error_rate": 0.0,
@@ -44,14 +31,14 @@
     "reference_duplicate_rate": 0.0
   },
   "counts": {
-    "claims": 25,
-    "cited_claims": 24,
-    "unsupported_claims": 1,
+    "claims": 51,
+    "cited_claims": 40,
+    "unsupported_claims": 2,
     "high_risk_inference_claims": 0,
-    "number_claims": 25,
+    "number_claims": 40,
     "numeric_mismatches": 6,
-    "missing_sections": 10,
-    "urls": 0,
+    "missing_sections": 0,
+    "urls": 1,
     "citation_metadata_checked": 0,
     "citation_metadata_mismatches": 0,
     "citation_metadata_fetch_errors": 0,
@@ -59,30 +46,21 @@
     "arxiv_ids": 1,
     "tables": 0,
     "bad_tables": 0,
-    "references": 0,
+    "references": 1,
     "duplicate_references": 0,
     "undefined_acronyms": 50,
-    "vague_strong_words": 2,
-    "findings": 26
+    "vague_strong_words": 4,
+    "findings": 18
   },
-  "missing_sections": [
-    "📌 一句話總結",
-    "🧭 論文定位與研究問題",
-    "📖 詳細原理解說",
-    "🎨 ASCII 圖解",
-    "📐 數學公式",
-    "⚙️ 實作細節",
-    "🧪 實驗設計與結果",
-    "✅ 優缺點分析",
-    "💡 適用場景建議",
-    "📚 參考來源"
-  ],
+  "missing_sections": [],
   "deterministic_checks": {
     "mojibake_markers": [],
     "query_matrix_present": false,
-    "section_count": 10,
-    "url_count": 0,
-    "urls": [],
+    "section_count": 22,
+    "url_count": 1,
+    "urls": [
+      "https://arxiv.org/abs/2404.16130"
+    ],
     "url_status": [],
     "citation_metadata_verification_enabled": false,
     "citation_metadata": [],
@@ -95,29 +73,31 @@
     "arxiv_ids": [
       "2404.16130"
     ],
-    "arxiv_urls_missing": [
-      "2404.16130"
-    ],
+    "arxiv_urls_missing": [],
     "table_count": 0,
     "bad_tables": [],
-    "reference_count": 0,
+    "reference_count": 1,
     "duplicate_references": [],
     "length": {
-      "chars": 8062,
-      "words": 576,
-      "section_count": 10,
+      "chars": 12033,
+      "words": 991,
+      "section_count": 22,
       "short_sections": [
         {
           "section": "GraphRAG 跨章證據合成報告",
-          "chars": 94
+          "chars": 110
+        },
+        {
+          "section": "讀者導向綜合報告",
+          "chars": 2
         }
       ]
     },
     "language_ratio": {
-      "cjk_chars": 2532,
-      "latin_chars": 2740,
-      "chinese_ratio": 48.03,
-      "english_ratio": 51.97
+      "cjk_chars": 3775,
+      "latin_chars": 4217,
+      "chinese_ratio": 47.23,
+      "english_ratio": 52.77
     },
     "vague_strong_words": [
       {
@@ -127,6 +107,14 @@
       {
         "word": "完全",
         "context": "obal search 與 TS 間，都未觀察到統計顯著差異。[Edge et al., 2025, arXiv:2404.16130, Section 5]（SEC-024-CLM-009）  LLM 與 claim-based 評估並非完全一致：只看彙整後 LLM 標籤非 tie 的案例，該子集占 comprehensiveness 配對的 33%、diversity 的 39%；兩種標籤的一致率分別為 78% 與 69–70%。[Edge et al., 2025, arX"
+      },
+      {
+        "word": "必須",
+        "context": "tic search。所有條件使用相同 context-window 大小與回答 prompts，差別主要在 context 如何建立。[Edge et al., 2025, arXiv:2404.16130, Section 4]  結果必須分指標解讀：全域方法在 comprehensiveness 與 diversity 上優於 semantic search，但 semantic search 的 directness 較佳。相較 TS，C3 少用 26–33% conte"
+      },
+      {
+        "word": "證明",
+        "context": "大型語料先轉成實體關係圖與階層式社群摘要，再以 map-reduce 回答需要理解整份語料的全域問題；在本文限定的兩個約百萬 token 資料集與評估設定中，它提升了答案的 comprehensiveness 與 diversity，但沒有證明對所有查詢或品質面向都優於向量式 RAG。[Edge et al., 2025, arXiv:2404.16130, Abstract] [Edge et al., 2025, arXiv:2404.16130, Sections 5–6]"
       }
     ],
     "undefined_acronyms": [
@@ -135,6 +123,7 @@
       "C2",
       "C3",
       "GPT-4",
+      "ID",
       "QFS",
       "ROUGE-L",
       "SEC-001-CLM-001",
@@ -178,21 +167,19 @@
       "SEC-024-CLM-004",
       "SEC-024-CLM-005",
       "SEC-024-CLM-006",
-      "SEC-024-CLM-007",
-      "SEC-024-CLM-008"
+      "SEC-024-CLM-007"
     ],
     "source_number_check_enabled": true,
     "link_check_enabled": false
   },
   "reasoning_candidates": [
     {
-      "claim": "> 論文識別碼：`arxiv:2404.16130`。本報告只使用 synthesis packet 內已驗證的 claims；原始論文題名未包含於 packet，因此不另行補寫。",
+      "claim": "> Edge 等人的 *From Local to Global: A Graph RAG Approach to Query-Focused Summarization*，arXiv:2404.16130v2。",
       "has_citation": true,
       "risk_labels": [
-        "strong_or_causal_language",
-        "explicit_inference"
+        "cited_claim"
       ],
-      "context": "# GraphRAG 跨章證據合成報告  > 論文識別碼：`arxiv:2404.16130`。本報告只使用 synthesis packet 內已驗證的 claims；原始論文題名未包含於 packet，因此不另行補寫。  ## Abstract  本研究處理的核心落差是：傳統 RAG 能從外部知識來源擷取相關資訊，使大型語言模型回答私人或未見文件集合的問題，但當查詢要求概括整個語料庫時，問題已轉為 query-focused summarization（QFS），而非局部明確檢索；既有 QFS 又難以擴展到典型 RAG 的文本規模。[Edge et al., 2025, arXiv:2404.16130, Abstract]（SEC-001-CLM-",
+      "context": "# GraphRAG 跨章證據合成報告  > Edge 等人的 *From Local to Global: A Graph RAG Approach to Query-Focused Summarization*，arXiv:2404.16130v2。  ## Abstract  本研究處理的核心落差是：傳統 RAG 能從外部知識來源擷取相關資訊，使大型語言模型回答私人或未見文件集合的問題，但當查詢要求概括整個語料庫時，問題已轉為 query-focused summarization（QFS），而非局部明確檢索；既有 QFS 又難以擴展到典型 RAG 的文本規模。[Edge et al., 2025, arXiv:2404.16130, Abstract]（SEC-001-CLM-",
       "premise_extraction_instruction": "從 context 與 citation 句中抽出 P1/P2/P3；不得加入未提供的外部知識。"
     },
     {
@@ -201,7 +188,7 @@
       "risk_labels": [
         "cited_claim"
       ],
-      "context": "# GraphRAG 跨章證據合成報告  > 論文識別碼：`arxiv:2404.16130`。本報告只使用 synthesis packet 內已驗證的 claims；原始論文題名未包含於 packet，因此不另行補寫。  ## Abstract  本研究處理的核心落差是：傳統 RAG 能從外部知識來源擷取相關資訊，使大型語言模型回答私人或未見文件集合的問題，但當查詢要求概括整個語料庫時，問題已轉為 query-focused summarization（QFS），而非局部明確檢索；既有 QFS 又難以擴展到典型 RAG 的文本規模。[Edge et al., 2025, arXiv:2404.16130, Abstract]（SEC-001-CLM-001、SEC-001-CLM-002、SEC-001-CLM-003）  GraphRAG 因而被定位為可同時因應問題一般性與來源文本數量的圖式問答方法。其索引先由來源文件導出實體知識圖，再為密切相關的實體群組預先產生社群摘要；查詢時，各摘要先生成部分回答，再彙整為最終回答。[Edge et al., 2025, arXiv:2404.16130, Abstract]（SEC-001-CLM-004、SEC-001-CLM-005、SEC-001-CLM-006）摘要所報告的證據範圍是約一百萬 token",
+      "context": "# GraphRAG 跨章證據合成報告  > Edge 等人的 *From Local to Global: A Graph RAG Approach to Query-Focused Summarization*，arXiv:2404.16130v2。  ## Abstract  本研究處理的核心落差是：傳統 RAG 能從外部知識來源擷取相關資訊，使大型語言模型回答私人或未見文件集合的問題，但當查詢要求概括整個語料庫時，問題已轉為 query-focused summarization（QFS），而非局部明確檢索；既有 QFS 又難以擴展到典型 RAG 的文本規模。[Edge et al., 2025, arXiv:2404.16130, Abstract]（SEC-001-CLM-001、SEC-001-CLM-002、SEC-001-CLM-003）  GraphRAG 因而被定位為可同時因應問題一般性與來源文本數量的圖式問答方法。其索引先由來源文件導出實體知識圖，再為密切相關的實體群組預先產生社群摘要；查詢時，各摘要先生成部分回答，再彙整為最終回答。[Edge et al., 2025, arXiv:2404.16130, Abstract]（SEC-001-CLM-004、SEC-001-CLM-005、SEC-001-CLM-006）摘要所報告的證據範圍是約一百萬 token",
       "premise_extraction_instruction": "從 context 與 citation 句中抽出 P1/P2/P3；不得加入未提供的外部知識。"
     },
     {
@@ -429,105 +416,174 @@
         "explicit_inference",
         "direct_evidence_claim"
       ],
-      "context": "價值線索是預先社群摘要及其 token 節省，但因果歸因仍受現有比較限制。（SEC-024-CLM-005、SEC-024-CLM-006、SEC-024-CLM-009）第三，News diversity 只有 C0 能跨全部距離閾值顯著勝過 SS，而且兩種標籤的一致率不是完全一致，說明部分結果依賴資料集、閾值與評估方法。（SEC-024-CLM-008、SEC-024-CLM-010）後兩句均為由已驗證結果作出的限制性跨章推論。  因此，最安全的實務定位是：當任務要求對同一大型語料進行多次全域意義建構查詢時，可將 GraphRAG 視為有實證支持的候選索引與摘要架構；若任務偏局部、重視回答直接性，或領域與現有兩個語料差異很大，則現有 registry 沒有足夠證據宣稱它必然優於向量 RAG。（SEC-024-CLM-004、SEC-027-CLM-001、SEC-030-CLM-003）。部署時仍應揭露 AI 與錯誤風險，並補充 fabrication、跨領域泛化及局部／混合檢索的評估。[Edge et al., 2025, arXiv:2404.16130, Section 6]（SEC-027-CLM-001、SEC-027-CLM-002、SEC-027-CLM-004、SEC-027-CLM-006、SEC-027-CLM-007）",
+      "context": "價值線索是預先社群摘要及其 token 節省，但因果歸因仍受現有比較限制。（SEC-024-CLM-005、SEC-024-CLM-006、SEC-024-CLM-009）第三，News diversity 只有 C0 能跨全部距離閾值顯著勝過 SS，而且兩種標籤的一致率不是完全一致，說明部分結果依賴資料集、閾值與評估方法。（SEC-024-CLM-008、SEC-024-CLM-010）後兩句均為由已驗證結果作出的限制性跨章推論。  因此，最安全的實務定位是：當任務要求對同一大型語料進行多次全域意義建構查詢時，可將 GraphRAG 視為有實證支持的候選索引與摘要架構；若任務偏局部、重視回答直接性，或領域與現有兩個語料差異很大，則現有 registry 沒有足夠證據宣稱它必然優於向量 RAG。（SEC-024-CLM-004、SEC-027-CLM-001、SEC-030-CLM-003）。部署時仍應揭露 AI 與錯誤風險，並補充 fabrication、跨領域泛化及局部／混合檢索的評估。[Edge et al., 2025, arXiv:2404.16130, Section 6]（SEC-027-CLM-001、SEC-027-CLM-002、SEC-027-CLM-004、SEC-027-CLM-006、SEC-027-CLM-007）  ---  # 讀者導向綜合報告  ## 📌 一句話總結  GraphRAG 將大型語料先轉成實體關係圖與階層式社群摘要，再以 map-reduce 回答需要理解整份語料的全域問題；在本文限定的兩個約百萬 token 資料集與評估設定中，它提升了答案的 comprehensiveness 與 diversity，但沒有證明對所有查詢或品質面向都優於向量式 RAG。[Edge et al., 2025, arXiv:2404.16130",
+      "premise_extraction_instruction": "從 context 與 citation 句中抽出 P1/P2/P3；不得加入未提供的外部知識。"
+    },
+    {
+      "claim": "GraphRAG 將大型語料先轉成實體關係圖與階層式社群摘要，再以 map-reduce 回答需要理解整份語料的全域問題；在本文限定的兩個約百萬 token 資料集與評估設定中，它提升了答案的 comprehensiveness 與 diversity，但沒有證明對所有查詢或品質面向都優於向量式 RAG。[Edge et al., 2025, arXiv:2404.16130, Abstract] [Edge et al., 2025, arXiv:2404.16130, Sections 5–6]",
+      "has_citation": true,
+      "risk_labels": [
+        "strong_or_causal_language",
+        "direct_evidence_claim"
+      ],
+      "context": "-CLM-003）。部署時仍應揭露 AI 與錯誤風險，並補充 fabrication、跨領域泛化及局部／混合檢索的評估。[Edge et al., 2025, arXiv:2404.16130, Section 6]（SEC-027-CLM-001、SEC-027-CLM-002、SEC-027-CLM-004、SEC-027-CLM-006、SEC-027-CLM-007）  ---  # 讀者導向綜合報告  ## 📌 一句話總結  GraphRAG 將大型語料先轉成實體關係圖與階層式社群摘要，再以 map-reduce 回答需要理解整份語料的全域問題；在本文限定的兩個約百萬 token 資料集與評估設定中，它提升了答案的 comprehensiveness 與 diversity，但沒有證明對所有查詢或品質面向都優於向量式 RAG。[Edge et al., 2025, arXiv:2404.16130, Abstract] [Edge et al., 2025, arXiv:2404.16130, Sections 5–6]  ## 🧭 論文定位與研究問題  論文關注的不是「找出一段與問題最相似的文字」，而是「如何根據整個私人或未見過的大型語料，回答需要理解整體大型語料的 global sensemaking 問題」。作者指出，傳統向量式 RAG 適合答案集中在少量局部紀錄的情況；當問題要求概括整體語料時，任務更接近 query-focused summarization，而既有方法又難以擴展到典型 RAG 的資料量。[Edge et al., 2025,",
+      "premise_extraction_instruction": "從 context 與 citation 句中抽出 P1/P2/P3；不得加入未提供的外部知識。"
+    },
+    {
+      "claim": "論文關注的不是「找出一段與問題最相似的文字」，而是「如何根據整個私人或未見過的大型語料，回答需要理解整體大型語料的 global sensemaking 問題」。作者指出，傳統向量式 RAG 適合答案集中在少量局部紀錄的情況；當問題要求概括整體語料時，任務更接近 query-focused summarization，而既有方法又難以擴展到典型 RAG 的資料量。[Edge et al., 2025, arXiv:2404.16130, Abstract] [Edge et al., 2025, arXiv:2404.16130, Sections 1–2]",
+      "has_citation": true,
+      "risk_labels": [
+        "explicit_inference",
+        "direct_evidence_claim"
+      ],
+      "context": "解整份語料的全域問題；在本文限定的兩個約百萬 token 資料集與評估設定中，它提升了答案的 comprehensiveness 與 diversity，但沒有證明對所有查詢或品質面向都優於向量式 RAG。[Edge et al., 2025, arXiv:2404.16130, Abstract] [Edge et al., 2025, arXiv:2404.16130, Sections 5–6]  ## 🧭 論文定位與研究問題  論文關注的不是「找出一段與問題最相似的文字」，而是「如何根據整個私人或未見過的大型語料，回答需要理解整體大型語料的 global sensemaking 問題」。作者指出，傳統向量式 RAG 適合答案集中在少量局部紀錄的情況；當問題要求概括整體語料時，任務更接近 query-focused summarization，而既有方法又難以擴展到典型 RAG 的資料量。[Edge et al., 2025, arXiv:2404.16130, Abstract] [Edge et al., 2025, arXiv:2404.16130, Sections 1–2]  ## 📖 詳細原理解說  逐章證據顯示，GraphRAG 的核心是把全文處理拆成離線索引與線上回答。離線階段先切分文件，以語言模型抽取實體、關係及描述，聚合成知識圖；接著遞迴套用 Leiden community detection，形成由粗到細的階層式社群，並為各層社群預先產生摘要。[Edge et al., 2025, arXiv:2404.16130, Section 3]  線上階段收到問題後，系統將社群摘要分批送進模型。m",
+      "premise_extraction_instruction": "從 context 與 citation 句中抽出 P1/P2/P3；不得加入未提供的外部知識。"
+    },
+    {
+      "claim": "逐章證據顯示，GraphRAG 的核心是把全文處理拆成離線索引與線上回答。離線階段先切分文件，以語言模型抽取實體、關係及描述，聚合成知識圖；接著遞迴套用 Leiden community detection，形成由粗到細的階層式社群，並為各層社群預先產生摘要。[Edge et al., 2025, arXiv:2404.16130, Section 3]",
+      "has_citation": true,
+      "risk_labels": [
+        "direct_evidence_claim"
+      ],
+      "context": "問題」。作者指出，傳統向量式 RAG 適合答案集中在少量局部紀錄的情況；當問題要求概括整體語料時，任務更接近 query-focused summarization，而既有方法又難以擴展到典型 RAG 的資料量。[Edge et al., 2025, arXiv:2404.16130, Abstract] [Edge et al., 2025, arXiv:2404.16130, Sections 1–2]  ## 📖 詳細原理解說  逐章證據顯示，GraphRAG 的核心是把全文處理拆成離線索引與線上回答。離線階段先切分文件，以語言模型抽取實體、關係及描述，聚合成知識圖；接著遞迴套用 Leiden community detection，形成由粗到細的階層式社群，並為各層社群預先產生摘要。[Edge et al., 2025, arXiv:2404.16130, Section 3]  線上階段收到問題後，系統將社群摘要分批送進模型。map 階段對每批摘要產生部分答案與 helpfulness 分數，分數為零的答案被過濾；reduce 階段依 helpfulness 排序，在 context window 容量內組合較有用的部分答案，形成最後的 global answer。[Edge et al., 2025, arXiv:2404.16130, Sections 1 and 3]  ## 🎨 ASCII 圖解",
+      "premise_extraction_instruction": "從 context 與 citation 句中抽出 P1/P2/P3；不得加入未提供的外部知識。"
+    },
+    {
+      "claim": "線上階段收到問題後，系統將社群摘要分批送進模型。map 階段對每批摘要產生部分答案與 helpfulness 分數，分數為零的答案被過濾；reduce 階段依 helpfulness 排序，在 context window 容量內組合較有用的部分答案，形成最後的 global answer。[Edge et al., 2025, arXiv:2404.16130, Sections 1 and 3]",
+      "has_citation": true,
+      "risk_labels": [
+        "direct_evidence_claim"
+      ],
+      "context": "2404.16130, Sections 1–2]  ## 📖 詳細原理解說  逐章證據顯示，GraphRAG 的核心是把全文處理拆成離線索引與線上回答。離線階段先切分文件，以語言模型抽取實體、關係及描述，聚合成知識圖；接著遞迴套用 Leiden community detection，形成由粗到細的階層式社群，並為各層社群預先產生摘要。[Edge et al., 2025, arXiv:2404.16130, Section 3]  線上階段收到問題後，系統將社群摘要分批送進模型。map 階段對每批摘要產生部分答案與 helpfulness 分數，分數為零的答案被過濾；reduce 階段依 helpfulness 排序，在 context window 容量內組合較有用的部分答案，形成最後的 global answer。[Edge et al., 2025, arXiv:2404.16130, Sections 1 and 3]  ## 🎨 ASCII 圖解  ```text 來源 PDF／文件       │       ▼ 文字切塊 ──► 實體、關係、描述抽取       │       ▼    知識圖譜       │       ▼ Leiden 階層社群       │       ▼ 各層社群摘要（離線建立）       │ 使用者全域問題       │       ▼ Map：各批摘要產生部分答案＋helpfulness       │",
+      "premise_extraction_instruction": "從 context 與 citation 句中抽出 P1/P2/P3；不得加入未提供的外部知識。"
+    },
+    {
+      "claim": "此圖只重述已驗證的方法流程，不表示每個中間步驟都已由獨立消融實驗證明其因果貢獻。[Edge et al., 2025, arXiv:2404.16130, Sections 1 and 3]",
+      "has_citation": true,
+      "risk_labels": [
+        "strong_or_causal_language",
+        "direct_evidence_claim"
+      ],
+      "context": "▼ 文字切塊 ──► 實體、關係、描述抽取       │       ▼    知識圖譜       │       ▼ Leiden 階層社群       │       ▼ 各層社群摘要（離線建立）       │ 使用者全域問題       │       ▼ Map：各批摘要產生部分答案＋helpfulness       │       ▼ Reduce：排序、過濾、彙整       │       ▼ 全域回答 ```  此圖只重述已驗證的方法流程，不表示每個中間步驟都已由獨立消融實驗證明其因果貢獻。[Edge et al., 2025, arXiv:2404.16130, Sections 1 and 3]  ## 📐 數學公式  本文評估中的兩個 claim-based 指標可用操作性形式表示：  ```text Comprehensiveness(answer) = 該回答抽取出的 claim 數 Diversity(answer) = 該回答內 claim clusters 數 ```  作者以 Claimify 抽取並去除回答內重複 claims，再用 agglomerative clustering、complete linka",
+      "premise_extraction_instruction": "從 context 與 citation 句中抽出 P1/P2/P3；不得加入未提供的外部知識。"
+    },
+    {
+      "claim": "本文評估中的兩個 claim-based 指標可用操作性形式表示：",
+      "has_citation": false,
+      "risk_labels": [
+        "direct_evidence_claim"
+      ],
+      "context": "│ 使用者全域問題       │       ▼ Map：各批摘要產生部分答案＋helpfulness       │       ▼ Reduce：排序、過濾、彙整       │       ▼ 全域回答 ```  此圖只重述已驗證的方法流程，不表示每個中間步驟都已由獨立消融實驗證明其因果貢獻。[Edge et al., 2025, arXiv:2404.16130, Sections 1 and 3]  ## 📐 數學公式  本文評估中的兩個 claim-based 指標可用操作性形式表示：  ```text Comprehensiveness(answer) = 該回答抽取出的 claim 數 Diversity(answer) = 該回答內 claim clusters 數 ```  作者以 Claimify 抽取並去除回答內重複 claims，再用 agglomerative clustering、complete linkage 與 `1 − ROUGE-L` 距離形成 clusters；兩項指標都以數值較高代表表",
+      "premise_extraction_instruction": "從 context 與 citation 句中抽出 P1/P2/P3；不得加入未提供的外部知識。"
+    },
+    {
+      "claim": "作者以 Claimify 抽取並去除回答內重複 claims，再用 agglomerative clustering、complete linkage 與 `1 − ROUGE-L` 距離形成 clusters；兩項指標都以數值較高代表表現較好。[Edge et al., 2025, arXiv:2404.16130, Section 4]",
+      "has_citation": true,
+      "risk_labels": [
+        "strong_or_causal_language",
+        "explicit_inference",
+        "direct_evidence_claim"
+      ],
+      "context": "驟都已由獨立消融實驗證明其因果貢獻。[Edge et al., 2025, arXiv:2404.16130, Sections 1 and 3]  ## 📐 數學公式  本文評估中的兩個 claim-based 指標可用操作性形式表示：  ```text Comprehensiveness(answer) = 該回答抽取出的 claim 數 Diversity(answer) = 該回答內 claim clusters 數 ```  作者以 Claimify 抽取並去除回答內重複 claims，再用 agglomerative clustering、complete linkage 與 `1 − ROUGE-L` 距離形成 clusters；兩項指標都以數值較高代表表現較好。[Edge et al., 2025, arXiv:2404.16130, Section 4]  ## ⚙️ 實作細節  切塊大小存在成本與召回率取捨：較長 chunk 減少語言模型抽取呼叫，卻可能降低位於 chunk 前段資訊的召回。本文實驗中的 Podcast 語料被切成 1669 個 600-token chunks，相鄰重疊 100 tokens；News 語料為 3197 個 600-token chunks，同樣重疊 100 tokens。community summaries、community answers 與",
+      "premise_extraction_instruction": "從 context 與 citation 句中抽出 P1/P2/P3；不得加入未提供的外部知識。"
+    },
+    {
+      "claim": "切塊大小存在成本與召回率取捨：較長 chunk 減少語言模型抽取呼叫，卻可能降低位於 chunk 前段資訊的召回。本文實驗中的 Podcast 語料被切成 1669 個 600-token chunks，相鄰重疊 100 tokens；News 語料為 3197 個 600-token chunks，同樣重疊 100 tokens。community summaries、community answers 與 global answers 使用固定 8k-token context window。[Edge et al., 2025, arXiv:2404.16130, Sections 3–4]",
+      "has_citation": true,
+      "risk_labels": [
+        "explicit_inference",
+        "direct_evidence_claim"
+      ],
+      "context": "swer) = 該回答內 claim clusters 數 ```  作者以 Claimify 抽取並去除回答內重複 claims，再用 agglomerative clustering、complete linkage 與 `1 − ROUGE-L` 距離形成 clusters；兩項指標都以數值較高代表表現較好。[Edge et al., 2025, arXiv:2404.16130, Section 4]  ## ⚙️ 實作細節  切塊大小存在成本與召回率取捨：較長 chunk 減少語言模型抽取呼叫，卻可能降低位於 chunk 前段資訊的召回。本文實驗中的 Podcast 語料被切成 1669 個 600-token chunks，相鄰重疊 100 tokens；News 語料為 3197 個 600-token chunks，同樣重疊 100 tokens。community summaries、community answers 與 global answers 使用固定 8k-token context window。[Edge et al., 2025, arXiv:2404.16130, Sections 3–4]  問題生成使用角色、任務與問題的階段式程序。`K` 表示假想使用者數，`N` 表示每位使用者的任務數，`M` 表示每組「使用者—任務」配對所生成的問題數；作者設定 `K = N = M = 5`，因此每個資料集得到 `K × N × M = 125` 個測試問題。由於沒有 gold-standard answers，作者採 LLM evaluator 對競爭答案作 head-to-head 比較。[Edge et al., 2025,",
+      "premise_extraction_instruction": "從 context 與 citation 句中抽出 P1/P2/P3；不得加入未提供的外部知識。"
+    },
+    {
+      "claim": "問題生成使用角色、任務與問題的階段式程序。`K` 表示假想使用者數，`N` 表示每位使用者的任務數，`M` 表示每組「使用者—任務」配對所生成的問題數；作者設定 `K = N = M = 5`，因此每個資料集得到 `K × N × M = 125` 個測試問題。由於沒有 gold-standard answers，作者採 LLM evaluator 對競爭答案作 head-to-head 比較。[Edge et al., 2025, arXiv:2404.16130, Section 3]",
+      "has_citation": true,
+      "risk_labels": [
+        "strong_or_causal_language",
+        "explicit_inference",
+        "direct_evidence_claim"
+      ],
+      "context": "600-token chunks，相鄰重疊 100 tokens；News 語料為 3197 個 600-token chunks，同樣重疊 100 tokens。community summaries、community answers 與 global answers 使用固定 8k-token context window。[Edge et al., 2025, arXiv:2404.16130, Sections 3–4]  問題生成使用角色、任務與問題的階段式程序。`K` 表示假想使用者數，`N` 表示每位使用者的任務數，`M` 表示每組「使用者—任務」配對所生成的問題數；作者設定 `K = N = M = 5`，因此每個資料集得到 `K × N × M = 125` 個測試問題。由於沒有 gold-standard answers，作者採 LLM evaluator 對競爭答案作 head-to-head 比較。[Edge et al., 2025, arXiv:2404.16130, Section 3]  ## 🧪 實驗設計與結果  實驗比較 GraphRAG 的 C0、C1、C2、C3 四個社群層級、直接對原文作 map-reduce 的 text summarization，以及向量 RAG semantic search。所有條件使用相同 context-window 大小與回答 prompts，差別主要在 context 如何建立。[Edge et al., 2025, arXiv:2404.16130, Section 4]",
+      "premise_extraction_instruction": "從 context 與 citation 句中抽出 P1/P2/P3；不得加入未提供的外部知識。"
+    },
+    {
+      "claim": "實驗比較 GraphRAG 的 C0、C1、C2、C3 四個社群層級、直接對原文作 map-reduce 的 text summarization，以及向量 RAG semantic search。所有條件使用相同 context-window 大小與回答 prompts，差別主要在 context 如何建立。[Edge et al., 2025, arXiv:2404.16130, Section 4]",
+      "has_citation": true,
+      "risk_labels": [
+        "direct_evidence_claim"
+      ],
+      "context": "用者的任務數，`M` 表示每組「使用者—任務」配對所生成的問題數；作者設定 `K = N = M = 5`，因此每個資料集得到 `K × N × M = 125` 個測試問題。由於沒有 gold-standard answers，作者採 LLM evaluator 對競爭答案作 head-to-head 比較。[Edge et al., 2025, arXiv:2404.16130, Section 3]  ## 🧪 實驗設計與結果  實驗比較 GraphRAG 的 C0、C1、C2、C3 四個社群層級、直接對原文作 map-reduce 的 text summarization，以及向量 RAG semantic search。所有條件使用相同 context-window 大小與回答 prompts，差別主要在 context 如何建立。[Edge et al., 2025, arXiv:2404.16130, Section 4]  結果必須分指標解讀：全域方法在 comprehensiveness 與 diversity 上優於 semantic search，但 semantic search 的 directness 較佳。相較 TS，C3 少用 26–33% context tokens，C0 少用逾 97%，但這些 token 降幅不表示統計顯著性；然而 GraphRAG global search 與無圖 text summarization 在 c",
+      "premise_extraction_instruction": "從 context 與 citation 句中抽出 P1/P2/P3；不得加入未提供的外部知識。"
+    },
+    {
+      "claim": "結果必須分指標解讀：全域方法在 comprehensiveness 與 diversity 上優於 semantic search，但 semantic search 的 directness 較佳。相較 TS，C3 少用 26–33% context tokens，C0 少用逾 97%，但這些 token 降幅不表示統計顯著性；然而 GraphRAG global search 與無圖 text summarization 在 claim-based comprehensiveness、diversity 上沒有統計顯著差異，因此現有結果不足以把全部收益單獨歸因於知識圖。[Edge et al., 2025, arXiv:2404.16130, Section 5]",
+      "has_citation": true,
+      "risk_labels": [
+        "strong_or_causal_language",
+        "explicit_inference",
+        "direct_evidence_claim"
+      ],
+      "context": "## 🧪 實驗設計與結果  實驗比較 GraphRAG 的 C0、C1、C2、C3 四個社群層級、直接對原文作 map-reduce 的 text summarization，以及向量 RAG semantic search。所有條件使用相同 context-window 大小與回答 prompts，差別主要在 context 如何建立。[Edge et al., 2025, arXiv:2404.16130, Section 4]  結果必須分指標解讀：全域方法在 comprehensiveness 與 diversity 上優於 semantic search，但 semantic search 的 directness 較佳。相較 TS，C3 少用 26–33% context tokens，C0 少用逾 97%，但這些 token 降幅不表示統計顯著性；然而 GraphRAG global search 與無圖 text summarization 在 claim-based comprehensiveness、diversity 上沒有統計顯著差異，因此現有結果不足以把全部收益單獨歸因於知識圖。[Edge et al., 2025, arXiv:2404.16130, Section 5]  ## ✅ 優缺點分析  優點是它把全域語料理解轉換成可預先計算的階層摘要索引，適合對同一資料集重複提出全域問題；方法同時保留不同社群層級，使細節與涵蓋範圍可以調整。實驗也提供 comprehensiveness、diversity、directness 與 token 使用等多角度比較。[Edge et al., 2025, arXiv:2404.16130, Sections 3–5]  缺點是索引需要語言模型執行抽取與摘要，ch",
+      "premise_extraction_instruction": "從 context 與 citation 句中抽出 P1/P2/P3；不得加入未提供的外部知識。"
+    },
+    {
+      "claim": "優點是它把全域語料理解轉換成可預先計算的階層摘要索引，適合對同一資料集重複提出全域問題；方法同時保留不同社群層級，使細節與涵蓋範圍可以調整。實驗也提供 comprehensiveness、diversity、directness 與 token 使用等多角度比較。[Edge et al., 2025, arXiv:2404.16130, Sections 3–5]",
+      "has_citation": true,
+      "risk_labels": [
+        "explicit_inference",
+        "direct_evidence_claim"
+      ],
+      "context": "s，C0 少用逾 97%，但這些 token 降幅不表示統計顯著性；然而 GraphRAG global search 與無圖 text summarization 在 claim-based comprehensiveness、diversity 上沒有統計顯著差異，因此現有結果不足以把全部收益單獨歸因於知識圖。[Edge et al., 2025, arXiv:2404.16130, Section 5]  ## ✅ 優缺點分析  優點是它把全域語料理解轉換成可預先計算的階層摘要索引，適合對同一資料集重複提出全域問題；方法同時保留不同社群層級，使細節與涵蓋範圍可以調整。實驗也提供 comprehensiveness、diversity、directness 與 token 使用等多角度比較。[Edge et al., 2025, arXiv:2404.16130, Sections 3–5]  缺點是索引需要語言模型執行抽取與摘要，chunk 大小會形成成本和資訊召回的取捨。評估依賴 LLM 相對判斷，且 LLM 與 claim-based 評估並非完全一致；本文也沒有證明知識圖是相對無圖全域摘要取得品質差異的唯一原因。[Edge et al., 2025, arXiv:2404.16130, Sections 3–6]  ## 💡 適用場景建議  對同一資料集的大量全域查詢，GraphRAG 根層摘要可作為候選索引。對只",
+      "premise_extraction_instruction": "從 context 與 citation 句中抽出 P1/P2/P3；不得加入未提供的外部知識。"
+    },
+    {
+      "claim": "缺點是索引需要語言模型執行抽取與摘要，chunk 大小會形成成本和資訊召回的取捨。評估依賴 LLM 相對判斷，且 LLM 與 claim-based 評估並非完全一致；本文也沒有證明知識圖是相對無圖全域摘要取得品質差異的唯一原因。[Edge et al., 2025, arXiv:2404.16130, Sections 3–6]",
+      "has_citation": true,
+      "risk_labels": [
+        "strong_or_causal_language",
+        "direct_evidence_claim"
+      ],
+      "context": "404.16130, Section 5]  ## ✅ 優缺點分析  優點是它把全域語料理解轉換成可預先計算的階層摘要索引，適合對同一資料集重複提出全域問題；方法同時保留不同社群層級，使細節與涵蓋範圍可以調整。實驗也提供 comprehensiveness、diversity、directness 與 token 使用等多角度比較。[Edge et al., 2025, arXiv:2404.16130, Sections 3–5]  缺點是索引需要語言模型執行抽取與摘要，chunk 大小會形成成本和資訊召回的取捨。評估依賴 LLM 相對判斷，且 LLM 與 claim-based 評估並非完全一致；本文也沒有證明知識圖是相對無圖全域摘要取得品質差異的唯一原因。[Edge et al., 2025, arXiv:2404.16130, Sections 3–6]  ## 💡 適用場景建議  對同一資料集的大量全域查詢，GraphRAG 根層摘要可作為候選索引。對只需少量局部事實或高度直接回答的問題，現有證據不足以宣稱 GraphRAG 必然優於向量式 RAG；局部與混合路徑應視為待評估方向。[Edge et al., 2025, arXiv:2404.16130, Sections 5–7]  ## 限制、風險與未來方向  本文只評估兩個各約百萬 token 的語料及其特定 sensemaki",
+      "premise_extraction_instruction": "從 context 與 citation 句中抽出 P1/P2/P3；不得加入未提供的外部知識。"
+    },
+    {
+      "claim": "對同一資料集的大量全域查詢，GraphRAG 根層摘要可作為候選索引。對只需少量局部事實或高度直接回答的問題，現有證據不足以宣稱 GraphRAG 必然優於向量式 RAG；局部與混合路徑應視為待評估方向。[Edge et al., 2025, arXiv:2404.16130, Sections 5–7]",
+      "has_citation": true,
+      "risk_labels": [
+        "strong_or_causal_language",
+        "direct_evidence_claim"
+      ],
+      "context": "2025, arXiv:2404.16130, Sections 3–5]  缺點是索引需要語言模型執行抽取與摘要，chunk 大小會形成成本和資訊召回的取捨。評估依賴 LLM 相對判斷，且 LLM 與 claim-based 評估並非完全一致；本文也沒有證明知識圖是相對無圖全域摘要取得品質差異的唯一原因。[Edge et al., 2025, arXiv:2404.16130, Sections 3–6]  ## 💡 適用場景建議  對同一資料集的大量全域查詢，GraphRAG 根層摘要可作為候選索引。對只需少量局部事實或高度直接回答的問題，現有證據不足以宣稱 GraphRAG 必然優於向量式 RAG；局部與混合路徑應視為待評估方向。[Edge et al., 2025, arXiv:2404.16130, Sections 5–7]  ## 限制、風險與未來方向  本文只評估兩個各約百萬 token 的語料及其特定 sensemaking 問題，不能直接外推至任意領域、任意查詢或任意資料規模。作者沒有比較 fabrication rates，並建議未來可加入 SelfCheckGPT 類檢查。其他方向包括以 embedding 匹配圖註釋的局部 RAG、結合即時社群報告的混合流程、跨層 roll-up，以及沿摘要線索向下探索的 drill-down。[Edge e",
+      "premise_extraction_instruction": "從 context 與 citation 句中抽出 P1/P2/P3；不得加入未提供的外部知識。"
+    },
+    {
+      "claim": "本文只評估兩個各約百萬 token 的語料及其特定 sensemaking 問題，不能直接外推至任意領域、任意查詢或任意資料規模。作者沒有比較 fabrication rates，並建議未來可加入 SelfCheckGPT 類檢查。其他方向包括以 embedding 匹配圖註釋的局部 RAG、結合即時社群報告的混合流程、跨層 roll-up，以及沿摘要線索向下探索的 drill-down。[Edge et al., 2025, arXiv:2404.16130, Section 6]",
+      "has_citation": true,
+      "risk_labels": [
+        "explicit_inference",
+        "direct_evidence_claim"
+      ],
+      "context": "25, arXiv:2404.16130, Sections 3–6]  ## 💡 適用場景建議  對同一資料集的大量全域查詢，GraphRAG 根層摘要可作為候選索引。對只需少量局部事實或高度直接回答的問題，現有證據不足以宣稱 GraphRAG 必然優於向量式 RAG；局部與混合路徑應視為待評估方向。[Edge et al., 2025, arXiv:2404.16130, Sections 5–7]  ## 限制、風險與未來方向  本文只評估兩個各約百萬 token 的語料及其特定 sensemaking 問題，不能直接外推至任意領域、任意查詢或任意資料規模。作者沒有比較 fabrication rates，並建議未來可加入 SelfCheckGPT 類檢查。其他方向包括以 embedding 匹配圖註釋的局部 RAG、結合即時社群報告的混合流程、跨層 roll-up，以及沿摘要線索向下探索的 drill-down。[Edge et al., 2025, arXiv:2404.16130, Section 6]  部署風險不只是答案品質：若系統把局部事實錯誤表述為整體結論，可能影響後續 sensemaking 與決策。因此介面應揭露 AI 參與與錯誤可能性，並保留 evidence passage、section、claim ID 與 audit status，讓結論可以回查。[Edge et al., 2025, arXiv:2404.16130, Section 6]  ## 📚 參考來源  - Edge, D., Trinh, H.,",
       "premise_extraction_instruction": "從 context 與 citation 句中抽出 P1/P2/P3；不得加入未提供的外部知識。"
     }
   ],
   "rewrite_contexts": [
     {
-      "severity": "major",
-      "category": "coverage",
-      "score_impact": 4,
-      "message": "缺少必要章節：📌 一句話總結",
-      "context": "GraphRAG 跨章證據合成報告; Abstract; Introduction; Background; Methods; Analysis; Results; Discussion; Conclusion; 綜合結論",
-      "rewrite_hint": "補上 `📌 一句話總結` 章節，並加入證據或明確標記推論。"
-    },
-    {
-      "severity": "major",
-      "category": "coverage",
-      "score_impact": 4,
-      "message": "缺少必要章節：🧭 論文定位與研究問題",
-      "context": "GraphRAG 跨章證據合成報告; Abstract; Introduction; Background; Methods; Analysis; Results; Discussion; Conclusion; 綜合結論",
-      "rewrite_hint": "補上 `🧭 論文定位與研究問題` 章節，並加入證據或明確標記推論。"
-    },
-    {
-      "severity": "major",
-      "category": "coverage",
-      "score_impact": 4,
-      "message": "缺少必要章節：📖 詳細原理解說",
-      "context": "GraphRAG 跨章證據合成報告; Abstract; Introduction; Background; Methods; Analysis; Results; Discussion; Conclusion; 綜合結論",
-      "rewrite_hint": "補上 `📖 詳細原理解說` 章節，並加入證據或明確標記推論。"
-    },
-    {
-      "severity": "major",
-      "category": "coverage",
-      "score_impact": 4,
-      "message": "缺少必要章節：🎨 ASCII 圖解",
-      "context": "GraphRAG 跨章證據合成報告; Abstract; Introduction; Background; Methods; Analysis; Results; Discussion; Conclusion; 綜合結論",
-      "rewrite_hint": "補上 `🎨 ASCII 圖解` 章節，並加入證據或明確標記推論。"
-    },
-    {
-      "severity": "major",
-      "category": "coverage",
-      "score_impact": 4,
-      "message": "缺少必要章節：📐 數學公式",
-      "context": "GraphRAG 跨章證據合成報告; Abstract; Introduction; Background; Methods; Analysis; Results; Discussion; Conclusion; 綜合結論",
-      "rewrite_hint": "補上 `📐 數學公式` 章節，並加入證據或明確標記推論。"
-    },
-    {
-      "severity": "major",
-      "category": "coverage",
-      "score_impact": 4,
-      "message": "缺少必要章節：⚙️ 實作細節",
-      "context": "GraphRAG 跨章證據合成報告; Abstract; Introduction; Background; Methods; Analysis; Results; Discussion; Conclusion; 綜合結論",
-      "rewrite_hint": "補上 `⚙️ 實作細節` 章節，並加入證據或明確標記推論。"
-    },
-    {
-      "severity": "major",
-      "category": "coverage",
-      "score_impact": 4,
-      "message": "缺少必要章節：🧪 實驗設計與結果",
-      "context": "GraphRAG 跨章證據合成報告; Abstract; Introduction; Background; Methods; Analysis; Results; Discussion; Conclusion; 綜合結論",
-      "rewrite_hint": "補上 `🧪 實驗設計與結果` 章節，並加入證據或明確標記推論。"
-    },
-    {
-      "severity": "major",
-      "category": "coverage",
-      "score_impact": 4,
-      "message": "缺少必要章節：✅ 優缺點分析",
-      "context": "GraphRAG 跨章證據合成報告; Abstract; Introduction; Background; Methods; Analysis; Results; Discussion; Conclusion; 綜合結論",
-      "rewrite_hint": "補上 `✅ 優缺點分析` 章節，並加入證據或明確標記推論。"
-    },
-    {
-      "severity": "major",
-      "category": "coverage",
-      "score_impact": 4,
-      "message": "缺少必要章節：💡 適用場景建議",
-      "context": "GraphRAG 跨章證據合成報告; Abstract; Introduction; Background; Methods; Analysis; Results; Discussion; Conclusion; 綜合結論",
-      "rewrite_hint": "補上 `💡 適用場景建議` 章節，並加入證據或明確標記推論。"
-    },
-    {
-      "severity": "major",
-      "category": "coverage",
-      "score_impact": 4,
-      "message": "缺少必要章節：📚 參考來源",
-      "context": "GraphRAG 跨章證據合成報告; Abstract; Introduction; Background; Methods; Analysis; Results; Discussion; Conclusion; 綜合結論",
-      "rewrite_hint": "補上 `📚 參考來源` 章節，並加入證據或明確標記推論。"
-    },
-    {
       "severity": "minor",
-      "category": "arxiv_format",
+      "category": "section_length",
       "score_impact": 1,
-      "message": "arXiv ID 有出現但缺少 arxiv.org 標準連結：2404.16130",
-      "context": "# GraphRAG 跨章證據合成報告  > 論文識別碼：`arxiv:2404.16130`。本報告只使用 synthesis packet 內已驗證的 claims；原始論文題名未包含於 packet，因此不另行補寫。  ## Abstract  本研究處理的核心落差是：傳統 RAG 能從外部知識來源擷取相關資訊，使大型語言模型回答私人或未見文件集合的問題，但當查詢要求概括整個語料庫時，問題已轉為 query-focused summarization（QFS），而非局部明確檢索；既有 QFS 又難以擴展到典型 RAG 的",
-      "rewrite_hint": "補上 `https://arxiv.org/abs/2404.16130`。"
+      "message": "章節內容過短：GraphRAG 跨章證據合成報告",
+      "context": "110 chars",
+      "rewrite_hint": "補充該章節的證據、解釋、限制或實作細節。"
     },
     {
       "severity": "minor",
       "category": "section_length",
       "score_impact": 1,
-      "message": "章節內容過短：GraphRAG 跨章證據合成報告",
-      "context": "94 chars",
+      "message": "章節內容過短：讀者導向綜合報告",
+      "context": "2 chars",
       "rewrite_hint": "補充該章節的證據、解釋、限制或實作細節。"
     },
     {
@@ -535,7 +591,7 @@
       "category": "language_ratio",
       "score_impact": 2,
       "message": "中文比例偏低，可能不符合中文報告要求。",
-      "context": "{\"cjk_chars\": 2532, \"latin_chars\": 2740, \"chinese_ratio\": 48.03, \"english_ratio\": 51.97}",
+      "context": "{\"cjk_chars\": 3775, \"latin_chars\": 4217, \"chinese_ratio\": 47.23, \"english_ratio\": 52.77}",
       "rewrite_hint": "將摘要、分析、表格說明與結論改為中文；英文保留在術語或 citation。"
     },
     {
@@ -556,10 +612,26 @@
     },
     {
       "severity": "minor",
+      "category": "vague_strong_word",
+      "score_impact": 1,
+      "message": "出現空泛或過強措辭：必須",
+      "context": "tic search。所有條件使用相同 context-window 大小與回答 prompts，差別主要在 context 如何建立。[Edge et al., 2025, arXiv:2404.16130, Section 4]  結果必須分指標解讀：全域方法在 comprehensiveness 與 diversity 上優於 semantic search，但 semantic search 的 directness 較佳。相較 TS，C3 少用 26–33% conte",
+      "rewrite_hint": "若有直接證據，補 citation；否則改成更保守、可驗證的措辭。"
+    },
+    {
+      "severity": "minor",
+      "category": "vague_strong_word",
+      "score_impact": 1,
+      "message": "出現空泛或過強措辭：證明",
+      "context": "大型語料先轉成實體關係圖與階層式社群摘要，再以 map-reduce 回答需要理解整份語料的全域問題；在本文限定的兩個約百萬 token 資料集與評估設定中，它提升了答案的 comprehensiveness 與 diversity，但沒有證明對所有查詢或品質面向都優於向量式 RAG。[Edge et al., 2025, arXiv:2404.16130, Abstract] [Edge et al., 2025, arXiv:2404.16130, Sections 5–6]",
+      "rewrite_hint": "若有直接證據，補 citation；否則改成更保守、可驗證的措辭。"
+    },
+    {
+      "severity": "minor",
       "category": "undefined_acronym",
       "score_impact": 2,
       "message": "偵測到可能未定義縮寫。",
-      "context": "C0, C1, C2, C3, GPT-4, QFS, ROUGE-L, SEC-001-CLM-001, SEC-001-CLM-002, SEC-001-CLM-003, SEC-001-CLM-004, SEC-001-CLM-005, SEC-001-CLM-006, SEC-001-CLM-007, SEC-002-CLM-001, SEC-002-CLM-002, SEC-002-CLM-003, SEC-002-CLM-004, SEC-002-CLM-005, SEC-002-CLM-006",
+      "context": "C0, C1, C2, C3, GPT-4, ID, QFS, ROUGE-L, SEC-001-CLM-001, SEC-001-CLM-002, SEC-001-CLM-003, SEC-001-CLM-004, SEC-001-CLM-005, SEC-001-CLM-006, SEC-001-CLM-007, SEC-002-CLM-001, SEC-002-CLM-002, SEC-002-CLM-003, SEC-002-CLM-004, SEC-002-CLM-005",
       "rewrite_hint": "第一次出現縮寫時補上中文/英文全名，例如 `檢索增強生成（RAG）`。"
     },
     {
@@ -572,10 +644,26 @@
     },
     {
       "severity": "major",
+      "category": "unsupported_claim",
+      "score_impact": 3,
+      "message": "重要主張缺少 citation。",
+      "context": "│ 使用者全域問題       │       ▼ Map：各批摘要產生部分答案＋helpfulness       │       ▼ Reduce：排序、過濾、彙整       │       ▼ 全域回答 ```  此圖只重述已驗證的方法流程，不表示每個中間步驟都已由獨立消融實驗證明其因果貢獻。[Edge et al., 2025, arXiv:2404.16130, Sections 1 and 3]  ## 📐 數學公式  本文評估中的兩個 claim-based 指標可用操作性形式表示：  ```text Comprehensiveness(answer) = 該回答抽取出的 claim 數 Diversity(answer) = 該回答內 claim clusters 數 ```  作者以 Claimify 抽取並去除回答內重複 claims，再用 agglomerative clustering、complete linkage 與 `1 − ROUGE-L` 距離形成 clusters；兩項指標都以數值較高代表表",
+      "rewrite_hint": "補上原論文章節/表格/URL citation；若找不到證據，改寫為推論或刪除。"
+    },
+    {
+      "severity": "major",
       "category": "citation_precision",
       "score_impact": 4,
       "message": "宣稱『論文指出/實驗顯示』但沒有 citation。",
       "context": "全域查詢的情境，根層社群摘要可成為一種資料索引：其表現優於向量 RAG，並以少量 token 成本達到與其他全域方法具競爭力的表現。[Edge et al., 2025, arXiv:2404.16130, Section 7]（SEC-030-CLM-003）這個結論的適用條件不可省略：它面向重複的全域查詢，而非宣稱對所有局部查詢都應取代向量檢索。（SEC-002-CLM-002、SEC-030-CLM-003）  ## 綜合結論  跨章證據共同支持一項有範圍的結論：GraphRAG 把原本依賴少量局部紀錄的向量檢索，擴展為「實體關係圖—階層社群—社群摘要—map-reduce 回答」的全域 sensemaking 流程；其優勢最清楚地出現在本研究兩個約百萬 token 語料、特定全域問題與既定評估程序下的 comprehensiveness、diversity 及 context-token 使用，而非所有問答品質面向。（SEC-002-CLM-002、SEC-002-CLM-003、SEC-002-CLM-004、SEC-002-CLM-005、SEC-019-CLM-001、SEC-024-CLM-002、SEC-024-CLM-006）這是跨章推論，直接證據分別來自方法、實驗設計與結果 claims。  證據也揭示三項不可忽略的平衡。第一，SS 的 directness 較佳，所以更完整、更多樣不等同於在每個品質維度都勝出。[Edge et al., 2025, arXiv:2404.16130, Section 5]（SEC-024-CLM-003、SEC-024-CLM-004）第二，GraphRAG 與無圖 TS 在 claim-based comprehensiveness、diversity 上未呈現統計顯著差異，因而不能",
+      "rewrite_hint": "在句尾加入具體來源，例如 `[Author et al., Year, Section x.x]`。"
+    },
+    {
+      "severity": "major",
+      "category": "citation_precision",
+      "score_impact": 4,
+      "message": "宣稱『論文指出/實驗顯示』但沒有 citation。",
+      "context": "│ 使用者全域問題       │       ▼ Map：各批摘要產生部分答案＋helpfulness       │       ▼ Reduce：排序、過濾、彙整       │       ▼ 全域回答 ```  此圖只重述已驗證的方法流程，不表示每個中間步驟都已由獨立消融實驗證明其因果貢獻。[Edge et al., 2025, arXiv:2404.16130, Sections 1 and 3]  ## 📐 數學公式  本文評估中的兩個 claim-based 指標可用操作性形式表示：  ```text Comprehensiveness(answer) = 該回答抽取出的 claim 數 Diversity(answer) = 該回答內 claim clusters 數 ```  作者以 Claimify 抽取並去除回答內重複 claims，再用 agglomerative clustering、complete linkage 與 `1 − ROUGE-L` 距離形成 clusters；兩項指標都以數值較高代表表",
       "rewrite_hint": "在句尾加入具體來源，例如 `[Author et al., Year, Section x.x]`。"
     },
     {
@@ -623,24 +711,8 @@
       "category": "numeric_faithfulness",
       "score_impact": 4,
       "message": "報告中的數字未在來源文字中找到：027, 030, 027, 027, 027, 027, 027",
-      "context": "價值線索是預先社群摘要及其 token 節省，但因果歸因仍受現有比較限制。（SEC-024-CLM-005、SEC-024-CLM-006、SEC-024-CLM-009）第三，News diversity 只有 C0 能跨全部距離閾值顯著勝過 SS，而且兩種標籤的一致率不是完全一致，說明部分結果依賴資料集、閾值與評估方法。（SEC-024-CLM-008、SEC-024-CLM-010）後兩句均為由已驗證結果作出的限制性跨章推論。  因此，最安全的實務定位是：當任務要求對同一大型語料進行多次全域意義建構查詢時，可將 GraphRAG 視為有實證支持的候選索引與摘要架構；若任務偏局部、重視回答直接性，或領域與現有兩個語料差異很大，則現有 registry 沒有足夠證據宣稱它必然優於向量 RAG。（SEC-024-CLM-004、SEC-027-CLM-001、SEC-030-CLM-003）。部署時仍應揭露 AI 與錯誤風險，並補充 fabrication、跨領域泛化及局部／混合檢索的評估。[Edge et al., 2025, arXiv:2404.16130, Section 6]（SEC-027-CLM-001、SEC-027-CLM-002、SEC-027-CLM-004、SEC-027-CLM-006、SEC-027-CLM-007）",
+      "context": "價值線索是預先社群摘要及其 token 節省，但因果歸因仍受現有比較限制。（SEC-024-CLM-005、SEC-024-CLM-006、SEC-024-CLM-009）第三，News diversity 只有 C0 能跨全部距離閾值顯著勝過 SS，而且兩種標籤的一致率不是完全一致，說明部分結果依賴資料集、閾值與評估方法。（SEC-024-CLM-008、SEC-024-CLM-010）後兩句均為由已驗證結果作出的限制性跨章推論。  因此，最安全的實務定位是：當任務要求對同一大型語料進行多次全域意義建構查詢時，可將 GraphRAG 視為有實證支持的候選索引與摘要架構；若任務偏局部、重視回答直接性，或領域與現有兩個語料差異很大，則現有 registry 沒有足夠證據宣稱它必然優於向量 RAG。（SEC-024-CLM-004、SEC-027-CLM-001、SEC-030-CLM-003）。部署時仍應揭露 AI 與錯誤風險，並補充 fabrication、跨領域泛化及局部／混合檢索的評估。[Edge et al., 2025, arXiv:2404.16130, Section 6]（SEC-027-CLM-001、SEC-027-CLM-002、SEC-027-CLM-004、SEC-027-CLM-006、SEC-027-CLM-007）  ---  # 讀者導向綜合報告  ## 📌 一句話總結  GraphRAG 將大型語料先轉成實體關係圖與階層式社群摘要，再以 map-reduce 回答需要理解整份語料的全域問題；在本文限定的兩個約百萬 token 資料集與評估設定中，它提升了答案的 comprehensiveness 與 diversity，但沒有證明對所有查詢或品質面向都優於向量式 RAG。[Edge et al., 2025, arXiv:2404.16130",
       "rewrite_hint": "核對原論文表格/實驗設定；若是推算數字，明確標註計算方式。"
-    },
-    {
-      "severity": "critical",
-      "category": "hard_gate",
-      "score_impact": 10,
-      "message": "必要章節覆蓋率低於硬門檻 60.0%。",
-      "context": "{\"gate\": \"minimum_required_section_rate\", \"message\": \"必要章節覆蓋率低於硬門檻 60.0%。\", \"actual\": 0.0, \"minimum\": 60.0}",
-      "rewrite_hint": "補齊最低證據條件後重新審核；不要讓空報告、低引用或缺章節報告靠扣分制通過。"
-    },
-    {
-      "severity": "critical",
-      "category": "hard_gate",
-      "score_impact": 10,
-      "message": "參考來源區沒有可辨識文獻條目。",
-      "context": "{\"gate\": \"minimum_references\", \"message\": \"參考來源區沒有可辨識文獻條目。\", \"actual\": 0, \"minimum\": 1}",
-      "rewrite_hint": "補齊最低證據條件後重新審核；不要讓空報告、低引用或缺章節報告靠扣分制通過。"
     }
   ],
   "semantic_packet_path": "tests/cases/graphrag/pipeline_run/final_report.semantic_audit_packet.json",

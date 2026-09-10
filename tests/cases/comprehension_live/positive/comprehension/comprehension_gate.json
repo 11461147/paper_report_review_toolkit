@@ -1,0 +1,8 @@
+{
+  "passed": true,
+  "report_hash": "9bc1abfa1616694ddab226a084cb1f3c3c0618becf697a74a2a32d4c4694e06f",
+  "reasons": [],
+  "unresolved_count": 0,
+  "unresolved": [],
+  "required_stage": "fresh full-report final scan after all local resolutions and rewrites"
+}

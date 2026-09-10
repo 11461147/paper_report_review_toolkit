@@ -1,0 +1,122 @@
+{
+  "job_id": "COMPREHENSION-DISCOVER-FULL-REPORT",
+  "context_policy": "fresh",
+  "stage": "discover",
+  "report_path": "/tmp/paper-tool-negative/final_report.md",
+  "report_hash": "53f879ad3b07b75fa5541efc0342f87dfca2ca365269170661658fcfc33a3f02",
+  "report": "## 方法\n\n模型使用 ζ_align = 0.3 計算最終分數。\n",
+  "instructions": [
+    "Act as a first-time technical reader; use only the supplied report and no outside knowledge.",
+    "Open-world task: dynamically identify every dependency needed to understand important claims; do not use a predefined term list.",
+    "Check first use, definitions supplied later, symbol meaning, abbreviation expansion, numeric derivation, comparison baseline/metric/dataset, method role, and scope.",
+    "Copy claim_text, first_use_text, and answer_text exactly from the report.",
+    "A term registry is not proof that the report is self-contained.",
+    "Blocking means the missing information can materially change the claim's meaning, numeric relation, comparison, or stated scope.",
+    "Do not demand exhaustive background, dataset provenance, implementation detail, or definitions of ordinary words that are unnecessary to understand the asserted claim.",
+    "Do not recursively invent new reader questions after the report has supplied the minimum definitions and relations needed for the claim.",
+    "Use warning rather than blocking for optional detail that only adds depth.",
+    "In final stage, any blocking unanswered dependency makes self_contained false."
+  ],
+  "output_schema": {
+    "report_hash": "sha256",
+    "self_contained": "boolean",
+    "items": [
+      {
+        "id": "COMP-NNN",
+        "claim_text": "exact report text",
+        "expression": "dynamic expression or concept",
+        "reader_question": "knowledge a reader still needs",
+        "first_use_text": "exact report text",
+        "first_use_heading": "heading",
+        "issue": "undefined|late_definition|ambiguous|missing_relation|missing_scope|inconsistent",
+        "answered_in_report": "boolean",
+        "answer_text": "exact report text or null",
+        "severity": "blocking|warning"
+      }
+    ]
+  },
+  "json_schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "report_hash": {
+        "type": "string"
+      },
+      "self_contained": {
+        "type": "boolean"
+      },
+      "items": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "claim_text": {
+              "type": "string"
+            },
+            "expression": {
+              "type": "string"
+            },
+            "reader_question": {
+              "type": "string"
+            },
+            "first_use_text": {
+              "type": "string"
+            },
+            "first_use_heading": {
+              "type": "string"
+            },
+            "issue": {
+              "type": "string",
+              "enum": [
+                "undefined",
+                "late_definition",
+                "ambiguous",
+                "missing_relation",
+                "missing_scope",
+                "inconsistent"
+              ]
+            },
+            "answered_in_report": {
+              "type": "boolean"
+            },
+            "answer_text": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "severity": {
+              "type": "string",
+              "enum": [
+                "blocking",
+                "warning"
+              ]
+            }
+          },
+          "required": [
+            "id",
+            "claim_text",
+            "expression",
+            "reader_question",
+            "first_use_text",
+            "first_use_heading",
+            "issue",
+            "answered_in_report",
+            "answer_text",
+            "severity"
+          ]
+        }
+      }
+    },
+    "required": [
+      "report_hash",
+      "self_contained",
+      "items"
+    ]
+  },
+  "expected_output": "comprehension/discover_full_report_scan.json"
+}

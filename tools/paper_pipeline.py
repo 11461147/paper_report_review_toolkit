@@ -11,12 +11,29 @@ import argparse
 import hashlib
 import json
 import re
+import subprocess
 import sys
+import tempfile
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, Protocol
 
 from report_auditor import NUMBER_RE, read_source_text
+
+
+FINAL_REPORT_SECTIONS = [
+    "📌 一句話總結",
+    "🧭 論文定位與研究問題",
+    "📖 詳細原理解說",
+    "🎨 ASCII 圖解",
+    "📐 數學公式",
+    "⚙️ 實作細節",
+    "🧪 實驗設計與結果",
+    "✅ 優缺點分析",
+    "💡 適用場景建議",
+    "限制、風險與未來方向",
+    "📚 參考來源",
+]
 
 
 HEADING_PATTERNS = (
@@ -387,15 +404,330 @@ def command_prepare_synthesis(args: argparse.Namespace) -> int:
         "verified_claim_registry": registry["claims"],
         "instructions": ["Use only claims in verified_claim_registry.", "Cite supporting claim_ids for every conclusion.",
                          "Separate direct evidence from cross-chapter inference.", "Preserve dataset, method, metric, baseline, and experimental scope.",
-                         "Report contradictions and unavailable evidence; do not invent missing facts."],
+                         "Report contradictions and unavailable evidence; do not invent missing facts.",
+                         "Write the original paper-section reports first, then append final_report_sections in the exact order given.",
+                         "The appended sections are the reader-facing synthesis and must be audited after generation."],
+        "final_report_sections": FINAL_REPORT_SECTIONS,
         "output_schema": {"paper_summary": "string", "conclusions": [{"conclusion_id": "SYN-NNN", "text": "string",
             "conclusion_type": "direct|cross_chapter_inference", "supported_by": ["claim_id"], "scope": {}, "limitations": []}],
-            "unsupported_or_unknown": [], "overall_limitations": []},
-        "expected_output": "synthesis_report.json",
+            "unsupported_or_unknown": [], "overall_limitations": [],
+            "final_report": {"path": "final_report.md", "minimum_chars": 2000,
+                             "required_sections": FINAL_REPORT_SECTIONS}},
+        "expected_output": ["synthesis_report.json", "final_report.md"],
     }
     write_json(workdir / "synthesis_packet.json", packet)
     print(f'prepared synthesis packet with {len(registry["claims"])} verified claims')
     return 0
+
+
+class ModelRunner(Protocol):
+    def run(self, packet: dict[str, Any], output_schema: dict[str, Any]) -> dict[str, Any]: ...
+
+
+class CodexModelRunner:
+    """Execute one packet per ephemeral, read-only Codex context."""
+
+    def __init__(self, cwd: Path, model: str | None = None, timeout: int = 600):
+        self.cwd, self.model, self.timeout = cwd, model, timeout
+
+    def run(self, packet: dict[str, Any], output_schema: dict[str, Any]) -> dict[str, Any]:
+        with tempfile.TemporaryDirectory(prefix="paper-comprehension-") as tmp:
+            temp = Path(tmp)
+            schema_path, output_path = temp / "schema.json", temp / "output.json"
+            schema_path.write_text(json.dumps(output_schema, ensure_ascii=False), encoding="utf-8")
+            command = ["codex", "--ask-for-approval", "never", "exec", "--ephemeral", "--ignore-rules", "--skip-git-repo-check", "--sandbox", "read-only", "--output-schema", str(schema_path),
+                       "--output-last-message", str(output_path), "-"]
+            if self.model:
+                command[2:2] = ["--model", self.model]
+            prompt = "Return only JSON matching the supplied schema. Execute no tools.\n\nPACKET:\n" + json.dumps(packet, ensure_ascii=False)
+            completed = subprocess.run(command, input=prompt, text=True, capture_output=True,
+                                       cwd=self.cwd, timeout=self.timeout, check=False)
+            if completed.returncode != 0:
+                raise RuntimeError("model runner failed: " + (completed.stderr.strip() or completed.stdout.strip()))
+            try:
+                return json.loads(output_path.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError) as exc:
+                raise RuntimeError(f"model runner returned invalid JSON: {exc}") from exc
+
+
+def _object_schema(properties: dict[str, Any], required: list[str]) -> dict[str, Any]:
+    return {"type": "object", "additionalProperties": False, "properties": properties, "required": required}
+
+
+COMPREHENSION_SCAN_JSON_SCHEMA = _object_schema({
+    "report_hash": {"type": "string"}, "self_contained": {"type": "boolean"},
+    "items": {"type": "array", "items": _object_schema({
+        "id": {"type": "string"}, "claim_text": {"type": "string"}, "expression": {"type": "string"},
+        "reader_question": {"type": "string"}, "first_use_text": {"type": "string"},
+        "first_use_heading": {"type": "string"},
+        "issue": {"type": "string", "enum": ["undefined", "late_definition", "ambiguous", "missing_relation", "missing_scope", "inconsistent"]},
+        "answered_in_report": {"type": "boolean"}, "answer_text": {"type": ["string", "null"]},
+        "severity": {"type": "string", "enum": ["blocking", "warning"]},
+    }, ["id", "claim_text", "expression", "reader_question", "first_use_text", "first_use_heading",
+        "issue", "answered_in_report", "answer_text", "severity"])},
+}, ["report_hash", "self_contained", "items"])
+
+LOCAL_RESOLUTION_JSON_SCHEMA = _object_schema({
+    "id": {"type": "string"}, "status": {"type": "string", "enum": ["resolved", "unresolved"]},
+    "answer_from": {"type": "string", "enum": ["report", "source", "none"]},
+    "definition": {"type": ["string", "null"]}, "evidence_text": {"type": ["string", "null"]},
+    "passage_id": {"type": ["string", "null"]},
+    "action": {"type": "string", "enum": ["keep", "rewrite", "delete", "mark_source_undefined"]},
+    "reason": {"type": "string"},
+}, ["id", "status", "answer_from", "definition", "evidence_text", "passage_id", "action", "reason"])
+
+REWRITE_JSON_SCHEMA = _object_schema({
+    "report": {"type": "string"}, "applied_issue_ids": {"type": "array", "items": {"type": "string"}},
+}, ["report", "applied_issue_ids"])
+
+
+def _text_hash(text: str) -> str:
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
+def _report_context(report: str, needle: str, radius: int = 700) -> str:
+    position = report.find(needle)
+    if position < 0:
+        return ""
+    return report[max(0, position - radius):min(len(report), position + len(needle) + radius)]
+
+
+def _load_evidence_records(path: Path) -> dict[str, dict[str, Any]]:
+    if not path.exists():
+        return {}
+    records = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+    return {record["passage_id"]: record for record in records}
+
+
+def _candidate_evidence(issue: dict[str, Any], records: dict[str, dict[str, Any]], limit: int = 5) -> list[dict[str, Any]]:
+    expression = str(issue.get("expression", ""))
+    query = " ".join((expression, str(issue.get("reader_question", "")),
+                      str(issue.get("claim_text", "")), str(issue.get("first_use_text", ""))))
+    terms = {term.casefold() for term in re.findall(r"[A-Za-zΑ-Ωα-ω][\w.-]*", query)
+             if len(term) > 1 or term.isupper()}
+    ranked = []
+    for record in records.values():
+        haystack = (record.get("section_title", "") + " " + record.get("text", "")).casefold()
+        score = sum(3 if term == expression.casefold() and term in haystack else haystack.count(term) for term in terms)
+        if score:
+            ranked.append((score, record["passage_id"], record))
+    ranked.sort(key=lambda item: (-item[0], item[1]))
+    if ranked:
+        return [record for _, _, record in ranked[:limit]]
+    # Cross-language or novel concepts may have no lexical overlap. A small,
+    # deterministic fallback prevents "not retrieved" from being mislabeled
+    # as "not defined" while keeping the local packet bounded.
+    return [records[key] for key in sorted(records)[:limit]]
+
+
+COMPREHENSION_SCAN_SCHEMA = {
+    "report_hash": "sha256",
+    "self_contained": "boolean",
+    "items": [{
+        "id": "COMP-NNN", "claim_text": "exact report text", "expression": "dynamic expression or concept",
+        "reader_question": "knowledge a reader still needs", "first_use_text": "exact report text",
+        "first_use_heading": "heading", "issue": "undefined|late_definition|ambiguous|missing_relation|missing_scope|inconsistent",
+        "answered_in_report": "boolean", "answer_text": "exact report text or null", "severity": "blocking|warning",
+    }],
+}
+
+
+def command_prepare_comprehension(args: argparse.Namespace) -> int:
+    workdir = args.workdir.resolve()
+    report_path = args.report.resolve() if args.report else workdir / "final_report.md"
+    if not report_path.exists():
+        print(f"report missing: {report_path}", file=sys.stderr)
+        return 2
+    report = report_path.read_text(encoding="utf-8")
+    stage = args.stage
+    packet = {
+        "job_id": f"COMPREHENSION-{stage.upper()}-FULL-REPORT", "context_policy": "fresh", "stage": stage,
+        "report_path": str(report_path), "report_hash": _text_hash(report), "report": report,
+        "instructions": [
+            "Act as a first-time technical reader; use only the supplied report and no outside knowledge.",
+            "Open-world task: dynamically identify every dependency needed to understand important claims; do not use a predefined term list.",
+            "Check first use, definitions supplied later, symbol meaning, abbreviation expansion, numeric derivation, comparison baseline/metric/dataset, method role, and scope.",
+            "Copy claim_text, first_use_text, and answer_text exactly from the report.",
+            "A term registry is not proof that the report is self-contained.",
+            "Blocking means the missing information can materially change the claim's meaning, numeric relation, comparison, or stated scope.",
+            "Do not demand exhaustive background, dataset provenance, implementation detail, or definitions of ordinary words that are unnecessary to understand the asserted claim.",
+            "Do not recursively invent new reader questions after the report has supplied the minimum definitions and relations needed for the claim.",
+            "Use warning rather than blocking for optional detail that only adds depth.",
+            "In final stage, any blocking unanswered dependency makes self_contained false.",
+        ],
+        "output_schema": COMPREHENSION_SCAN_SCHEMA,
+        "json_schema": COMPREHENSION_SCAN_JSON_SCHEMA,
+        "expected_output": f"comprehension/{stage}_full_report_scan.json",
+    }
+    write_json(workdir / "comprehension" / f"{stage}_full_report_scan_packet.json", packet)
+    print(f"prepared {stage} full-report comprehension scan for {report_path.name}")
+    return 0
+
+
+def command_prepare_local_comprehension(args: argparse.Namespace) -> int:
+    workdir = args.workdir.resolve()
+    scan_path = workdir / "comprehension" / "discover_full_report_scan.json"
+    packet_path = workdir / "comprehension" / "discover_full_report_scan_packet.json"
+    if not scan_path.exists() or not packet_path.exists():
+        print("blocked: discovery scan output is missing", file=sys.stderr)
+        return 2
+    scan, discovery_packet = read_json(scan_path), read_json(packet_path)
+    report = discovery_packet["report"]
+    if scan.get("report_hash") != discovery_packet["report_hash"]:
+        print("blocked: discovery scan does not match report hash", file=sys.stderr)
+        return 2
+    evidence = _load_evidence_records(workdir / "evidence_index.jsonl")
+    jobs, seen = [], set()
+    for issue in scan.get("items", []):
+        if issue.get("answered_in_report") and issue.get("severity") != "blocking":
+            continue
+        issue_id = issue.get("id", "")
+        if not issue_id or issue_id in seen:
+            print("blocked: comprehension issue IDs must be non-empty and unique", file=sys.stderr)
+            return 2
+        seen.add(issue_id)
+        local_packet = {
+            "job_id": f"{issue_id}-LOCAL-RESOLUTION", "context_policy": "fresh", "report_hash": scan["report_hash"],
+            "issue": issue, "local_report_context": _report_context(report, issue.get("first_use_text", "")),
+            "candidate_source_passages": _candidate_evidence(issue, evidence),
+            "instructions": [
+                "Decide whether the supplied report context already answers the reader question.",
+                "If source evidence supplies a missing definition, quote evidence_text exactly and identify passage_id.",
+                "Never answer from outside knowledge; missing evidence must remain unresolved.",
+                "Recommend keep, rewrite, delete, or mark_source_undefined. Do not edit the report.",
+            ],
+            "output_schema": {"id": issue_id, "status": "resolved|unresolved", "answer_from": "report|source|none",
+                              "definition": "string|null", "evidence_text": "exact quote|null", "passage_id": "string|null",
+                              "action": "keep|rewrite|delete|mark_source_undefined", "reason": "string"},
+            "json_schema": LOCAL_RESOLUTION_JSON_SCHEMA,
+            "expected_output": f"comprehension/local_verdicts/{issue_id}.json",
+        }
+        relative = f"comprehension/local_packets/{issue_id}.json"
+        write_json(workdir / relative, local_packet)
+        jobs.append({"job_id": local_packet["job_id"], "packet": relative,
+                     "output": local_packet["expected_output"], "context_policy": "fresh"})
+    write_json(workdir / "comprehension" / "local_jobs.json", {"report_hash": scan["report_hash"], "jobs": jobs})
+    print(f"prepared {len(jobs)} isolated local comprehension jobs")
+    return 0
+
+
+def _validated_local_verdict(packet: dict[str, Any], verdict: dict[str, Any]) -> dict[str, Any]:
+    errors = []
+    if verdict.get("id") != packet["issue"]["id"]:
+        errors.append("verdict ID mismatch")
+    if verdict.get("status") == "resolved":
+        source = verdict.get("answer_from")
+        evidence_text = verdict.get("evidence_text") or ""
+        if source == "source":
+            passages = {item["passage_id"]: item for item in packet["candidate_source_passages"]}
+            passage = passages.get(verdict.get("passage_id"))
+            if not passage or _normalized(evidence_text) not in _normalized(passage.get("text", "")):
+                errors.append("source evidence is not an exact candidate passage quote")
+        elif source == "report":
+            if _normalized(evidence_text) not in _normalized(packet.get("local_report_context", "")):
+                errors.append("report evidence is not in local context")
+        else:
+            errors.append("resolved verdict has no grounded answer source")
+        if not verdict.get("definition"):
+            errors.append("resolved verdict has no definition")
+    if errors:
+        return {**verdict, "status": "unresolved", "action": "mark_source_undefined",
+                "validation_errors": errors}
+    return {**verdict, "validation_errors": []}
+
+
+def run_comprehension_pipeline(workdir: Path, report_path: Path, runner: ModelRunner) -> dict[str, Any]:
+    namespace = argparse.Namespace(workdir=workdir, report=report_path, stage="discover")
+    if command_prepare_comprehension(namespace):
+        raise RuntimeError("unable to prepare discovery scan")
+    discover_packet = read_json(workdir / "comprehension/discover_full_report_scan_packet.json")
+    discover = runner.run(discover_packet, COMPREHENSION_SCAN_JSON_SCHEMA)
+    discover["report_hash"] = discover_packet["report_hash"]
+    write_json(workdir / "comprehension/discover_full_report_scan.json", discover)
+    if command_prepare_local_comprehension(argparse.Namespace(workdir=workdir)):
+        raise RuntimeError("unable to prepare local comprehension jobs")
+    jobs = read_json(workdir / "comprehension/local_jobs.json")["jobs"]
+    resolutions = []
+    for job in jobs:
+        packet = read_json(workdir / job["packet"])
+        verdict = _validated_local_verdict(packet, runner.run(packet, LOCAL_RESOLUTION_JSON_SCHEMA))
+        write_json(workdir / job["output"], verdict)
+        resolutions.append(verdict)
+    unresolved = [item for item in resolutions if item.get("status") != "resolved"]
+    if unresolved:
+        gate = {"passed": False, "report_hash": discover_packet["report_hash"],
+                "reasons": ["local comprehension issues remain unresolved"],
+                "unresolved_count": len(unresolved), "unresolved": unresolved}
+        write_json(workdir / "comprehension/comprehension_gate.json", gate)
+        return gate
+    if resolutions:
+        original = report_path.read_text(encoding="utf-8")
+        rewrite_packet = {
+            "job_id": "COMPREHENSION-REWRITE", "context_policy": "fresh", "report_hash": _text_hash(original),
+            "report": original, "validated_resolutions": resolutions,
+            "instructions": ["Apply only the validated resolutions with minimal edits.",
+                             "Preserve all citations, headings, and unrelated text.",
+                             "Do not add outside knowledge or unvalidated definitions."],
+            "json_schema": REWRITE_JSON_SCHEMA,
+        }
+        write_json(workdir / "comprehension/rewrite_packet.json", rewrite_packet)
+        rewrite = runner.run(rewrite_packet, REWRITE_JSON_SCHEMA)
+        expected_ids = {item["id"] for item in resolutions if item.get("action") != "keep"}
+        if not expected_ids.issubset(set(rewrite.get("applied_issue_ids", []))):
+            raise RuntimeError("rewrite did not apply every required issue")
+        backup = report_path.with_suffix(report_path.suffix + ".pre_comprehension")
+        if not backup.exists():
+            backup.write_text(original, encoding="utf-8")
+        report_path.write_text(rewrite["report"], encoding="utf-8")
+    final_args = argparse.Namespace(workdir=workdir, report=report_path, stage="final")
+    command_prepare_comprehension(final_args)
+    final_packet = read_json(workdir / "comprehension/final_full_report_scan_packet.json")
+    final_scan = runner.run(final_packet, COMPREHENSION_SCAN_JSON_SCHEMA)
+    final_scan["report_hash"] = final_packet["report_hash"]
+    write_json(workdir / "comprehension/final_full_report_scan.json", final_scan)
+    command_audit_comprehension(argparse.Namespace(workdir=workdir, report=report_path))
+    return read_json(workdir / "comprehension/comprehension_gate.json")
+
+
+def command_run_comprehension(args: argparse.Namespace) -> int:
+    workdir = args.workdir.resolve()
+    report_path = args.report.resolve() if args.report else workdir / "final_report.md"
+    try:
+        gate = run_comprehension_pipeline(workdir, report_path,
+                                          CodexModelRunner(workdir, model=args.model, timeout=args.timeout))
+    except (RuntimeError, subprocess.TimeoutExpired) as exc:
+        write_json(workdir / "comprehension/run_failure.json", {"passed": False, "error": str(exc)})
+        print(f"comprehension run failed: {exc}", file=sys.stderr)
+        return 2
+    return 0 if gate.get("passed") else 2
+
+
+def command_audit_comprehension(args: argparse.Namespace) -> int:
+    workdir = args.workdir.resolve()
+    report_path = args.report.resolve() if args.report else workdir / "final_report.md"
+    report_hash = _text_hash(report_path.read_text(encoding="utf-8")) if report_path.exists() else ""
+    final_packet_path = workdir / "comprehension" / "final_full_report_scan_packet.json"
+    final_scan_path = workdir / "comprehension" / "final_full_report_scan.json"
+    reasons, unresolved = [], []
+    if not final_packet_path.exists() or not final_scan_path.exists():
+        reasons.append("final full-report comprehension scan is missing")
+    else:
+        packet, scan = read_json(final_packet_path), read_json(final_scan_path)
+        if packet.get("report_hash") != report_hash or scan.get("report_hash") != report_hash:
+            reasons.append("final comprehension scan is stale")
+        ids = [item.get("id") for item in scan.get("items", [])]
+        if any(not item for item in ids) or len(ids) != len(set(ids)):
+            reasons.append("final comprehension issue IDs are missing or duplicated")
+        unresolved = [item for item in scan.get("items", [])
+                      if item.get("severity") == "blocking" and not item.get("answered_in_report")]
+        if not scan.get("self_contained") or unresolved:
+            reasons.append("report is not self-contained")
+    gate = {"passed": not reasons, "report_hash": report_hash, "reasons": reasons,
+            "unresolved_count": len(unresolved), "unresolved": unresolved,
+            "required_stage": "fresh full-report final scan after all local resolutions and rewrites"}
+    write_json(workdir / "comprehension" / "comprehension_gate.json", gate)
+    print(f'comprehension gate passed={gate["passed"]}; unresolved={len(unresolved)}')
+    return 0 if gate["passed"] else 2
 
 
 def command_search(args: argparse.Namespace) -> int:
@@ -420,7 +752,9 @@ def command_search(args: argparse.Namespace) -> int:
 def command_status(args: argparse.Namespace) -> int:
     workdir = args.workdir.resolve()
     names = ["paper_metadata.json", "sections.json", "evidence_index.jsonl", "chapter_jobs.json", "chapter_audit_summary.json",
-             "verified_claim_registry.json", "verified_claims.md", "synthesis_gate.json", "synthesis_packet.json", "synthesis_report.json"]
+             "verified_claim_registry.json", "verified_claims.md", "synthesis_gate.json", "synthesis_packet.json", "synthesis_report.json",
+             "comprehension/discover_full_report_scan_packet.json", "comprehension/local_jobs.json",
+             "comprehension/final_full_report_scan_packet.json", "comprehension/comprehension_gate.json"]
     print(json.dumps({name: (workdir / name).exists() for name in names}, ensure_ascii=False, indent=2))
     return 0
 
@@ -437,11 +771,24 @@ def build_parser() -> argparse.ArgumentParser:
         ("prepare-chapters", "create isolated fresh-context chapter job packets", command_prepare_chapters),
         ("audit-chapters", "deterministically audit model-produced chapter reports", command_audit_chapters),
         ("prepare-synthesis", "gate and create the final fresh-context synthesis packet", command_prepare_synthesis),
+        ("prepare-local-comprehension", "create isolated evidence-resolution jobs from the discovery scan", command_prepare_local_comprehension),
+        ("audit-comprehension", "fail closed unless the fresh final full-report scan is self-contained", command_audit_comprehension),
         ("status", "show available pipeline artifacts", command_status),
     ):
         command = sub.add_parser(name, help=help_text)
         command.add_argument("--workdir", type=Path, required=True)
         command.set_defaults(func=func)
+    comprehension = sub.add_parser("prepare-comprehension", help="create an open-world fresh full-report comprehension scan")
+    comprehension.add_argument("--workdir", type=Path, required=True)
+    comprehension.add_argument("--report", type=Path)
+    comprehension.add_argument("--stage", choices=("discover", "final"), default="discover")
+    comprehension.set_defaults(func=command_prepare_comprehension)
+    run_comprehension = sub.add_parser("run-comprehension", help="execute the complete comprehension workflow with real isolated model calls")
+    run_comprehension.add_argument("--workdir", type=Path, required=True)
+    run_comprehension.add_argument("--report", type=Path)
+    run_comprehension.add_argument("--model")
+    run_comprehension.add_argument("--timeout", type=int, default=600)
+    run_comprehension.set_defaults(func=command_run_comprehension)
     search = sub.add_parser("search", help="search the extracted full-text evidence index")
     search.add_argument("--workdir", type=Path, required=True)
     search.add_argument("--query", required=True)

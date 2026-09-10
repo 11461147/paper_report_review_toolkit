@@ -1,0 +1,30 @@
+{
+  "report_hash": "53f879ad3b07b75fa5541efc0342f87dfca2ca365269170661658fcfc33a3f02",
+  "self_contained": false,
+  "items": [
+    {
+      "id": "COMP-001",
+      "claim_text": "模型使用 ζ_align = 0.3 計算最終分數。",
+      "expression": "ζ_align",
+      "reader_question": "ζ_align 代表什麼量或參數？",
+      "first_use_text": "模型使用 ζ_align = 0.3 計算最終分數。",
+      "first_use_heading": "方法",
+      "issue": "undefined",
+      "answered_in_report": false,
+      "answer_text": null,
+      "severity": "blocking"
+    },
+    {
+      "id": "COMP-002",
+      "claim_text": "模型使用 ζ_align = 0.3 計算最終分數。",
+      "expression": "ζ_align = 0.3 與最終分數的關係",
+      "reader_question": "ζ_align 的值 0.3 如何用於計算最終分數（例如公式中的權重、閾值或其他角色）？",
+      "first_use_text": "模型使用 ζ_align = 0.3 計算最終分數。",
+      "first_use_heading": "方法",
+      "issue": "missing_relation",
+      "answered_in_report": false,
+      "answer_text": null,
+      "severity": "blocking"
+    }
+  ]
+}

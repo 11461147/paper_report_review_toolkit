@@ -1,0 +1,119 @@
+{
+  "job_id": "COMP-001-LOCAL-RESOLUTION",
+  "context_policy": "fresh",
+  "report_hash": "237027b1083b637c800fef5488ac8b7e92dba115fcd8cdf7de99699a360af389",
+  "issue": {
+    "id": "COMP-001",
+    "claim_text": "作者設定 K = N = M = 5，因此每個資料集產生 125 個問題。",
+    "expression": "K、N、M",
+    "reader_question": "K、N、M 各自代表什麼實驗變數或維度？",
+    "first_use_text": "作者設定 K = N = M = 5，因此每個資料集產生 125 個問題。",
+    "first_use_heading": "實驗設計",
+    "issue": "undefined",
+    "answered_in_report": false,
+    "answer_text": null,
+    "severity": "blocking"
+  },
+  "local_report_context": "## 實驗設計\n\n作者設定 K = N = M = 5，因此每個資料集產生 125 個問題。\n",
+  "candidate_source_passages": [
+    {
+      "passage_id": "SEC-001-P001",
+      "section_id": "SEC-001",
+      "section_number": "3.2",
+      "section_title": "Question Generation",
+      "page_start": 7,
+      "page_end": 7,
+      "text": "Input: Description of a corpus, number of users K, number of tasks per user N, number of questions per (user, task) combination M. Output: A set of K * N * M high-level questions. For our evaluation, we set K = M = N = 5 for a total of 125 test questions per dataset."
+    },
+    {
+      "passage_id": "SEC-002-P001",
+      "section_id": "SEC-002",
+      "section_number": "4.1",
+      "section_title": "Datasets",
+      "page_start": 8,
+      "page_end": 8,
+      "text": "We selected two datasets: podcast transcripts and news articles. Each dataset is representative of corpora that users may encounter in real-world activities."
+    }
+  ],
+  "instructions": [
+    "Decide whether the supplied report context already answers the reader question.",
+    "If source evidence supplies a missing definition, quote evidence_text exactly and identify passage_id.",
+    "Never answer from outside knowledge; missing evidence must remain unresolved.",
+    "Recommend keep, rewrite, delete, or mark_source_undefined. Do not edit the report."
+  ],
+  "output_schema": {
+    "id": "COMP-001",
+    "status": "resolved|unresolved",
+    "answer_from": "report|source|none",
+    "definition": "string|null",
+    "evidence_text": "exact quote|null",
+    "passage_id": "string|null",
+    "action": "keep|rewrite|delete|mark_source_undefined",
+    "reason": "string"
+  },
+  "json_schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "id": {
+        "type": "string"
+      },
+      "status": {
+        "type": "string",
+        "enum": [
+          "resolved",
+          "unresolved"
+        ]
+      },
+      "answer_from": {
+        "type": "string",
+        "enum": [
+          "report",
+          "source",
+          "none"
+        ]
+      },
+      "definition": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "evidence_text": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "passage_id": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "action": {
+        "type": "string",
+        "enum": [
+          "keep",
+          "rewrite",
+          "delete",
+          "mark_source_undefined"
+        ]
+      },
+      "reason": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "id",
+      "status",
+      "answer_from",
+      "definition",
+      "evidence_text",
+      "passage_id",
+      "action",
+      "reason"
+    ]
+  },
+  "expected_output": "comprehension/local_verdicts/COMP-001.json"
+}

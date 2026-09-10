@@ -1,0 +1,11 @@
+{
+  "id": "COMP-004",
+  "status": "resolved",
+  "answer_from": "source",
+  "definition": "「問題」是由使用者與任務的組合所產生的高階測試問題；K 為使用者數、N 為每位使用者的任務數、M 為每個（使用者、任務）組合的問題數，因此總數為 K × N × M = 5 × 5 × 5 = 125。",
+  "evidence_text": "Input: Description of a corpus, number of users K, number of tasks per user N, number of questions per (user, task) combination M. Output: A set of K * N * M high-level questions. For our evaluation, we set K = M = N = 5 for a total of 125 test questions per dataset.",
+  "passage_id": "SEC-001-P001",
+  "action": "rewrite",
+  "reason": "報告目前只列出參數與總數，未定義「問題」的類型或說明組合方式；來源明確指出其為高階測試問題，並定義 K、N、M 及 K × N × M 的生成關係。",
+  "validation_errors": []
+}

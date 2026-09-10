@@ -19,59 +19,43 @@ paper_report_review_toolkit/
 │       ├── agents/
 │       ├── references/
 │       └── scripts/
-└── tools/
-    ├── report_auditor.py
-    └── smoke_test_auditor.py
+├── tools/
+│   ├── paper_pipeline.py
+│   ├── report_auditor.py
+│   ├── smoke_test_auditor.py
+│   └── test_paper_pipeline.py
+└── tests/
+    └── cases/
+        ├── comprehension_live/
+        └── graphrag/
 ```
 
 ## 元件用途
 
 - `skills/paper-deep-researcher/`：給 Codex 使用的論文深度調研 skill，規範搜尋、閱讀、引用、報告結構與審查習慣。
+- `tools/paper_pipeline.py`：端到端 orchestration：章節抽取、逐章 fresh context、claim registry、合成與理解完整性審查。
 - `tools/report_auditor.py`：主要審核器，負責 deterministic checks、hard gates、packet generation、final review merge。
-- `tools/smoke_test_auditor.py`：回歸測試，快速確認 hard gates、L2/L3 packet 與 final review gating 沒有壞掉。
+- `tools/smoke_test_auditor.py`：L1/L2/L3 與 final review smoke tests。
+- `tools/test_paper_pipeline.py`：pipeline、理解審查與真模型 runner 回歸測試。
+- `tests/cases/graphrag/`：GraphRAG（arXiv:2404.16130）端到端案例。
+- `tests/cases/comprehension_live/`：真 Codex backend 正反案例。
 
 ## 工作方式總覽
 
-這套工具採用四層審查。
-
 ```text
-source paper / extracted text
-        |
-        v
-research report.md
-        |
-        v
-L1 deterministic audit
-  - citation、URL、DOI/arXiv、數字、表格、章節、亂碼、reference、hard gates
-        |
-        v
-L2 semantic support packet
-  - 交給模型檢查 citation/context 是否真的支撐 claim
-        |
-        v
-L3a argument normalization packet
-  - 交給模型把自然語言 claim 拆成 premises、conclusion、scope、inference rule
-        |
-        v
-L3b inference validity packet
-  - 交給模型檢查前提是否能推出結論
-        |
-        v
-final review merge
-  - 把 L2/L3 verdict JSON 回灌，blocking verdict 會讓最終審查不通過
+PDF / extracted text
+ -> automatic section extraction
+ -> fresh chapter jobs -> chapter evidence audits
+ -> verified claim registry -> fresh synthesis context
+ -> final_report.md
+ -> full-report discovery -> local source resolution
+ -> minimal rewrite -> fresh full-report rescan
+ -> L1 deterministic audit -> L2 semantic review
+ -> L3a argument normalization -> L3b inference validity
+ -> final review merge
 ```
 
-核心原則：
-
-```text
-verified source evidence
-+ complete premises
-+ valid inference
-+ preserved scope conditions
-= conclusion acceptable within evidence scope
-```
-
-L1 用 code 做，不交給模型猜。L2/L3 用模型做，但模型只能在 packet 給定的 claim、context、citation 線索中工作，不得補外部知識，也不得重算 L1 分數。
+章節模型只能使用該章原文；只有通過 audit 的主張進入 verified claim registry。合成模型使用全新上下文，只讀 registry 與必要摘要。理解完整性審查先讀完整報告找讀者可能誤解之處，再回到最小局部原文求解。
 
 ## 快速開始
 
@@ -136,6 +120,35 @@ GraphRAG 使用 Leiden community detection 建立階層式社群 [Edge et al., 2
 
 建議每個重要 claim 都在句尾放 citation。不要把多個 citation 擠成不可解析的格式，也不要只在段落最後放一個籠統來源。
 
+## 自動理解完整性審查
+
+這一層不維護術語名單，而是從完整報告判斷：合理讀者是否會因缺少定義、符號角色、分母、比較基準或適用範圍，得到兩個以上會實質改變結論的解讀。
+
+```powershell
+codex login status
+python tools/paper_pipeline.py run-comprehension --workdir output --report output/final_report.md
+```
+
+模型呼叫使用 ephemeral、read-only context，輸出受 JSON Schema 約束。`exit code 0` 代表通過；`exit code 2` 代表仍有無法從來源消除的實質歧義，流程 fail closed。工具會做完整報告 discovery、局部原文 resolution、最小改寫與另一個 fresh-context 全文複審。
+
+判斷規則：
+
+- 模型的 `confidence` 是未校準自評，只供診斷，不能單獨阻擋。
+- blocker 必須提出至少兩個合理解讀，並證明差異會改變真假、數值意義、比較方向或適用範圍。
+- 不影響結論的補充只算 warning；每個 claim 最多三個 blocker。
+- `evidence_text` 必須能在來源全文搜尋。來源沒有定義時不得用常識補寫，報告保持未改並 fail closed。
+- packet 與 gate 保存輸入 hash，上游變動會使舊 verdict 失效。
+
+Artifacts 位於 `<workdir>/comprehension/`：`discover_full_report_scan.json`、`local_packets/`、`local_verdicts/`、`rewrite_packet.json`、`final_full_report_scan.json`、`comprehension_gate.json`。改寫前報告保存為 `final_report.md.pre_comprehension`。
+
+真模型案例位於 `tests/cases/comprehension_live/`：
+
+- `positive/`：來源有 K、N、M 定義，工具補出三者角色與乘積 125。
+- `negative/`：來源沒有 `ζ_align` 定義，工具不得猜測或改寫，gate 必須失敗。
+- `live_test_summary.json`：記錄預期與實際結果。
+
+Mock 只能驗證 orchestration；真 backend 正反案例都符合預期，才能宣稱模型行為通過。
+
 ## 常用輸出
 
 執行 auditor 後，常見輸出如下：
@@ -149,6 +162,22 @@ GraphRAG 使用 Leiden community detection 建立階層式社群 [Edge et al., 2
 - `*.final_review.json`：合併 L1/L2/L3 verdict 後的最終閉環審查結果。
 
 `.gitignore` 預設忽略這些 audit/packet/output 檔案，避免把研究過程產物誤推到公開 repo。
+
+## 章節化報告與 GraphRAG 範例
+
+```powershell
+python tools/paper_pipeline.py extract --source paper.pdf --workdir output
+python tools/paper_pipeline.py prepare-chapters --workdir output
+python tools/paper_pipeline.py audit-chapters --workdir output
+python tools/paper_pipeline.py prepare-synthesis --workdir output
+python tools/paper_pipeline.py status --workdir output
+```
+
+章節辨識完全自動化；可靠主章不存在時停止，不要求人工修改 `sections.json`。每章 packet 的 `context_policy` 是 `fresh`；必要章節未通過 evidence audit 時不產生 synthesis packet。
+
+GraphRAG 輸出包括 `final_report.md`、可供後續模型使用的 `verified_claims.md`、可全文搜尋的 `evidence_index.jsonl` 與 `final_report.audit.json`，位於 `tests/cases/graphrag/pipeline_run/`。
+
+`2,000` 字元 hard gate 套用於合併後最終報告；逐章報告以證據完整、範圍不越界與 schema 通過為準，不強迫每章達到 2,000 字。
 
 ## L1 Deterministic Audit
 
@@ -476,3 +505,12 @@ C:\Users\<你的使用者名稱>\.codex\skills\paper-deep-researcher
 ### MD 還是 TXT 比較好？
 
 報告用 Markdown。原文抽取檔也建議用 Markdown，因為可以保留 page markers、section markers 與表格上下文。純 TXT 可用，但後續引用定位較弱。
+
+## Pipeline Test
+
+```powershell
+python tools/test_paper_pipeline.py
+python tools/smoke_test_auditor.py
+```
+
+目前 pipeline suite 有 14 個測試，涵蓋章節抽取、fresh-context packet、跨章證據阻擋、claim registry、synthesis gate、理解審查正反路徑與 Codex CLI 參數順序。模型能力仍須執行上述 live tests，不能以 mock 取代。

@@ -1,0 +1,30 @@
+{
+  "report_hash": "237027b1083b637c800fef5488ac8b7e92dba115fcd8cdf7de99699a360af389",
+  "self_contained": false,
+  "items": [
+    {
+      "id": "COMP-001",
+      "claim_text": "作者設定 K = N = M = 5，因此每個資料集產生 125 個問題。",
+      "expression": "K、N、M",
+      "reader_question": "K、N、M 各自代表什麼實驗變數或維度？",
+      "first_use_text": "作者設定 K = N = M = 5，因此每個資料集產生 125 個問題。",
+      "first_use_heading": "實驗設計",
+      "issue": "undefined",
+      "answered_in_report": false,
+      "answer_text": null,
+      "severity": "blocking"
+    },
+    {
+      "id": "COMP-002",
+      "claim_text": "作者設定 K = N = M = 5，因此每個資料集產生 125 個問題。",
+      "expression": "K = N = M = 5 ⇒ 每個資料集產生 125 個問題",
+      "reader_question": "125 如何由 K、N、M 推導而來；是否是三個維度的所有組合數 5 × 5 × 5？",
+      "first_use_text": "作者設定 K = N = M = 5，因此每個資料集產生 125 個問題。",
+      "first_use_heading": "實驗設計",
+      "issue": "missing_relation",
+      "answered_in_report": false,
+      "answer_text": null,
+      "severity": "blocking"
+    }
+  ]
+}
