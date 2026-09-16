@@ -22,6 +22,8 @@ from report_auditor import (
     build_reasoning_appendix_template,
     build_argument_packet,
     build_reasoning_packet,
+    build_semantic_packet,
+    load_external_evidence_registry,
     read_source_text,
 )
 
@@ -155,6 +157,95 @@ def test_reasoning_verdict_blocks_final_pass() -> None:
     assert final_review["reasoning_review"]["counts"]["blocking"] == 1
 
 
+def test_external_passages_are_attached_to_matching_l2_items() -> None:
+    result = {
+        "passed": True, "final_score": 90, "threshold": 80, "scores": {}, "counts": {},
+        "deterministic_checks": {},
+        "rewrite_contexts": [{"category": "citation_precision", "severity": "major",
+                              "message": "check external claim", "context": "Claim text（EXT-SRC-007）"}],
+        "external_evidence_registry": {"sources": [{
+            "source_id": "EXT-SRC-007",
+            "paper": {"title": "Example", "year": 2025},
+            "evidence_passages": [{"passage_id": "EXT-SRC-007-P01", "text": "The experiment reports a scoped result.",
+                                   "access_level": "full_text", "source_url": "https://arxiv.org/abs/2501.00001",
+                                   "source_sha256": "abc", "location": {"section": "Results"}}],
+        }]},
+    }
+    packet = build_semantic_packet(result)
+    attached = packet["items"][0]["external_evidence"]
+    assert attached[0]["source_id"] == "EXT-SRC-007"
+    assert attached[0]["evidence_passages"][0]["access_level"] == "full_text"
+
+
+def test_external_source_reuse_creates_distinct_claim_reviews() -> None:
+    result = {
+        "passed": True, "final_score": 90, "threshold": 80, "scores": {}, "counts": {},
+        "deterministic_checks": {}, "rewrite_contexts": [],
+        "report_text": "方法處理全域問題。（EXT-SRC-001）\n\n方法降低延遲。（EXT-SRC-001）",
+        "external_evidence_registry": {"sources": [{
+            "source_id": "EXT-SRC-001",
+            "evidence_passages": [{
+                "passage_id": "EXT-SRC-001-P01", "text": "Evidence.",
+                "access_level": "full_text", "source_url": "https://arxiv.org/abs/2501.00001",
+            }],
+        }]},
+    }
+    items = build_semantic_packet(result)["items"]
+    assert [item["id"] for item in items] == ["L2-EXT-001", "L2-EXT-002"]
+    assert all(item["reviewed_source_id"] == "EXT-SRC-001" for item in items)
+    assert items[0]["report_claim"] != items[1]["report_claim"]
+
+
+def test_undefined_external_source_is_fail_closed() -> None:
+    result = {
+        "passed": True, "final_score": 90, "threshold": 80, "scores": {}, "counts": {},
+        "deterministic_checks": {}, "rewrite_contexts": [],
+        "report_text": "此結論引用不存在的來源。（EXT-SRC-999）",
+        "external_evidence_registry": {"sources": []},
+    }
+    item = build_semantic_packet(result)["items"][0]
+    assert item["registry_precheck"] == "undefined_source"
+    review = build_final_review(result)
+    assert not review["passed"]
+    assert any(issue["category"] == "undefined_source" for issue in review["blocking_issues"])
+
+
+def test_omitted_external_review_id_is_blocking() -> None:
+    result = {
+        "passed": True, "final_score": 90, "threshold": 80, "scores": {}, "counts": {},
+        "deterministic_checks": {}, "rewrite_contexts": [],
+        "report_text": "外部結果支持此結論。（EXT-SRC-001）",
+        "external_evidence_registry": {"sources": [{
+            "source_id": "EXT-SRC-001",
+            "evidence_passages": [{
+                "passage_id": "EXT-SRC-001-P01", "text": "Scoped result evidence.",
+                "access_level": "full_text", "source_url": "https://arxiv.org/abs/2501.00001",
+            }],
+        }]},
+    }
+    with TemporaryDirectory() as tmp:
+        verdicts = Path(tmp) / "semantic.json"
+        verdicts.write_text(json.dumps({"verdicts": []}), encoding="utf-8")
+        review = build_final_review(result, semantic_verdicts=verdicts)
+    assert not review["passed"]
+    assert any(item["category"] == "missing_semantic_item"
+               for item in review["semantic_review"]["blocking_items"])
+
+
+def test_metadata_only_cannot_contain_content_evidence() -> None:
+    with TemporaryDirectory() as tmp:
+        path = Path(tmp) / "external.json"
+        path.write_text(json.dumps({"sources": [{"source_id": "EXT-SRC-001", "evidence_passages": [
+            {"passage_id": "EXT-SRC-001-P01", "access_level": "metadata_only", "text": "invented result"}
+        ]}]}), encoding="utf-8")
+        try:
+            load_external_evidence_registry(path)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError("metadata_only content evidence must be rejected")
+
+
 def main() -> int:
     test_empty_report_fails()
     test_uncited_report_fails()
@@ -164,6 +255,11 @@ def main() -> int:
     test_reasoning_outputs_include_appendix_contract()
     test_required_model_reviews_block_when_missing()
     test_reasoning_verdict_blocks_final_pass()
+    test_external_passages_are_attached_to_matching_l2_items()
+    test_external_source_reuse_creates_distinct_claim_reviews()
+    test_undefined_external_source_is_fail_closed()
+    test_omitted_external_review_id_is_blocking()
+    test_metadata_only_cannot_contain_content_evidence()
     print("smoke tests passed")
     return 0
 

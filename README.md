@@ -2,6 +2,8 @@
 
 這是一套可複製到其他專案的論文調研與報告審核工具。它的目標不是讓模型自由打分，而是把「報告是否可信」拆成可追蹤的流程：先用程式做可計算檢查，再把 citation 支撐與推論有效性整理成 packet 交給模型做受限審查，最後把 verdict 回灌成最終通過或阻擋。
 
+> **目前狀態：Beta。** 外部論文搜尋、全文取得與證據 registry 已可用，但仍應把 L1/L2/L3 與 comprehension gate 的完整通過視為正式交付條件。未通過任一閘門的報告是測試產物，不應標示為已驗證研究結論。
+
 適合用在：
 
 - 單篇論文深度調研報告。
@@ -71,6 +73,13 @@ $env:PYTHONIOENCODING="utf-8"
 ```powershell
 python tools/report_auditor.py report.md --source paper.pdf --json-out report_audit.json --rewrite-packet --semantic-packet --argument-packet --reasoning-packet --reasoning-appendix
 ```
+
+外部文獻內容證據由 bundled helper 自動取得：`search_external_papers(..., include_full_text=True)` 會嘗試官方／開放 PDF、執行 `pdftotext`、保存 SHA-256 與 passages；失敗時明確降級為 `abstract_only` 或 `metadata_only`。後兩者不能用來支持超出實際可見文字的研究結果。L2 審查可用 `--external-evidence-registry external_evidence_registry.json` 將對應的 `EXT-SRC-NNN-PNN` passages 放進模型封包。
+外部 registry 使用分層 ID：`EXT-SRC-NNN`（來源）、`EXT-SRC-NNN-PNN`（證據段落）、`EXT-SRC-NNN-CNN`（由段落支持的主張）與 `L2-EXT-NNN`（一次報告主張審查）。同一來源可以支持多個不同主張，但每個報告主張都必須有獨立 review item。只有通過語意支撐驗證的 passage/claim 才能進入最終報告；`semantic_support_verified: false` 不得被後續模型自行提升為已驗證證據。
+
+`access_level: full_text` 只表示工具已成功取得並抽取完整文件，不表示模型已逐段閱讀全文。報告中的主張只能依實際放入 evidence packet 的 passages 判定；若 packet 沒有 Results、Evaluation、表格或比較段落，就不能宣稱方法優於 baseline。當候選論文包含實驗性主張時，正式流程應另外檢索結果章節，而不能只使用與搜尋 query 詞彙最相似的段落。
+
+為避免引用追查無限遞迴，外部證據預設只展開一層；只有來源歸屬、相互矛盾或關鍵二手引述需要核對時，才有限度展開第二層。背景引用不會自動遞迴追查。證據仍不足時，流程應縮窄或刪除主張，而不是繼續擴張引用鏈。
 
 `--source` 現在預設接受 PDF。工具會呼叫 Poppler 的 `pdftotext -layout`，直接把 PDF 轉成 UTF-8 文字供數字與 evidence checks 使用，不必先手動建立 `paper_extracted.md`。如果系統沒有 `pdftotext`，工具會停止並提示安裝 Poppler；仍可傳入預先抽取的 `.txt` 或 `.md`。
 

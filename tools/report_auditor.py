@@ -1344,7 +1344,11 @@ def reasoning_item_is_blocking(item: dict) -> bool:
     return verdict in REASONING_BLOCKING_VERDICTS
 
 
-def summarize_semantic_review(path: Path | None, require_review: bool) -> dict:
+def summarize_semantic_review(
+    path: Path | None,
+    require_review: bool,
+    expected_ids: list[str] | None = None,
+) -> dict:
     if not path:
         return {
             "enabled": False,
@@ -1361,6 +1365,25 @@ def summarize_semantic_review(path: Path | None, require_review: bool) -> dict:
         }
     items = normalize_review_items(load_json(path))
     blocking = [item for item in items if semantic_item_is_blocking(item)]
+    expected_ids = expected_ids or []
+    reviewed_ids = [str(item.get("id", "")) for item in items]
+    for missing_id in [item_id for item_id in expected_ids if item_id not in reviewed_ids]:
+        blocking.append({
+            "id": missing_id,
+            "category": "missing_semantic_item",
+            "message": "L2 verdict file omitted a required semantic review item.",
+            "evidence_status": "unverifiable",
+            "action": "replace_source",
+        })
+    duplicate_ids = sorted({item_id for item_id in reviewed_ids if item_id and reviewed_ids.count(item_id) > 1})
+    for duplicate_id in duplicate_ids:
+        blocking.append({
+            "id": duplicate_id,
+            "category": "duplicate_semantic_item",
+            "message": "L2 verdict file contains a duplicate review ID.",
+            "evidence_status": "unverifiable",
+            "action": "replace_source",
+        })
     return {
         "enabled": True,
         "required": require_review,
@@ -1413,7 +1436,27 @@ def build_final_review(
     require_model_reviews: bool = False,
 ) -> dict:
     l1_passed = bool(result.get("passed"))
-    semantic = summarize_semantic_review(semantic_verdicts, require_model_reviews)
+    semantic_packet = build_semantic_packet(result)
+    expected_semantic_ids = [item["id"] for item in semantic_packet["items"]]
+    semantic = summarize_semantic_review(
+        semantic_verdicts, require_model_reviews, expected_ids=expected_semantic_ids
+    )
+    external_precheck_issues = [
+        {
+            "id": item["id"],
+            "category": item["registry_precheck"],
+            "message": f'External source precheck failed: {item["registry_precheck"]}',
+            "evidence_status": "unverifiable",
+            "action": "replace_source",
+        }
+        for item in semantic_packet["items"]
+        if item.get("category") == "external_evidence_support"
+        and item.get("registry_precheck") != "ready"
+    ]
+    if external_precheck_issues:
+        semantic["blocking_items"].extend(external_precheck_issues)
+        semantic["passed"] = False
+        semantic.setdefault("counts", {})["blocking"] = len(semantic["blocking_items"])
     reasoning = summarize_reasoning_review(reasoning_verdicts, require_model_reviews)
     blocking_issues = []
     for item in semantic.get("blocking_items", []):
@@ -1471,7 +1514,96 @@ def default_final_review_path(report_path: Path) -> Path:
     return report_path.with_name(report_path.stem + ".final_review.json")
 
 
+EXTERNAL_SOURCE_ID_RE = re.compile(r"\bEXT-SRC-\d{3}\b")
+
+
+def load_external_evidence_registry(path: Path) -> dict:
+    data = json.loads(path.read_text(encoding="utf-8"))
+    sources = data.get("sources")
+    if not isinstance(sources, list):
+        raise ValueError("external evidence registry must contain a sources list")
+    allowed = {"full_text", "abstract_only", "metadata_only"}
+    seen_source_ids = set()
+    seen_passage_ids = set()
+    for source in sources:
+        source_id = source.get("source_id") if isinstance(source, dict) else None
+        if not source_id or not EXTERNAL_SOURCE_ID_RE.fullmatch(source_id):
+            raise ValueError("every external source requires source_id formatted EXT-SRC-NNN")
+        if source_id in seen_source_ids:
+            raise ValueError(f"duplicate external source_id: {source_id}")
+        seen_source_ids.add(source_id)
+        passages = source.get("evidence_passages", [])
+        if not isinstance(passages, list):
+            raise ValueError("evidence_passages must be a list")
+        for passage in passages:
+            passage_id = passage.get("passage_id")
+            if not passage_id or not passage_id.startswith(source_id + "-P"):
+                raise ValueError(f"passage_id must be namespaced by {source_id}-P")
+            if passage_id in seen_passage_ids:
+                raise ValueError(f"duplicate external passage_id: {passage_id}")
+            seen_passage_ids.add(passage_id)
+            if passage.get("access_level") not in allowed:
+                raise ValueError("passage access_level must be full_text, abstract_only, or metadata_only")
+            if passage.get("access_level") == "metadata_only" and passage.get("text"):
+                raise ValueError("metadata_only records cannot contain content evidence")
+    return data
+
+
+def external_evidence_for_context(context: str, registry: dict) -> list[dict]:
+    ids = set(EXTERNAL_SOURCE_ID_RE.findall(context or ""))
+    return [source for source in registry.get("sources", []) if source.get("source_id") in ids]
+
+
+def build_external_semantic_items(report: str, registry: dict) -> list[dict]:
+    """Create one L2 review per report claim × external source citation."""
+    source_map = {source["source_id"]: source for source in registry.get("sources", [])}
+    items = []
+    seen = set()
+    for claim in CLAIM_SPLIT_RE.split(report):
+        claim = claim.strip()
+        if not claim:
+            continue
+        for source_id in dict.fromkeys(EXTERNAL_SOURCE_ID_RE.findall(claim)):
+            key = (re.sub(r"\s+", " ", claim), source_id)
+            if key in seen:
+                continue
+            seen.add(key)
+            source = source_map.get(source_id)
+            passages = source.get("evidence_passages", []) if source else []
+            access_levels = {passage.get("access_level") for passage in passages}
+            if source is None:
+                precheck = "undefined_source"
+            elif not passages:
+                precheck = "no_passages"
+            elif access_levels == {"metadata_only"}:
+                precheck = "metadata_only"
+            else:
+                precheck = "ready"
+            items.append({
+                "id": f"L2-EXT-{len(items) + 1:03d}",
+                "category": "external_evidence_support",
+                "severity": "critical" if precheck != "ready" else "major",
+                "report_claim": claim,
+                "reviewed_source_id": source_id,
+                "registry_precheck": precheck,
+                "external_evidence": [source] if source else [],
+                "semantic_questions": [
+                    "passage 是否直接支持這一句報告主張？",
+                    "dataset、task、method、metric、baseline 與條件是否一致？",
+                    "access_level 是否足以支持這個細節？",
+                ],
+                "model_output_schema": {
+                    "evidence_status": "supported | partially_supported | unsupported | unverifiable",
+                    "inference_risk": "low | medium | high",
+                    "action": "keep | rewrite | add_citation | replace_source | delete",
+                    "reason": "中文短理由，不計算分數",
+                    "rewrite_instruction": "中文改寫指令",
+                },
+            })
+    return items
+
 def build_semantic_packet(result: dict, max_items: int = 40) -> dict:
+    external_registry = result.get("external_evidence_registry", {"sources": []})
     deterministic = result.get("deterministic_checks", {})
     semantic_categories = {
         "citation_url_mismatch",
@@ -1493,6 +1625,7 @@ def build_semantic_packet(result: dict, max_items: int = 40) -> dict:
                 "severity": finding.get("severity", ""),
                 "l1_message": finding.get("message", ""),
                 "context": finding.get("context", ""),
+                "external_evidence": external_evidence_for_context(finding.get("context", ""), external_registry),
                 "rewrite_hint": finding.get("rewrite_hint", ""),
                 "semantic_questions": [
                     "citation 是否真的支撐該主張？",
@@ -1512,6 +1645,10 @@ def build_semantic_packet(result: dict, max_items: int = 40) -> dict:
         if len(items) >= max_items:
             break
 
+    items.extend(build_external_semantic_items(
+        result.get("report_text", ""), external_registry
+    ))
+
     return {
         "packet_type": "semantic_audit_l2",
         "language": "zh-TW",
@@ -1529,6 +1666,11 @@ def build_semantic_packet(result: dict, max_items: int = 40) -> dict:
             "檢查 citation 是否語義支撐 context 中的主張。",
             "檢查是否有過度推論、因果跳躍、強詞或未明確限制適用範圍。",
             "若 L1 提供 citation metadata，優先使用 metadata/context 判斷來源是否對得上。",
+            "若 item 含 external_evidence，只能用其中 evidence_passages 驗證外部內容主張。",
+            "full_text 可驗證內文；abstract_only 只能支持摘要明示內容；metadata_only 不得支持研究結果。",
+            "不得把 title、authors、year、DOI 或 URL 等 metadata 當成實驗結果證據。",
+            "所有 L2-EXT items 都必須逐項輸出；同一 source_id 的不同 report_claim 不得合併審查。",
+            "registry_precheck 不是 ready 時必須標記 unverifiable，且不得 keep。",
             "若資料不足，標記 unverifiable，並要求回到官方論文、DOI、arXiv 或出版頁查證。",
             "輸出只能是審核意見與重寫指令，不得給新的 L1 分數。",
         ],
@@ -1771,6 +1913,7 @@ def main() -> int:
         type=Path,
         help="Optional paper source (.pdf is converted with pdftotext; text/Markdown is read directly)",
     )
+    parser.add_argument("--external-evidence-registry", type=Path, help="External evidence JSON with access tiers and source passages")
     parser.add_argument("--threshold", type=float, default=DEFAULT_THRESHOLD)
     parser.add_argument("--json-out", type=Path, help="Write audit JSON to this path")
     parser.add_argument("--check-links", action="store_true", help="Check URL reachability with HTTP requests")
@@ -1832,6 +1975,13 @@ def main() -> int:
         check_links=args.check_links,
         verify_citation_metadata_enabled=not args.no_verify_citation_metadata,
     )
+    result["report_text"] = report
+
+    if args.external_evidence_registry:
+        try:
+            result["external_evidence_registry"] = load_external_evidence_registry(args.external_evidence_registry)
+        except (OSError, ValueError, json.JSONDecodeError) as exc:
+            parser.error(str(exc))
 
     if args.semantic_verdicts or args.reasoning_verdicts or args.final_review_out or args.require_model_reviews:
         final_review = build_final_review(
@@ -1862,6 +2012,7 @@ def main() -> int:
     if args.reasoning_appendix:
         result["reasoning_appendix_path"] = str(write_reasoning_appendix(args.report, result))
 
+    result.pop("report_text", None)
     if args.json_out:
         args.json_out.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
 

@@ -73,7 +73,7 @@
     "type": "function",
     "function": {
       "name": "get_paper_snippets",
-      "description": "Retrieves exact full-text passages (~480 tokens each) from a specific paper using the Semantic Scholar Open Research Corpus (S2ORC). Use this to extract precise evidence for fact-scoring and in-text citation.",
+      "description": "Retrieves abstract or TLDR candidates from Semantic Scholar metadata. It does not claim full-text access; use retrieve_paper_evidence for verified PDF text.",
       "parameters": {
         "type": "object",
         "properties": {
@@ -116,5 +116,54 @@
         "required": ["paperId"]
       }
     }
-  }
+  },
+    {
+        "type": "function",
+        "function": {
+            "name": "retrieve_paper_evidence",
+            "description": "Downloads an official/open-access PDF, extracts text, hashes the snapshot, and returns evidence passages. Fails closed to abstract_only or metadata_only.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "paper": {
+                        "type": "object",
+                        "description": "Paper record from search, including externalIds, canonical_url, openAccessPdf, or pdf_url."
+                    },
+                    "query": {
+                        "type": "string",
+                        "description": "Evidence question used to rank passages."
+                    },
+                    "maxPassages": {
+                        "type": "integer",
+                        "default": 5
+                    }
+                },
+                "required": ["paper", "query"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "search_external_papers",
+            "description": "Searches keyless-first scholarly providers, deduplicates results, and can automatically retrieve official full text and evidence passages.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "query": {"type": "string"},
+                    "limit": {"type": "integer", "default": 20},
+                    "providers": {
+                        "type": "array",
+                        "items": {"type": "string", "enum": ["arxiv", "crossref", "openalex", "semantic_scholar"]}
+                    },
+                    "include_full_text": {
+                        "type": "boolean",
+                        "default": true,
+                        "description": "When true, download official/open-access PDFs and attach provenance-preserving passages."
+                    }
+                },
+                "required": ["query"]
+            }
+        }
+    }
 ]

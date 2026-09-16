@@ -16,7 +16,7 @@ description: 嚴謹的學術論文深度調研與證據合成 skill，適用於�
 3. Citation 優先使用格式：`[Author et al., Year, S2ID:paperId]`。
 4. 複雜問題必須先拆成至少 3 個 boolean-style sub-queries，但 query matrix 只作為內部規劃，不要放進最終報告，除非使用者明確要求。
 5. 搜尋時要結合 lexical keyword search 與 semantic/related-paper search；若沒有向量工具，至少用多組關鍵字、同義詞、縮寫、引用網路補足。
-6. 證據片段 relevance score `R(c|q) < 0.75` 時不得用於最終合成。
+6. 字面檢索分數只用於產生 top-k 候選；證據必須經模型判定為 `supported` 且 scope 一致，才能用於最終合成。
 7. 必須主動找出並記錄不同論文之間的矛盾、條件差異與可能原因。
 8. 不得信任 web search summaries 作為 citation source；必須閱讀或驗證原始 URL、abstract page、PDF、DOI page 或 publisher page。
 9. 找不到直接證據時，明確寫：`No direct evidence found in evaluated literature.`
@@ -67,7 +67,26 @@ description: 嚴謹的學術論文深度調研與證據合成 skill，適用於�
 - 對每個 boolean query 搜尋。
 - 對 top seed papers 追蹤 references、citations、recommendations。
 - 優先保留高相關、高引用、近期、重要 venue、直接回答問題的論文。
-- 使用 composite impact intuition 排序：citation count、influential citations、publication recency、venue relevance、topic directness。
+- 先按查詢相關性產生候選，再將 citation impact 當次要排序訊號；未知 citation metadata 必須保留為未知，不得填入估算值或當成已驗證的零。
+
+使用 bundled search helper 時：
+- 需要內容證據時以 `include_full_text=True` 執行搜尋，或對單篇呼叫 `retrieve_paper_evidence`；工具自動下載官方／開放 PDF、轉成文字並附來源雜湊。
+- 每個來源必須標示 `full_text | abstract_only | metadata_only`；下載或解析失敗時自動降級，`metadata_only` 絕不可支撐研究結果。
+- 每個 evidence passage 必須保存 `source_url`、`source_sha256`、`location` 與 access level，再交給 fresh-context 模型判斷支撐性。
+
+- 優先呼叫 `search_external_papers`，以 arXiv、Crossref、OpenAlex 匿名 API 搜尋，並將 Semantic Scholar 視為可選增強。
+- 預設不得要求 API key；`SEMANTIC_SCHOLAR_API_KEY`、`OPENALEX_API_KEY` 與 `CROSSREF_MAILTO` 都是 optional。
+- 檢查每次結果的 `provider_status`。任一來源為 `rate_limited` 或 `error` 時，標記搜尋覆蓋不完整，不得把空結果解讀為「文獻不存在」。
+- 依 DOI、arXiv ID 與正規化標題合併重複記錄，並保存 `source_provenance`、canonical URL 與原始 identifiers。
+- 將 `lexical_candidate_score` 只視為召回與排序訊號，不得視為語意相關機率或 evidence support。
+- 中文查詢使用相鄰雙字元 bigrams 產生候選；英文使用正規化 word tokens。
+- 不得用固定分數門檻宣稱 passage 已獲證實；取 top-k 候選交給 fresh-context 模型審查。
+- 先用 `build_relevance_review_packet` 判斷 `high | medium | low | irrelevant`，再用 `build_support_review_packet` 判斷 `supported | partially_supported | contradicted | insufficient`。
+- 高相關 passage 仍可能反駁 claim；只有 `supported` 且 scope 一致的證據才能進入 verified claim registry。
+- 將 `negation_warning` 只作為模型注意事項，不得由字面規則直接判定支持或反駁。
+
+外部文獻不得混入原論文 claim registry。將它們保存於獨立的 external evidence registry，並標明與原主張的關係為 `supports | contradicts | contextualizes | extends | independent`。外部證據只能佐證、反駁或補充背景，不得用來宣稱原論文說過其未曾陳述的內容。
+外部證據 ID 必須分層：`EXT-SRC-NNN` 代表一篇外部來源，`EXT-SRC-NNN-PNN` 代表該來源的一個 passage，`L2-EXT-NNN` 只代表一次「報告主張 × 外部來源」審查。同一 source 可在正文重複引用，但每個不同主張必須建立獨立 review ID。
 
 ### Phase 3: Evidence Extraction and Fact Scoring
 
@@ -75,12 +94,10 @@ description: 嚴謹的學術論文深度調研與證據合成 skill，適用於�
 
 1. 驗證 metadata：title、authors、year、venue、S2ID、DOI、arXiv ID、canonical URL。
 2. 讀取 abstract、introduction、method、experiment、results、limitations、conclusion 中與 sub-question 直接相關的段落。
-3. 為每個 evidence snippet 估計 `R(c|q)`：
-   - `R >= 0.90`：Primary evidence，可直接作為主要證據。
-   - `0.75 <= R < 0.90`：Supporting evidence，可作為輔助證據。
-   - `R < 0.75`：Discard，不得用於結論。
-4. 每個保留片段都要標記來源：`[Author et al., Year, S2ID:paperId]`。
-5. Benchmark 數字、dataset 名稱、公式、方法限制，只能使用來源中明確出現的內容。
+3. 先用 lexical top-k 召回 evidence snippets，再由 fresh-context 模型分別審查語意相關性與 claim support；不得將 lexical score 當成校準機率。
+4. 將相關性與支撐性分開：相關 passage 可能反駁 claim，只有 `supported` 且 scope 一致的證據才可用於結論。
+5. 每個保留片段都要標記來源：`[Author et al., Year, S2ID:paperId]`。
+6. Benchmark 數字、dataset 名稱、公式、方法限制，只能使用來源中明確出現的內容。
 
 ### Phase 4: Structured Synthesis
 
@@ -161,7 +178,8 @@ PDF 與 metadata
 |:--|:--|
 | `search_academic_papers` | 初始查詢、關鍵字探索、候選論文發現 |
 | `traverse_citation_graph` | 從核心論文擴展 references / citations / recommendations |
-| `get_paper_snippets` | 從論文抽取精確 evidence passages |
+| `get_paper_snippets` | 只取得 metadata 中的 abstract／TLDR 候選，不代表已讀全文 |
+| `retrieve_paper_evidence` | 自動取得官方 PDF、轉文字並輸出具雜湊與位置的 evidence passages |
 | `get_paper_metadata` | 驗證 title、authors、year、venue、abstract、external IDs |
 | `read_url_content` | 引用前驗證 canonical URL、title、authors、abstract；若可用則必須使用 |
 | web search | 只能作為 discovery hints；最終 citation 必須回到原始學術來源 |
@@ -229,7 +247,7 @@ Title keywords    必須匹配
 - [ ] 每個 benchmark number 都能回到原始 paper evidence。
 - [ ] 每個 citation 都驗證過 title、authors、year、URL。
 - [ ] 沒有把 web search summary 當 citation source。
-- [ ] `R(c|q) < 0.75` 的片段沒有進入結論。
+- [ ] 進入結論的片段已由模型判定為 `supported`，且 dataset、metric、method 與條件 scope 一致。
 - [ ] 找不到證據的 sub-question 有明確寫 `No direct evidence found in evaluated literature.`
 - [ ] 已標出 contradictions、limitations、open challenges。
 - [ ] References 已去重。
