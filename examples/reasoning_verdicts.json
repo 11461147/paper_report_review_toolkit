@@ -1,0 +1,13 @@
+{
+  "items": [
+    {
+      "id": "L3-001",
+      "verdict": "valid",
+      "premises_used": ["P1", "P2"],
+      "invalid_step": "none",
+      "scope_status": "preserved",
+      "reason": "The conclusion is limited to Dataset D.",
+      "safer_conclusion": "Method A has higher measured accuracy on Dataset D."
+    }
+  ]
+}

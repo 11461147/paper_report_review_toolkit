@@ -25,6 +25,7 @@ from report_auditor import (
     build_semantic_packet,
     load_external_evidence_registry,
     read_source_text,
+    load_review_items,
 )
 
 
@@ -144,11 +145,11 @@ def test_reasoning_verdict_blocks_final_pass() -> None:
         l2_path = tmp_path / "semantic.json"
         l3_path = tmp_path / "reasoning.json"
         l2_path.write_text(
-            json.dumps({"items": [{"id": "L2-001", "evidence_status": "supported", "inference_risk": "low", "action": "keep"}]}),
+            json.dumps({"items": [{"id": "L2-001", "evidence_status": "supported", "inference_risk": "low", "action": "keep", "reason": "Citation supports the claim."}]}),
             encoding="utf-8",
         )
         l3_path.write_text(
-            json.dumps({"items": [{"id": "L3-001", "verdict": "overgeneralized", "reason": "scope widened"}]}),
+            json.dumps({"items": [{"id": "L3-001", "verdict": "overgeneralized", "premises_used": ["P1"], "invalid_step": "scope widened", "scope_status": "narrowed_needed", "reason": "scope widened", "safer_conclusion": "Limit the claim to the measured dataset."}]}),
             encoding="utf-8",
         )
         final_review = build_final_review(result, semantic_verdicts=l2_path, reasoning_verdicts=l3_path)
@@ -225,7 +226,10 @@ def test_omitted_external_review_id_is_blocking() -> None:
     }
     with TemporaryDirectory() as tmp:
         verdicts = Path(tmp) / "semantic.json"
-        verdicts.write_text(json.dumps({"verdicts": []}), encoding="utf-8")
+        verdicts.write_text(json.dumps({"verdicts": [{
+            "id": "L2-999", "evidence_status": "supported", "inference_risk": "low",
+            "action": "keep", "reason": "Unrelated item."
+        }]}), encoding="utf-8")
         review = build_final_review(result, semantic_verdicts=verdicts)
     assert not review["passed"]
     assert any(item["category"] == "missing_semantic_item"
@@ -245,6 +249,27 @@ def test_metadata_only_cannot_contain_content_evidence() -> None:
         else:
             raise AssertionError("metadata_only content evidence must be rejected")
 
+def test_malformed_verdict_cannot_pass() -> None:
+    with TemporaryDirectory() as tmp:
+        path = Path(tmp) / "semantic.json"
+        path.write_text(json.dumps({"items": [{"id": "L2-001", "evidence_status": "supoorted"}]}), encoding="utf-8")
+        try:
+            load_review_items(path, "semantic_verdicts.schema.json")
+        except ValueError:
+            pass
+        else:
+            raise AssertionError("malformed L2 verdict was accepted")
+
+
+def test_external_verdict_id_is_schema_valid() -> None:
+    with TemporaryDirectory() as tmp:
+        path = Path(tmp) / "semantic.json"
+        path.write_text(json.dumps({"items": [{
+            "id": "L2-EXT-001", "evidence_status": "supported", "inference_risk": "low",
+            "action": "keep", "reason": "Full-text passage supports the scoped claim."
+        }]}), encoding="utf-8")
+        assert load_review_items(path, "semantic_verdicts.schema.json")[0]["id"] == "L2-EXT-001"
+
 
 def main() -> int:
     test_empty_report_fails()
@@ -260,6 +285,8 @@ def main() -> int:
     test_undefined_external_source_is_fail_closed()
     test_omitted_external_review_id_is_blocking()
     test_metadata_only_cannot_contain_content_evidence()
+    test_malformed_verdict_cannot_pass()
+    test_external_verdict_id_is_schema_valid()
     print("smoke tests passed")
     return 0
 

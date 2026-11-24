@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Validate Python syntax
+        run: python -m compileall -q tools
+      - name: Audit smoke tests
+        run: python tools/smoke_test_auditor.py
+      - name: Research helper tests
+        run: python tools/test_paper_research_skill.py
+      - name: Pipeline tests
+        run: python tools/test_paper_pipeline.py
+      - name: Example L1 gate
+        run: python tools/report_auditor.py examples/report.md --source examples/source.md --no-verify-citation-metadata --fail-on-audit-fail --json-out /tmp/example-audit.json > /tmp/example-audit.stdout
+      - name: Check committed diff
+        run: git diff --check HEAD^ HEAD

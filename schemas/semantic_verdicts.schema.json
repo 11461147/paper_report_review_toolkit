@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "L2 semantic review verdicts",
+  "type": "object",
+  "required": ["items"],
+  "properties": {
+    "items": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "evidence_status", "inference_risk", "action", "reason"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^L2-(?:EXT-)?[0-9]{3,}$"},
+          "evidence_status": {"enum": ["supported", "partially_supported", "unsupported", "unverifiable"]},
+          "inference_risk": {"enum": ["low", "medium", "high"]},
+          "action": {"enum": ["keep", "rewrite", "add_citation", "replace_source", "delete"]},
+          "reason": {"type": "string", "minLength": 1},
+          "rewrite_instruction": {"type": "string"}
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}
