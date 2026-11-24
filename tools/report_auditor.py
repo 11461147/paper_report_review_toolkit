@@ -1306,6 +1306,24 @@ def load_json(path: Path) -> dict | list:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def load_review_items(path: Path, schema_name: str) -> list[dict]:
+    from jsonschema import Draft202012Validator
+
+    payload = load_json(path)
+    items = normalize_review_items(payload)
+    schema_path = Path(__file__).resolve().parent.parent / "schemas" / schema_name
+    schema = load_json(schema_path)
+    validator = Draft202012Validator(schema)
+    errors = sorted(validator.iter_errors({"items": items}), key=lambda error: list(map(str, error.path)))
+    if errors:
+        detail = "; ".join(f"{'/'.join(map(str, error.path))}: {error.message}" for error in errors)
+        raise ValueError(f"Invalid review file {path}: {detail}")
+    ids = [item["id"] for item in items]
+    if len(ids) != len(set(ids)):
+        raise ValueError(f"Invalid review file {path}: duplicate item ids")
+    return items
+
+
 def normalize_review_items(payload: dict | list) -> list[dict]:
     if isinstance(payload, list):
         return [item for item in payload if isinstance(item, dict)]
@@ -1363,7 +1381,7 @@ def summarize_semantic_review(
                 }
             ] if require_review else [],
         }
-    items = normalize_review_items(load_json(path))
+    items = load_review_items(path, "semantic_verdicts.schema.json")
     blocking = [item for item in items if semantic_item_is_blocking(item)]
     expected_ids = expected_ids or []
     reviewed_ids = [str(item.get("id", "")) for item in items]
@@ -1413,7 +1431,7 @@ def summarize_reasoning_review(path: Path | None, require_review: bool) -> dict:
                 }
             ] if require_review else [],
         }
-    items = normalize_review_items(load_json(path))
+    items = load_review_items(path, "reasoning_verdicts.schema.json")
     blocking = [item for item in items if reasoning_item_is_blocking(item)]
     return {
         "enabled": True,

@@ -61,6 +61,12 @@ PDF / extracted text
 
 ## 快速開始
 
+先安裝 Python 依賴：
+
+```powershell
+python -m pip install -r requirements.txt
+```
+
 建議在 Windows PowerShell 顯式設定 UTF-8：
 
 ```powershell
@@ -100,6 +106,14 @@ python tools/report_auditor.py report.md --source paper_extracted.md --json-out 
 ```powershell
 python tools/report_auditor.py report.md --source paper_extracted.md --json-out report_audit.json --fail-on-audit-fail
 ```
+
+可執行範例在 `examples/`。`source.md` 和 `report.md` 都是虛構資料，不是真實論文；`audit.json` 是 L1 審查輸出。從 repo 根目錄執行：
+
+```powershell
+python tools/report_auditor.py examples/report.md --source examples/source.md --json-out examples/audit.json --semantic-packet --argument-packet --reasoning-packet --no-verify-citation-metadata
+```
+
+`examples/semantic_verdicts.json` 和 `examples/reasoning_verdicts.json` 展示最小合法格式；它們只示範一筆，不代表整份報告的 L2/L3 審查已完成。正式使用時，應逐筆審核 packet 中的 items。
 
 ## 輸入文件要求
 
@@ -389,6 +403,12 @@ python tools/report_auditor.py report.md --source paper_extracted.md --json-out 
 - 附錄不得覆寫 L1 分數。
 
 ## Final Review Merge
+
+輸入的 verdict 會依 `schemas/semantic_verdicts.schema.json` 和 `schemas/reasoning_verdicts.schema.json` 驗證欄位、型別及 enum；L2 同時接受 `L2-NNN` 與外部來源 `L2-EXT-NNN`。缺欄位、拼錯狀態、空陣列或重複 ID 會報錯。L2 還會檢查目前 semantic packet 的每個 ID 都有 verdict；schema 只能驗證格式，不能判斷模型意見是否正確。L3 目前尚未檢查每個候選項都有 verdict，正式交付前仍應核對覆蓋率。
+
+## CI 驗證
+
+`.github/workflows/ci.yml` 會在每次 push 與 pull request 執行 auditor smoke tests、研究 helper 測試、pipeline 測試、範例報告 L1 hard gate，以及 Git diff 格式檢查。這些檢查通過後才可把該 commit 視為可發佈版本；CI 不會代替需要真模型與原文核對的 L2/L3 審查。
 
 正式閉環審查分兩步。
 

@@ -1,0 +1,11 @@
+{
+  "items": [
+    {
+      "id": "L2-001",
+      "evidence_status": "supported",
+      "inference_risk": "low",
+      "action": "keep",
+      "reason": "Source Section 3 gives both accuracy values."
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "L3 reasoning review verdicts",
+  "type": "object",
+  "required": ["items"],
+  "properties": {
+    "items": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "verdict", "premises_used", "invalid_step", "scope_status", "reason", "safer_conclusion"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^L3-[0-9]{3,}$"},
+          "verdict": {"enum": ["valid", "overgeneralized", "causal_jump", "missing_condition", "unsupported", "unclear"]},
+          "premises_used": {"type": "array", "items": {"type": "string"}},
+          "invalid_step": {"type": "string"},
+          "scope_status": {"enum": ["preserved", "narrowed_needed", "missing", "unclear"]},
+          "reason": {"type": "string", "minLength": 1},
+          "safer_conclusion": {"type": "string", "minLength": 1},
+          "appendix_markdown": {"type": "string"}
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

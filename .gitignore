@@ -18,3 +18,5 @@ env/
 *.final_review.json
 *.argument_packet.json
 outputs/
+examples/final_audit.json
+examples/final_review.json
